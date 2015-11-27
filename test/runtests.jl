@@ -1,5 +1,10 @@
-using CompScienceMeshes
+module PkgTests
+
+import CompScienceMeshes
 using Base.Test
 
 # write your own tests here
-@test 1 == 1
+include("test_mesh.jl")
+include("test_submesh.jl")
+
+end
