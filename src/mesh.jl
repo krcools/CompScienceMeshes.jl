@@ -12,18 +12,40 @@ valuetype{T}(m::AbstractMesh{T}) = T
 # UDim: dimension of the universe
 # MDim: dimension of the mesh
 # CType: type of the coordinates
-type Mesh{UDim,MDim,CType} <: AbstractMesh{CType}
-    vertices::Array{CType,2}
-    faces::Array{Int,2}
+# type Mesh{UDim,MDim,CType} <: AbstractMesh{CType}
+#     vertices::Array{CType,2}
+#     faces::Array{Int,2}
+# end
+
+# U: the dimension of the embedding space
+# D1: the dimension of the mesh + 1 (!)
+# T: the type of the coordinates of the vertices
+type Mesh{U,D1,T} <: AbstractMesh{T}
+    vertices::Array{Point{U,T},1}
+    faces::Array{Vec{D1,Int},1}
 end
 
-vertices(m::Mesh) = m.vertices
-vertices(m::Mesh, V) = m.vertices[:,V]
+vertextype{U,D1,T}(m::Mesh{U,D1,T}) = Point{U,T}
 
-numvertices(m::Mesh) = size(m.vertices,2)
-numcells(m::Mesh) = size(m.faces,2)
-dimension(m::Mesh) = size(m.faces,1)-1
-spacedimension(m::Mesh) = size(m.vertices,1)
+#vertices(m::Mesh) = m.vertices
+#vertices(m::Mesh, V) = m.vertices[:,V]
+function vertices(m::Mesh, I)
+    r = zeros(vertextype(m), length(I))
+    for i in I
+        r[i] = m.vertices[i]
+    end
+
+    return r
+end
+
+#numvertices(m::Mesh) = size(m.vertices,2)
+numvertices(m::Mesh) = length(m.vertices)
+#numcells(m::Mesh) = size(m.faces,2)
+numcells(m::Mesh) = length(m.faces)
+#dimension(m::Mesh) = size(m.faces,1)-1
+dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
+#spacedimension(m::Mesh) = size(m.vertices,1)
+spacedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
 function meshsegment{T<:Real}(length::T, delta::T, udim=2)
 
@@ -73,16 +95,21 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
     xs = (0:nx) * dx
     ys = (0:ny) * dy
 
-    vertices = zeros(T, udim, (nx+1)*(ny+1))
+    #vertices = zeros(T, udim, (nx+1)*(ny+1))
+    vertices = zeros(Point{UDim, T}, (nx+1)*(ny+1))
     k = 1
     for x in xs
         for y in ys
-            vertices[1:2,k] = [x,y]
+            p = zeros(T, UDim)
+            p[1] = x
+            p[2] = y
+            vertices[k] = Point(p)
             k += 1
         end
     end
 
-    faces = zeros(Int, 3, 2*nx*ny)
+    #faces = zeros(Int, 3, 2*nx*ny)
+    faces = zeros(Vec{3, Int}, 2*nx*ny)
     k = 1
     for i in 1 : nx
         for j in 1 : ny
@@ -90,13 +117,14 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
             v12 = i*(ny+1) + j
             v21 = (i-1)*(ny+1) + (j+1)
             v22 = i*(ny+1) + (j+1)
-            faces[:,k]   = [v11,v21,v12]
-            faces[:,k+1] = [v21,v22,v12]
+            faces[k]   = Vec(v11,v21,v12)
+            faces[k+1] = Vec(v21,v22,v12)
             k += 2
         end
     end
 
-    Mesh{UDim,MDim,T}(vertices, faces)
+    #Mesh{UDim,MDim+1,T}(vertices, faces)
+    Mesh(vertices, faces)
 end
 
 
@@ -137,7 +165,9 @@ end
 # the boundary and a array containing the indices of the
 # vertices of the original mesh that corresond to he
 # vertices of the boundary mesh.
-function boundary{U,D,T}(mesh::Mesh{U,D,T})
+function boundary{U,D1,T}(mesh::Mesh{U,D1,T})
+
+    D = D1 - 1
 
     # vertices have no boundary
     @assert 0 < D
@@ -153,7 +183,7 @@ function boundary{U,D,T}(mesh::Mesh{U,D,T})
     i = find(x -> x < 2, sum(abs(conn), 1))
 
     # create a mesh out of these
-    bnd = Mesh{U,D-1,T}(mesh.vertices, edges[:,i])
+    bnd = Mesh{U,D1-1,T}(mesh.vertices, edges[i])
 end
 
 """
@@ -166,22 +196,24 @@ vertex is a member of.
 """
 function vertextocellmap(mesh::Mesh, cells=mesh.faces)
 
-	# first pass: determine the maximum number of cells
+    # first pass: determine the maximum number of cells
     # containing a given vertex
 
-	numverts = numvertices(mesh)
-	numcells = size(cells, 2)
-	numneighbors = zeros(Int, numverts)
-	for i = 1 : numcells
-    numneighbors[ cells[:,i] ] += 1
-  end
+    numverts = numvertices(mesh)
+    numcells = length(cells)
+    numneighbors = zeros(Int, numverts)
+    for i = 1 : numcells
+        numneighbors[ cells[i] ] += 1
+    end
 
     npos = -1
     vertstocells = fill(npos, numverts, maximum(numneighbors))
     numneighbors = zeros(Int, numverts)
     for i = 1 : numcells
-        for j = 1 : size(cells,1)
-            v = cells[j,i]
+        cell = cells[i]
+        for j = 1 : length(cell)
+            #v = cells[j,i]
+            v = cell[j]
             k = (numneighbors[v] += 1)
             vertstocells[v,k] = i
         end
@@ -202,29 +234,27 @@ function cells(mesh::AbstractMesh, dim::Integer)
     @assert 0 <= dim <= meshdim
 
     if dim == 0
-        simplices = collect(1:numvertices(mesh))
-        simplices = reshape(simplices, 1, numvertices(mesh))
-        return simplices
+        return [Vec(i) for i in 1:numvertices(mesh)]
     end
 
     if dim == meshdim return mesh.faces end
 
     C = numcells(mesh)
-    simplices = zeros(Int, dim+1, C*binomial(meshdim+1,dim+1))
+    simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
 
     n = 1
     for c = 1 : C
 
-        cell = mesh.faces[:,c]
+        cell = mesh.faces[c]
         #cell = getsimplex(mesh, c)
         for simplex in combinations(cell,dim+1)
 
-            simplices[:,n] = sort(simplex)
+            simplices[n] = sort(simplex)
             n += 1
         end
     end
 
-    simplices = unique(simplices,2)
+    simplices = unique(simplices)
 end
 
 
@@ -253,13 +283,16 @@ function cells(f, mesh::AbstractMesh, k::Integer)
     kcells = unique(kcells,2)
 end
 
-function findfirst{T}(A::Array{T}, V::Array{T})
-    I = zeros(Int, size(V))
+function findfirst{N,T}(A::Array{T}, V::Union{Array{T,1},Vec{N,T}})
+    I = zeros(Int, length(V))
     for (k,v) in enumerate(V)
         I[k] = Base.findfirst(A, v)
     end
     return I
 end
+
+# findfirst(Array, Vec)
+
 
 
 # not exported
@@ -318,7 +351,14 @@ function relorientation(face, simplex)
     s = (-1)^(i-1)
 
     # remove that vertex from the simplex
-    face2 = [ simplex[1:i-1]; simplex[i+1:end]]
+    face2 = Array(Int, length(simplex)-1)
+    for j in 1 : i-1
+        face2[j] = simplex[j]
+    end
+    for j in i : length(simplex)-1
+        face2[j] = simplex[j+1]
+    end
+    #face2 = [ simplex[1:i-1]; simplex[i+1:end]]
 
     # get the permutation that maps face to face2
     p = findfirst(face2,face)
@@ -340,22 +380,29 @@ function connectivity(mesh::Mesh, k, kcells, mcells)
         return zeros(Int, 0, numcells(mesh))
     end
 
+    @show size(kcells), typeof(kcells)
+    @show size(mcells), typeof(mcells)
+
     vtok, _ = vertextocellmap(mesh, kcells)
     vtom, _ = vertextocellmap(mesh, mcells)
 
     const npos = -1
 
-    dimk = size(kcells,2)
-    dimm = size(mcells,2)
+    #dimk = size(kcells,2)
+    #dimm = size(mcells,2)
+    dimk = length(kcells)
+    dimm = length(mcells)
+
+    @show dimk, dimm
     D = spzeros(Int, dimm, dimk)
 
     for v in 1 : numvertices(mesh)
         for i in vtok[v,:]
             i == npos && break
-            kcell = kcells[:,i]
+            kcell = kcells[i]
             for j in vtom[v,:]
                 j == npos && break
-                mcell = mcells[:,j]
+                mcell = mcells[j]
                 D[j,i] = sign(relorientation(kcell, mcell))
             end
         end

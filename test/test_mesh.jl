@@ -1,6 +1,15 @@
 CSM = CompScienceMeshes
 
+using FixedSizeArrays
+using Base.Test
+
 rectangle = CSM.meshrectangle(1.0, 1.0, 1.0);
+
+@test CSM.vertices(rectangle, Vec(1,2,3)) == [
+    Point(0.0, 0.0, 0.0),
+    Point(0.0, 1.0, 0.0),
+    Point(1.0, 0.0, 0.0)
+]
 
 @test CSM.numvertices(rectangle) == 4
 @test CSM.numcells(rectangle) == 2
@@ -10,9 +19,9 @@ faces = CSM.cells(rectangle, 2)
 edges = CSM.cells(rectangle, 1)
 verts = CSM.cells(rectangle, 0)
 
-@test size(verts) == (1,4)
-@test size(edges) == (2,5)
-@test size(faces) == (3,2)
+@test length(verts) == 4
+@test length(edges) == 5
+@test length(faces) == 2
 
 Λ  = CSM.connectivity(rectangle, 0, verts, edges)
 Σᵀ = CSM.connectivity(rectangle, 1, edges, faces)
