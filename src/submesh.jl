@@ -37,22 +37,22 @@ function submesh(pred, mesh::Mesh, k)
     kcells = cells(mesh, k)
 
     j = 1
-    for i in 1:size(kcells,2)
+    for i in 1:length(kcells)
 
-        kcell = kcells[:,i]
+        kcell = kcells[i]
         if pred(kcell)
-            kcells[:,j] = kcell
+            kcells[j] = kcell
             j += 1
         end
 
     end
 
-    kcells = kcells[:,1:j-1]
+    kcells = kcells[1:j-1]
 
-    U = size(mesh.vertices, 1)
-    T = eltype(mesh.vertices)
+    #U = size(mesh.vertices, 1)
+    #T = eltype(mesh.vertices)
 
-    Mesh{U,k,T}(mesh.vertices, kcells)
+    Mesh(mesh.vertices, kcells)
 end
 
 import CollisionDetection

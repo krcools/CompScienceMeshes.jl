@@ -1,5 +1,5 @@
 export numcells
-export numvertices, dimension
+export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle
 export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation
