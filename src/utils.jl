@@ -19,6 +19,10 @@ function getindex{T,N}(A::AbstractArray{T}, I::Vec{N})
     return B
 end
 
+# getindex(A::AbstractArray, I::Vec{1}) = Vec(A[I[1]])
+# getindex(A::AbstractArray, I::Vec{2}) = Vec(A[I[1]], A[I[2]])
+# getindex(A::AbstractArray, I::Vec{3}) = Vec(A[I[1]], A[I[2]], A[I[3]])
+
 function setindex!{T,N}(A::AbstractArray{T}, v, I::Vec{N})
     for i in 1:N
         A[I[i]] = v

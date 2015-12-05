@@ -9,14 +9,6 @@ export Mesh
 abstract AbstractMesh{T}
 valuetype{T}(m::AbstractMesh{T}) = T
 
-# UDim: dimension of the universe
-# MDim: dimension of the mesh
-# CType: type of the coordinates
-# type Mesh{UDim,MDim,CType} <: AbstractMesh{CType}
-#     vertices::Array{CType,2}
-#     faces::Array{Int,2}
-# end
-
 # U: the dimension of the embedding space
 # D1: the dimension of the mesh + 1 (!)
 # T: the type of the coordinates of the vertices
@@ -27,59 +19,72 @@ end
 
 vertextype{U,D1,T}(m::Mesh{U,D1,T}) = Point{U,T}
 
-#vertices(m::Mesh) = m.vertices
-#vertices(m::Mesh, V) = m.vertices[:,V]
 function vertices(m::Mesh, I)
     r = zeros(vertextype(m), length(I))
-    for i in I
-        r[i] = m.vertices[i]
+    for i in 1:length(I)
+        r[i] = m.vertices[I[i]]
     end
 
     return r
 end
 
-#numvertices(m::Mesh) = size(m.vertices,2)
 numvertices(m::Mesh) = length(m.vertices)
-#numcells(m::Mesh) = size(m.faces,2)
 numcells(m::Mesh) = length(m.faces)
-#dimension(m::Mesh) = size(m.faces,1)-1
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
-#spacedimension(m::Mesh) = size(m.vertices,1)
 spacedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
-function meshsegment{T<:Real}(length::T, delta::T, udim=2)
+function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
-    num_segments = ceil(Int, length/delta)
-    actual_delta = length / num_segments
-    x = transpose(collect(0 : num_segments) * delta)
-    y = zeros(x);
+    num_segments = ceil(Int, L/delta)
+    actual_delta = L/num_segments
+    x = collect(0:num_segments) * delta
 
-    vertices = zeros(T, udim, num_segments+1)
-    vertices[1,:] = x
-    vertices[2,:] = y
+    vertices = zeros(Point{udim,T}, num_segments+1)
+    for i in 1 : length(vertices)
+        a = zeros(T, udim)
+        a[1] = x[i]
+        vertices[i] = Point{udim,T}(a)
+    end
 
-    faces = [ transpose(collect(1:num_segments));
-              transpose(collect(2:num_segments+1))]
+    faces = Array(Vec{2,Int}, num_segments)
+    for i in 1 : length(faces)
+        faces[i] = Vec(i, i+1)
+    end
 
-    return Mesh{udim,1,T}(vertices, faces)
+    return Mesh(vertices, faces)
 end
 
-function meshcircle{T<:Real}(radius::T, delta::T)
+function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
 
     circumf = 2 * pi *radius
     num_segments = ceil(Int, circumf / delta)
     delta = circumf / num_segments
     dalpha = delta / radius
-    alpha = transpose(collect(0 : num_segments-1) * dalpha)
-    vertices   = radius * [
-        cos(alpha);
-        sin(alpha) ]
-    faces      = [
-        transpose(1:num_segments);
-        transpose(2:num_segments+1) ]
-    faces[2,end] = 1
+    alpha = collect(0 : num_segments-1) * dalpha
 
-    return Mesh{2,1,T}(vertices, faces)
+    vertices = Array(Point{udim,T}, num_segments)
+    for i in 1 : num_segments
+        a = zeros(T, udim)
+        a[1] = radius * cos(alpha[i])
+        a[2] = radius * sin(alpha[i])
+        vertices[i] = Point{udim,T}(a)
+    end
+
+    # vertices   = radius * [
+    #     cos(alpha);
+    #     sin(alpha) ]
+
+    faces = Array(Vec{2,Int}, num_segments)
+    for i in 1 : length(faces)-1
+        faces[i] = Vec{2,Int}(i, i+1)
+    end
+    faces[end] = Vec{2,Int}(num_segments, 1)
+    # faces      = [
+    #     transpose(1:num_segments);
+    #     transpose(2:num_segments+1) ]
+    # faces[2,end] = 1
+
+    return Mesh(vertices, faces)
 end
 
 function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
@@ -283,7 +288,7 @@ function cells(f, mesh::AbstractMesh, k::Integer)
     kcells = unique(kcells,2)
 end
 
-function findfirst{N,T}(A::Array{T}, V::Union{Array{T,1},Vec{N,T}})
+function findfirst{T}(A, V::Array{T,1})
     I = zeros(Int, length(V))
     for (k,v) in enumerate(V)
         I[k] = Base.findfirst(A, v)
@@ -291,7 +296,14 @@ function findfirst{N,T}(A::Array{T}, V::Union{Array{T,1},Vec{N,T}})
     return I
 end
 
-# findfirst(Array, Vec)
+function findfirst{N,T}(A, V::Vec{N,T})
+    I = zeros(Int, length(V))
+    for (k,v) in enumerate(V)
+        I[k] = Base.findfirst(A, v)
+    end
+    return I
+end
+
 
 
 
@@ -421,16 +433,13 @@ end
 # this edge has local index `-id` in the cell refererred to by the first index
 function buildvolmpairs(mesh::Mesh, edges)
 
-    @assert size(edges,1) == 2
-    @assert ndims(edges) == 2
-
-    numedges = size(edges, 2)
+    numedges = length(edges)
     facepairs = zeros(Int, 2, numedges)
 
     v2e, nn = vertextocellmap(mesh, mesh.faces)
     for e in 1:numedges
 
-        edge = edges[:,e]
+        edge = edges[e]
 
         # neighborhood of startvertex
         v = edge[1]
@@ -449,14 +458,14 @@ function buildvolmpairs(mesh::Mesh, edges)
         @assert 0 <= n <= 2
         if n == 1 # boundary edge
             c = nbd[1]
-            cell = mesh.faces[:,c]
+            cell = mesh.faces[c]
             s = relorientation(edge, cell)
             facepairs[1,e] = c
             facepairs[2,e] = -abs(s)
         else # internal edge
             k = 0
             for c in nbd
-                cell = mesh.faces[:,c]
+                cell = mesh.faces[c]
                 s = relorientation(edge, cell)
                 if s > 0
                     facepairs[1,e] = c
