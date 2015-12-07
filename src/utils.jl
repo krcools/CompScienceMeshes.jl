@@ -34,3 +34,26 @@ function setindex!{N}(A::AbstractArray, V::AbstractArray, I::Vec{N})
         A[I[i]] = V[i]
     end
 end
+
+function searchsortedfirst(v, x, lo, hi, by, lt)
+    lo = lo-1
+    hi = hi+1
+    @inbounds while lo < hi-1
+        m = (lo+hi)>>>1
+        if lt(by(v[m]), x)
+        #if lt(o, v[m], x)
+            lo = m
+        else
+            hi = m
+        end
+    end
+    return hi
+end
+
+function colsearchsortedfirst(A, col)
+
+    n = size(A,2)
+    v =  collect(1:n)
+    searchsortedfirst(v, col, 1, n, i->A[:,i], lexless)
+
+end

@@ -1,6 +1,7 @@
-CSM = CompScienceMeshes
+using Base.Test
+MUT = CompScienceMeshes
 
-mesh = CSM.meshrectangle(1.0, 1.0, 0.5)
+mesh = MUT.meshrectangle(1.0, 1.0, 0.5)
 
 # This predicate tests whether a simplex is in the (x==0) plane
 function pred(simplex)
@@ -13,7 +14,7 @@ function pred(simplex)
     return true
 end
 
-sm = CSM.submesh(pred, mesh, 1)
+sm = MUT.submesh(pred, mesh, 1)
 #@test sm.faces == [1 2; 2 3]
 @test sm.faces == [
     Vec(1,2),

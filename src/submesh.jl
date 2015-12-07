@@ -1,29 +1,5 @@
 export submesh
 
-function searchsortedfirst(v, x, lo, hi, by, lt)
-    lo = lo-1
-    hi = hi+1
-    @inbounds while lo < hi-1
-        m = (lo+hi)>>>1
-        if lt(by(v[m]), x)
-        #if lt(o, v[m], x)
-            lo = m
-        else
-            hi = m
-        end
-    end
-    return hi
-end
-
-function colsearchsortedfirst(A, col)
-
-    n = size(A,2)
-    v =  collect(1:n)
-    searchsortedfirst(v, col, 1, n, i->A[:,i], lexless)
-
-end
-
-
 """
 Returns a mesh on the same vertexbuffer as the input mesh. The submesh
 will be a mesh of dimension k containing all the k-cells that are in mesh
@@ -58,7 +34,11 @@ end
 import CollisionDetection
 CD = CollisionDetection
 
+"""
+Store the k-cells of a mesh in an octree.
 
+    function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
+"""
 function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
 
     nverts = size(kcells,1)
@@ -80,6 +60,13 @@ function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
     CD.Octree(points, radii)
 end
 
+"""
+Predicate used for iteration over an Octree. Returns true if two boxes
+specified by their centers and halfsizes overlap. More carefull investigation
+of the objects within is required to assess collision.
+
+    function boxesoverlap(c1, hs1, c2, hs2)
+"""
 function boxesoverlap(c1, hs1, c2, hs2)
 
     dim = length(c1)
@@ -95,22 +82,54 @@ function boxesoverlap(c1, hs1, c2, hs2)
     return false
 end
 
+
+"""
+Returns the boundingbox of a patch in terms of its center and halfsize.
+
+    function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) -> center, halfsize
+"""
+function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T})
+
+    ll = minimum(p.vertices)
+    ur = maximum(p.vertices)
+
+    center = (ll + ur) / 2
+    halfsize = maximum(ur - center)
+
+    return center, halfsize
+end
+
+
+
 """
 Create a predicate that tests wheter a k-cell of bigmesh is
 included in smallmesh.
 """
-function subset_predicate(bigmesh::Mesh, smallmesh::Mesh, k::Int)
+function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
 
     # build an octree with the k-cells of smallmesh
-    kcells = cells(smallmesh, k)
-    tree = octree(smallmesh, kcells)
+    tree = octree(smallmesh, smallmesh.faces)
 
-    function pred(kcell)
+    function pred(simplex)
 
-        # build the patch
-        patch(bigmesh, kcell)
+        # create a patch object
+        p1 = patch(vertices(bigmesh, simplex))
 
+        # find all simplices of the small mesh that potentially
+        # collide with this patch
+        c1, s1 = boundingbox(p1)
+        for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
+            for i in box.data
 
+                # Build the candidate overlapping mesh
+                p2 = patch(smallmesh.vertices[smallmesh.faces[i]])
+
+                overlap(p1,p2) && return true
+
+            end
+        end
+
+        return false
     end
 
     return pred
