@@ -1,5 +1,7 @@
 export submesh
 
+using CollisionDetection
+
 """
 Returns a mesh on the same vertexbuffer as the input mesh. The submesh
 will be a mesh of dimension k containing all the k-cells that are in mesh
@@ -25,39 +27,33 @@ function submesh(pred, mesh::Mesh, k)
 
     kcells = kcells[1:j-1]
 
-    #U = size(mesh.vertices, 1)
-    #T = eltype(mesh.vertices)
-
     Mesh(mesh.vertices, kcells)
 end
-
-import CollisionDetection
-CD = CollisionDetection
 
 """
 Store the k-cells of a mesh in an octree.
 
     function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
 """
-function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
+function octree{U,D,T,K1}(mesh::Mesh{U,D,T}, kcells::Array{Vec{K1,Int},1})
 
-    nverts = size(kcells,1)
-    ncells = size(kcells,2)
+    nverts = K1              # number of vertices per cell
+    ncells = length(kcells)  # number of cells to store
 
-    points = zeros(T, ncells, U)
+    points = zeros(Point{U,T}, ncells)
     radii = zeros(T, ncells)
 
     for i in 1 : ncells
-        kcell = kcells[:,i]
-        verts = mesh.vertices[:,kcell]
+        kcell = kcells[i]
+        verts = mesh.vertices[kcell]
 
-        points[:,i] = sum(verts,2) / nverts, 0.0
+        points[i] = sum(verts) / nverts
         for j in 1 : nverts
-            radii[i] = max(radii[i], norm(verts[:,j] ))
+            radii[i] = max(radii[i], norm(verts[j]-points[i]))
         end
     end
 
-    CD.Octree(points, radii)
+    return Octree(points, radii)
 end
 
 """
@@ -113,19 +109,15 @@ function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
     function pred(simplex)
 
         # create a patch object
-        p1 = patch(vertices(bigmesh, simplex))
+        p1 = patch(vertices(bigmesh, simplex), Val{1})
 
         # find all simplices of the small mesh that potentially
         # collide with this patch
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box.data
-
-                # Build the candidate overlapping mesh
-                p2 = patch(smallmesh.vertices[smallmesh.faces[i]])
-
+                p2 = patch(smallmesh.vertices[smallmesh.faces[i]], Val{1})
                 overlap(p1,p2) && return true
-
             end
         end
 
@@ -134,3 +126,6 @@ function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
 
     return pred
 end
+
+
+submesh(bm::Mesh, sm::Mesh) = submesh(subset_predicate(bm, sm), bm, dimension(sm))

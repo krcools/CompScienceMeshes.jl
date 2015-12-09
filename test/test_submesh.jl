@@ -1,7 +1,9 @@
 using Base.Test
+using FixedSizeArrays
 MUT = CompScienceMeshes
 
-mesh = MUT.meshrectangle(1.0, 1.0, 0.5)
+width, height = 1.0, 1.0
+mesh = MUT.meshrectangle(width, height, 0.5)
 
 # This predicate tests whether a simplex is in the (x==0) plane
 function pred(simplex)
@@ -14,9 +16,16 @@ function pred(simplex)
     return true
 end
 
-sm = MUT.submesh(pred, mesh, 1)
-#@test sm.faces == [1 2; 2 3]
-@test sm.faces == [
-    Vec(1,2),
-    Vec(2,3)
-]
+
+# Test if meshes can be intersected
+line = MUT.meshsegment(width, 1/3, 3)
+line.vertices += Point(0.0, height, 0.0)
+sm2 = MUT.submesh(MUT.subset_predicate(mesh, line), mesh, 1)
+@test sm2.faces == [
+    Vec(3,6),
+    Vec(6,9)]
+
+γ = MUT.submesh(mesh, line)
+@test γ.faces == [
+    Vec(3,6),
+    Vec(6,9)]

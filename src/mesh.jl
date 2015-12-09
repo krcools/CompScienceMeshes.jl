@@ -392,20 +392,14 @@ function connectivity(mesh::Mesh, k, kcells, mcells)
         return zeros(Int, 0, numcells(mesh))
     end
 
-    @show size(kcells), typeof(kcells)
-    @show size(mcells), typeof(mcells)
-
     vtok, _ = vertextocellmap(mesh, kcells)
     vtom, _ = vertextocellmap(mesh, mcells)
 
     const npos = -1
 
-    #dimk = size(kcells,2)
-    #dimm = size(mcells,2)
     dimk = length(kcells)
     dimm = length(mcells)
 
-    @show dimk, dimm
     D = spzeros(Int, dimm, dimk)
 
     for v in 1 : numvertices(mesh)

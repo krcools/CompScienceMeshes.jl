@@ -9,6 +9,7 @@ export barytocart, vertices, dimension, volume
 
 # Interface for FlatPatch
 export tangents, dimension, centroid
+export FlatCellNM
 
 
 abstract Patch{T}
@@ -92,6 +93,7 @@ end
 function _normals{C}(tangents, ::Type{Val{C}})
     PT = eltype(tangents)
     D  = length(tangents)
+    U = length(PT)
     T  = eltype(PT)
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]

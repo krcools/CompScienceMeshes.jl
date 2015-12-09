@@ -1,0 +1,42 @@
+using FixedSizeArrays
+
+"""
+Compute whether two flat patches of the same dimension overlap or not
+"""
+function overlap{U,D,C,N,T}(p1::FlatCellNM{U,D,C,N,T}, p2::FlatCellNM{U,D,C,N,T})
+
+    # Are the patches in the same D-plane?
+    throw(ErrorException("Not implemented yet!"))
+
+end
+
+"""
+Compute whether two segments in 3D space overlap
+"""
+function overlap{T}(p::FlatCellNM{3,1,2,2,T}, q::FlatCellNM{3,1,2,2,T})
+
+        const tol = sqrt(eps(T))
+
+        # Are these edges on the same line?
+        o = q.vertices[2]
+        u = p.vertices[1] - o
+        t = q.tangents[1]
+        e = u - dot(u,t) / dot(t,t) * t
+
+        # if vertex 1 of p is not in the line defined by q, they do not overlap
+        norm(e) > tol && return false
+
+        # if the tangents are not linearly dependent return false
+        norm(cross(p.tangents[1],q.tangents[1])) > tol && return false
+
+        # we determined p and q are on the same line. Do standard collision testing
+        a1 = dot(p.vertices[1]-o, t)
+        b1 = dot(p.vertices[2]-o, t)
+
+        a1 < b1 ? (x1 = a1; y1 = b1) : (x1 = b1; y1 = a1)
+
+        y1 <= zero(T) && return false # p to the left of q
+        one(T) <= x1 && return false # q to the left of p
+
+        return true
+    end
