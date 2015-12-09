@@ -20,12 +20,9 @@ end
 # Test if meshes can be intersected
 line = MUT.meshsegment(width, 1/3, 3)
 line.vertices += Point(0.0, height, 0.0)
-sm2 = MUT.submesh(MUT.subset_predicate(mesh, line), mesh, 1)
-@test sm2.faces == [
-    Vec(3,6),
-    Vec(6,9)]
 
-γ = MUT.submesh(mesh, line)
+edges = MUT.cells(mesh, 1)
+γ = MUT.submesh(edges, line)
 @test γ.faces == [
     Vec(3,6),
     Vec(6,9)]

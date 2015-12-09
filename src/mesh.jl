@@ -18,16 +18,7 @@ type Mesh{U,D1,T} <: AbstractMesh{T}
 end
 
 vertextype{U,D1,T}(m::Mesh{U,D1,T}) = Point{U,T}
-
-function vertices(m::Mesh, I)
-    r = zeros(vertextype(m), length(I))
-    for i in 1:length(I)
-        r[i] = m.vertices[I[i]]
-    end
-
-    return r
-end
-
+vertices(m::Mesh, I) = m.vertices[I]
 numvertices(m::Mesh) = length(m.vertices)
 numcells(m::Mesh) = length(m.faces)
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
@@ -70,19 +61,11 @@ function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
         vertices[i] = Point{udim,T}(a)
     end
 
-    # vertices   = radius * [
-    #     cos(alpha);
-    #     sin(alpha) ]
-
     faces = Array(Vec{2,Int}, num_segments)
     for i in 1 : length(faces)-1
         faces[i] = Vec{2,Int}(i, i+1)
     end
     faces[end] = Vec{2,Int}(num_segments, 1)
-    # faces      = [
-    #     transpose(1:num_segments);
-    #     transpose(2:num_segments+1) ]
-    # faces[2,end] = 1
 
     return Mesh(vertices, faces)
 end
@@ -100,7 +83,6 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
     xs = (0:nx) * dx
     ys = (0:ny) * dy
 
-    #vertices = zeros(T, udim, (nx+1)*(ny+1))
     vertices = zeros(Point{UDim, T}, (nx+1)*(ny+1))
     k = 1
     for x in xs
@@ -113,7 +95,6 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
         end
     end
 
-    #faces = zeros(Int, 3, 2*nx*ny)
     faces = zeros(Vec{3, Int}, 2*nx*ny)
     k = 1
     for i in 1 : nx
@@ -128,7 +109,6 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
         end
     end
 
-    #Mesh{UDim,MDim+1,T}(vertices, faces)
     Mesh(vertices, faces)
 end
 
@@ -145,31 +125,32 @@ function meshfromfile(filename)
         num_vertices = parse(Int, sl[1])
         num_faces    = parse(Int, sl[2])
 
-        # read the vertex buffer
-        vertices = zeros(Float64, 3, num_vertices)
+        @show num_vertices
+        @show num_faces
+
+        vertices = zeros(Point{3,Float64}, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
-            vertices[:,i] = float(split(l))
+            vertices[i] = Point(float(split(l)))
         end
 
-        # read the index buffer
-        faces = zeros(Int64, 3, num_faces)
-        for i = 1 : num_faces
+        faces = zeros(Vec{3,Int}, num_faces)
+        for i in 1 : num_faces
             l = readline(f)
-            #faces[:,i] = int(split(l))
-            faces[:,i] = [parse(Int,s) for s in split(l)]
+            faces[i] = Vec([parse(Int,s) for s in split(l)])
         end
 
-        Mesh{3,2,Float64}(vertices, faces)
-
+        Mesh(vertices, faces)
     end
 end
 
-# function to determine the boundary of a manifold
-# Given a D-manifold, return a D-1 manifold representing
-# the boundary and a array containing the indices of the
-# vertices of the original mesh that corresond to he
-# vertices of the boundary mesh.
+"""
+function to determine the boundary of a manifold.
+Given a D-manifold, return a D-1 manifold representing
+the boundary and a array containing the indices of the
+vertices of the original mesh that corresond to he
+vertices of the boundary mesh.
+"""
 function boundary{U,D1,T}(mesh::Mesh{U,D1,T})
 
     D = D1 - 1
@@ -188,7 +169,7 @@ function boundary{U,D1,T}(mesh::Mesh{U,D1,T})
     i = find(x -> x < 2, sum(abs(conn), 1))
 
     # create a mesh out of these
-    bnd = Mesh{U,D1-1,T}(mesh.vertices, edges[i])
+    bnd = Mesh(mesh.vertices, edges.faces[i])
 end
 
 """
@@ -199,10 +180,10 @@ of the cells containing the i-th vertex. In addition the function returns
 an array of length numvertices(mesh) containing the number of cells each
 vertex is a member of.
 """
-function vertextocellmap(mesh::Mesh, cells=mesh.faces)
+#function vertextocellmap(mesh::Mesh, cells=mesh.faces)
+function vertextocellmap(mesh::Mesh)
 
-    # first pass: determine the maximum number of cells
-    # containing a given vertex
+    cells = mesh.faces
 
     numverts = numvertices(mesh)
     numcells = length(cells)
@@ -239,10 +220,11 @@ function cells(mesh::AbstractMesh, dim::Integer)
     @assert 0 <= dim <= meshdim
 
     if dim == 0
-        return [Vec(i) for i in 1:numvertices(mesh)]
+        simplices = [Vec(i) for i in 1:numvertices(mesh)]
+        return Mesh(mesh.vertices, simplices)
     end
 
-    if dim == meshdim return mesh.faces end
+    dim == meshdim && return mesh
 
     C = numcells(mesh)
     simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
@@ -260,6 +242,7 @@ function cells(mesh::AbstractMesh, dim::Integer)
     end
 
     simplices = unique(simplices)
+    Mesh(mesh.vertices, simplices)
 end
 
 
@@ -392,23 +375,23 @@ function connectivity(mesh::Mesh, k, kcells, mcells)
         return zeros(Int, 0, numcells(mesh))
     end
 
-    vtok, _ = vertextocellmap(mesh, kcells)
-    vtom, _ = vertextocellmap(mesh, mcells)
+    vtok, _ = vertextocellmap(kcells)
+    vtom, _ = vertextocellmap(mcells)
 
     const npos = -1
 
-    dimk = length(kcells)
-    dimm = length(mcells)
+    dimk = numcells(kcells)
+    dimm = numcells(mcells)
 
     D = spzeros(Int, dimm, dimk)
 
     for v in 1 : numvertices(mesh)
         for i in vtok[v,:]
             i == npos && break
-            kcell = kcells[i]
+            kcell = kcells.faces[i]
             for j in vtom[v,:]
                 j == npos && break
-                mcell = mcells[j]
+                mcell = mcells.faces[j]
                 D[j,i] = sign(relorientation(kcell, mcell))
             end
         end
@@ -418,22 +401,24 @@ function connectivity(mesh::Mesh, k, kcells, mcells)
 
 end
 
-# create pairs of volume cells from hypercells
-# and the assumption of global orientation
-# Every column of the returned array is a pair of indices
-# If both ids are positive then they both refer to faces
-# in the mesh structure. If the second number `id` is negative, this
-# means that the coresponding edge lies on the boundary and that
-# this edge has local index `-id` in the cell refererred to by the first index
+"""
+create pairs of volume cells from hypercells
+and the assumption of global orientation
+Every column of the returned array is a pair of indices
+If both ids are positive then they both refer to faces
+in the mesh structure. If the second number `id` is negative, this
+means that the coresponding edge lies on the boundary and that
+this edge has local index `-id` in the cell refererred to by the first index
+"""
 function buildvolmpairs(mesh::Mesh, edges)
 
-    numedges = length(edges)
+    numedges = numcells(edges)
     facepairs = zeros(Int, 2, numedges)
 
-    v2e, nn = vertextocellmap(mesh, mesh.faces)
+    v2e, nn = vertextocellmap(mesh)
     for e in 1:numedges
 
-        edge = edges[e]
+        edge = edges.faces[e]
 
         # neighborhood of startvertex
         v = edge[1]

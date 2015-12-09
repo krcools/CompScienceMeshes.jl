@@ -14,7 +14,7 @@ m = MUT.meshrectangle(1.0,1.0,0.5);
 
 # test edge detection
 edges = MUT.cells(m, 1)
-@test length(edges) == 16
+@test MUT.numcells(edges) == 16
 
 # test volume pair construction
 # from a list of edges

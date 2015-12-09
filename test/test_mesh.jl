@@ -18,9 +18,9 @@ faces = MUT.cells(rectangle, 2)
 edges = MUT.cells(rectangle, 1)
 verts = MUT.cells(rectangle, 0)
 
-@test length(verts) == 4
-@test length(edges) == 5
-@test length(faces) == 2
+@test MUT.numcells(verts) == 4
+@test MUT.numcells(edges) == 5
+@test MUT.numcells(faces) == 2
 
 Λ  = MUT.connectivity(rectangle, 0, verts, edges)
 Σᵀ = MUT.connectivity(rectangle, 1, edges, faces)
@@ -36,11 +36,16 @@ bnd = MUT.boundary(rectangle)
 @test MUT.numvertices(bnd) == 4
 @test MUT.numcells(bnd) == 4
 
-vtoe, num_vtoe = MUT.vertextocellmap(rectangle, edges)
-vtof, num_vtof = MUT.vertextocellmap(rectangle, faces)
+vtoe, num_vtoe = MUT.vertextocellmap(edges)
+vtof, num_vtof = MUT.vertextocellmap(faces)
 
 @test size(vtoe) == (4,3)
 @test size(vtof) == (4,2)
 
 @test size(num_vtoe) == (4,)
 @test size(num_vtof) == (4,)
+
+file = joinpath(Pkg.dir("CompScienceMeshes"),"test","sphere.in")
+sphere = MUT.meshfromfile(file)
+@test MUT.numvertices(sphere) == 335
+@test MUT.numcells(sphere) == 666

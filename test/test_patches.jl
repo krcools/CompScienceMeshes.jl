@@ -4,7 +4,7 @@ MUT = CompScienceMeshes
 
 mesh = MUT.meshrectangle(1.0, 1.0, 1.0)
 faces = MUT.cells(mesh, 2)
-verts = MUT.vertices(mesh, faces[1])
+verts = MUT.vertices(mesh, faces.faces[1])
 p = MUT.patch(verts, Val{2})
 
 @test p.vertices == Vec([

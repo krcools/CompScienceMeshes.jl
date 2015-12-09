@@ -10,14 +10,15 @@ and that fulfill the predicate pred.
 `pred` is a function with signature `pred(cell) -> Bool` returning true if
 the simplex is to be added to the submesh under construction.
 """
-function submesh(pred, mesh::Mesh, k)
+function submesh(pred, mesh::Mesh)
 
-    kcells = cells(mesh, k)
+    #kcells = deepcopy(cells(mesh, k))
+    kcells = similar(mesh.faces)
 
     j = 1
     for i in 1:length(kcells)
 
-        kcell = kcells[i]
+        kcell = mesh.faces[i]
         if pred(kcell)
             kcells[j] = kcell
             j += 1
@@ -128,4 +129,4 @@ function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
 end
 
 
-submesh(bm::Mesh, sm::Mesh) = submesh(subset_predicate(bm, sm), bm, dimension(sm))
+submesh(bm::Mesh, sm::Mesh) = submesh(subset_predicate(bm, sm), bm)
