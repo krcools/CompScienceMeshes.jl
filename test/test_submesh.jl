@@ -19,10 +19,20 @@ end
 
 # Test if meshes can be intersected
 line = MUT.meshsegment(width, 1/3, 3)
-line.vertices += Point(0.0, height, 0.0)
+line.vertices += Point(0.0, height, 0.0) # translation
 
 edges = MUT.cells(mesh, 1)
-γ = MUT.submesh(edges, line)
-@test γ.faces == [
+γ1 = MUT.submesh(line, edges)
+@test MUT.numcells(γ1) == 2
+@test γ1.faces == [
     Vec(3,6),
     Vec(6,9)]
+
+pred2 = MUT.interior_predicate(mesh)
+γ2 = MUT.submesh(pred2, edges)
+@test MUT.numcells(γ2) == 8
+
+pred3 = MUT.overlap_predicate(mesh, line)
+pred4 = x -> pred2(x) || pred3(x)
+γ3 = MUT.submesh(pred4, edges)
+@test MUT.numcells(γ3) == 10

@@ -125,9 +125,6 @@ function meshfromfile(filename)
         num_vertices = parse(Int, sl[1])
         num_faces    = parse(Int, sl[2])
 
-        @show num_vertices
-        @show num_faces
-
         vertices = zeros(Point{3,Float64}, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
@@ -173,6 +170,8 @@ function boundary{U,D1,T}(mesh::Mesh{U,D1,T})
 end
 
 """
+    vertextocellmap(mesh::Mesh)
+
 This function takes an array of indices into the mesh vertex buffer
 representing cells of a fixed dimension and returns an array of size
 numvertices(mesh) x nmax integers containing in row i the indices
@@ -219,12 +218,9 @@ function cells(mesh::AbstractMesh, dim::Integer)
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
 
-    if dim == 0
-        simplices = [Vec(i) for i in 1:numvertices(mesh)]
-        return Mesh(mesh.vertices, simplices)
+    if dim == meshdim
+        return mesh
     end
-
-    dim == meshdim && return mesh
 
     C = numcells(mesh)
     simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
@@ -233,9 +229,7 @@ function cells(mesh::AbstractMesh, dim::Integer)
     for c = 1 : C
 
         cell = mesh.faces[c]
-        #cell = getsimplex(mesh, c)
         for simplex in combinations(cell,dim+1)
-
             simplices[n] = sort(simplex)
             n += 1
         end
@@ -246,30 +240,57 @@ function cells(mesh::AbstractMesh, dim::Integer)
 end
 
 
-function cells(f, mesh::AbstractMesh, k::Integer)
 
-    @assert 0 <= k <= dimension(mesh)
+function cells(pred, mesh::AbstractMesh, dim::Integer)
 
-    # compute upper bound for the number cells and allocate memory
-    nc = numcells(mesh)
-    kcells = zeros(Int, k+1, nc*binomial(dimension(mesh)+1, k+1))
+    meshdim = dimension(mesh)
+    @assert 0 <= dim <= meshdim
+
+    C = numcells(mesh)
+    simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
 
     n = 1
-    for c in 1 : nc
+    for c = 1 : C
 
-        dcell = mesh.faces[:,c]
-        for kcell in combinations(dcell, k+1)
-
-            if f(kcell)
-                kcells[:,n] = sort(kcell)
+        cell = mesh.faces[c]
+        for simplex in combinations(cell,dim+1)
+            if pred(simplex)
+                simplices[n] = sort(simplex)
                 n += 1
             end
         end
     end
 
-    kcells = kcells[:,1:n-1]
-    kcells = unique(kcells,2)
+    simplices = simplices[1:n-1]
+    simplices = unique(simplices)
+
+    Mesh(mesh.vertices, simplices)
 end
+
+# function cells(f, mesh::AbstractMesh, k::Integer)
+#
+#     @assert 0 <= k <= dimension(mesh)
+#
+#     # compute upper bound for the number cells and allocate memory
+#     nc = numcells(mesh)
+#     kcells = zeros(Int, k+1, nc*binomial(dimension(mesh)+1, k+1))
+#
+#     n = 1
+#     for c in 1 : nc
+#
+#         dcell = mesh.faces[:,c]
+#         for kcell in combinations(dcell, k+1)
+#
+#             if f(kcell)
+#                 kcells[:,n] = sort(kcell)
+#                 n += 1
+#             end
+#         end
+#     end
+#
+#     kcells = kcells[:,1:n-1]
+#     kcells = unique(kcells,2)
+# end
 
 function findfirst{T}(A, V::Array{T,1})
     I = zeros(Int, length(V))
@@ -361,7 +382,13 @@ function relorientation(face, simplex)
     return s * levicivita(p) * i
 end
 
-function connectivity(mesh::Mesh, k, kcells, mcells)
+"""
+    connectivity(mesh::Mesh, k, kcells, mcells)
+
+Computes a dimm x dimk sparse matrix D with D[i,j] = +/-1 if m-cell i
+has k-cell j as a face. The sign depends on the relative orientation.
+"""
+function connectivity(mesh::Mesh, k, kcells, mcells; op = sign)
 
     if !( -1 <= k <= dimension(mesh))
         throw(ErrorException("k needs to be between zero and dim(mesh)"))
@@ -392,7 +419,8 @@ function connectivity(mesh::Mesh, k, kcells, mcells)
             for j in vtom[v,:]
                 j == npos && break
                 mcell = mcells.faces[j]
-                D[j,i] = sign(relorientation(kcell, mcell))
+                relo = relorientation(kcell, mcell)
+                D[j,i] = op(relo)
             end
         end
     end
@@ -411,6 +439,8 @@ means that the coresponding edge lies on the boundary and that
 this edge has local index `-id` in the cell refererred to by the first index
 """
 function buildvolmpairs(mesh::Mesh, edges)
+
+    @assert dimension(edges)+1 == dimension(mesh)
 
     numedges = numcells(edges)
     facepairs = zeros(Int, 2, numedges)

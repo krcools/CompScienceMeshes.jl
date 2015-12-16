@@ -102,7 +102,7 @@ end
 Create a predicate that tests wheter a k-cell of bigmesh is
 included in smallmesh.
 """
-function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
+function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
 
     # build an octree with the k-cells of smallmesh
     tree = octree(smallmesh, smallmesh.faces)
@@ -128,5 +128,31 @@ function subset_predicate(bigmesh::Mesh, smallmesh::Mesh)
     return pred
 end
 
+"""
+Creates a predicate that can be used to check wheter an edge is interior to
+a surface (true) or on its boundary (false).
+"""
+function interior_predicate(mesh::Mesh)
 
-submesh(bm::Mesh, sm::Mesh) = submesh(subset_predicate(bm, sm), bm)
+    @assert dimension(mesh) == 2
+
+    vtoc, vton = vertextocellmap(mesh)
+
+    function pred(simplex::Vec{2,Int})
+        v = simplex[1]
+        n = vton[v]
+        a = vtoc[v,1:n]
+
+        v = simplex[2]
+        n = vton[v]
+        b = vtoc[v,1:n]
+
+        ab = a ∩ b
+        return length(ab) == 2
+    end
+
+    return pred
+end
+
+
+submesh(sm::Mesh, bm::Mesh) = submesh(overlap_predicate(bm, sm), bm)
