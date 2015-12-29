@@ -40,3 +40,42 @@ function overlap{T}(p::FlatCellNM{3,1,2,2,T}, q::FlatCellNM{3,1,2,2,T})
 
     return true
 end
+
+"""
+Compute whether two triangles in 3D space overlap
+"""
+function overlap{T}(p::FlatCellNM{3,2,1,3,T}, q::FlatCellNM{3,2,1,3,T})
+
+  const tol = sqrt(eps(T))
+
+  # Are the patches in the same plane?
+  u1 = q.tangents[1]
+  u2 = q.tangents[2]
+  v = p.vertices[1] - q.vertices[2]
+
+  # if vertex 1 of p is not in q, return false
+  norm(dot(cross(u1,u2),v)) > tol && return false
+
+  # if the two triangles are not coplanar return false
+  norm(cross(p.normals[1], q.normals[1])) > tol && return false
+
+  n = p.normals[1]
+  for i in 1:3
+    a = p.vertices[mod1(i+1,3)]
+    b = p.vertices[mod1(i+2,3)]
+    c = p.vertices[i]
+    t = b - a
+    m = cross(t,n)
+
+    sp = zeros(T,3); sp[i] = dot(c-a, m)
+    sq = T[dot(q.vertices[j]-a, m) for j in 1:3]
+
+    minp, maxp = extrema(sp)
+    minq, maxq = extrema(sq)
+
+    maxq <= minp && return false
+    maxp <= minq && return false
+  end
+
+  return true
+end

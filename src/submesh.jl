@@ -36,9 +36,10 @@ Store the k-cells of a mesh in an octree.
 
     function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
 """
-function octree{U,D,T,K1}(mesh::Mesh{U,D,T}, kcells::Array{Vec{K1,Int},1})
+function octree{U,D1,T}(mesh::Mesh{U,D1,T})
 
-    nverts = K1              # number of vertices per cell
+    nverts = D1             # number of vertices per cell
+    kcells = mesh.faces
     ncells = length(kcells)  # number of cells to store
 
     points = zeros(Point{U,T}, ncells)
@@ -57,27 +58,7 @@ function octree{U,D,T,K1}(mesh::Mesh{U,D,T}, kcells::Array{Vec{K1,Int},1})
     return Octree(points, radii)
 end
 
-"""
-Predicate used for iteration over an Octree. Returns true if two boxes
-specified by their centers and halfsizes overlap. More carefull investigation
-of the objects within is required to assess collision.
 
-    function boxesoverlap(c1, hs1, c2, hs2)
-"""
-function boxesoverlap(c1, hs1, c2, hs2)
-
-    dim = length(c1)
-    @assert dim == length(c2)
-
-    hs = hs1 + hs2
-    for i in 1 : dim
-        if abs(c1[i] - c2[i]) < hs
-            return true
-        end
-    end
-
-    return false
-end
 
 
 """
@@ -105,7 +86,7 @@ included in smallmesh.
 function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
 
     # build an octree with the k-cells of smallmesh
-    tree = octree(smallmesh, smallmesh.faces)
+    tree = octree(smallmesh)
 
     function pred(simplex)
 
