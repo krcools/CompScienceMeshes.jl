@@ -2,7 +2,7 @@ export numcells
 export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle
 export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
-export relorientation
+export relorientation, universedimension
 
 export Mesh
 
@@ -22,7 +22,7 @@ vertices(m::Mesh, I) = m.vertices[I]
 numvertices(m::Mesh) = length(m.vertices)
 numcells(m::Mesh) = length(m.faces)
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
-spacedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
+universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
 function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 

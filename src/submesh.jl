@@ -1,4 +1,4 @@
-export submesh
+export submesh, overlap_predicate
 
 using CollisionDetection
 
