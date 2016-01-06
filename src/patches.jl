@@ -5,7 +5,7 @@ import CompScienceMeshes.dimension
 export patch
 
 # Interface for any Patch
-export barytocart, vertices, dimension, volume
+export barytocart, vertices, dimension, volume, carttobary
 
 # Interface for FlatPatch
 export tangents, dimension, centroid
@@ -118,8 +118,27 @@ end
 
 function barytocart(mani::FlatCellNM, u)
     r = last(mani.vertices)
-    for i in 1 : length(u)
+    for i in 1 : dimension(mani)
         r += mani.tangents[i] * u[i]
     end
     return r
+end
+
+function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
+
+    m = zeros(T,U,U)
+    for i in 1:D
+      for j in 1:U
+          m[j,i] = p.tangents[i][j]
+      end
+    end
+
+    for i in 1:C
+        for j in 1:U
+            m[j,D+i] = p.normals[i][j]
+        end
+    end
+
+    return inv(Mat{U,U,T}(m)) * Vec(cart - p.vertices[N])
+
 end

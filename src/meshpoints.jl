@@ -23,7 +23,7 @@ end
 unormal(mp::MeshPointNM) = mp.patch.normals[1]
 jacobian(mp::MeshPoint) = volume(mp.patch) * factorial(dimension(mp.patch))
 
-function meshpoint{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, bary::Array{T,1})
+function meshpoint{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, bary)
     cart = barytocart(p, bary)
     #D = dimension(p)
     MeshPointNM(p, Point{D,T}(bary), cart)

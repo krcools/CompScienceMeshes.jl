@@ -92,22 +92,6 @@ function move_before!(p, n, s, d)
     t2 == 0 || (n[t2] = t3)
 end
 
-# function splice(p, n, s0, s1, d)
-#     p[d] == s1 && return
-#
-#     t1 = p[d]
-#     t2 = p[s0]
-#     t3 = n[s1]
-#
-#     p[d] = s
-#     p[s0] = t1
-#     n[s1] == 0 || (p[n[s1]] = t2)
-#
-#     n[s1] = d
-#     t1 == 0 || (n[t1] = s)
-#     t2 == 0 || (n[t2] = t3)
-# end
-
 function sortneighbors(a, pred)
 
     n = collect(2:length(a)+1); n[end] = 0

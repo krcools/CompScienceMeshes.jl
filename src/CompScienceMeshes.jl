@@ -2,6 +2,8 @@ module CompScienceMeshes
 
 using FixedSizeArrays
 
+include("fsa_extensions.jl")
+
 include("simplex.jl")
 include("mesh.jl")
 include("geometry.jl")
