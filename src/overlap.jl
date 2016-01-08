@@ -1,4 +1,9 @@
+export overlap
+
 using FixedSizeArrays
+
+import FixedSizeArrays.cross
+cross{T}(a::Point{2,T}, b::Point{2,T}) = a[1]*b[2] - a[2]*b[1]
 
 """
 Compute whether two flat patches of the same dimension overlap or not
@@ -13,7 +18,7 @@ end
 """
 Compute whether two segments in 3D space overlap
 """
-function overlap{T}(p::FlatCellNM{3,1,2,2,T}, q::FlatCellNM{3,1,2,2,T})
+function overlap{T,U,C}(p::FlatCellNM{U,1,C,2,T}, q::FlatCellNM{U,1,C,2,T})
 
     const tol = sqrt(eps(T))
 

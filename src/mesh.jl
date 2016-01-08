@@ -28,7 +28,7 @@ function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
     num_segments = ceil(Int, L/delta)
     actual_delta = L/num_segments
-    x = collect(0:num_segments) * delta
+    x = collect(0:num_segments) * actual_delta
 
     vertices = zeros(Point{udim,T}, num_segments+1)
     for i in 1 : length(vertices)

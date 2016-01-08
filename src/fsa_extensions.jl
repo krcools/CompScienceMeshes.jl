@@ -1,3 +1,7 @@
+export dot
+export *
+
+
 using FixedSizeArrays
 import Base.dot
 import Base.*

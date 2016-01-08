@@ -12,6 +12,7 @@ include("overlap.jl")
 include("submesh.jl")
 include("meshpoints.jl")
 include("baryref.jl")
+include("intersect.jl")
 
 include("utils.jl")
 

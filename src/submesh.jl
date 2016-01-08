@@ -1,4 +1,4 @@
-export submesh, overlap_predicate
+export submesh, overlap_predicate, octree, boundingbox
 
 using CollisionDetection
 
@@ -75,6 +75,17 @@ function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T})
     halfsize = maximum(ur - center)
 
     return center, halfsize
+end
+
+function boundingbox(V)
+
+    ll = minimum(V)
+    ur = maximum(V)
+
+    c = (ll + ur) / 2
+    s = maximum(ur - c)
+
+    return c, s
 end
 
 

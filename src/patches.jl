@@ -97,13 +97,17 @@ function _normals{C}(tangents, ::Type{Val{C}})
     T  = eltype(PT)
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
-    temp = [tangents[j][i] for i in 1:U, j in 1:D]
-    normals = nullspace(temp * inv(metric) * temp')
-    for i in 1:C
-        normals[:,i] /= norm(normals[:,i])
-    end
-    normals = Vec{C,PT}([Point(normals[:,i]) for i in 1:C])
     volume = sqrt(abs(det(metric))) /  D
+
+    # temp = [tangents[j][i] for i in 1:U, j in 1:D]
+    # imetric = inv(metric)
+    # normals = nullspace(temp * imetric * temp')
+    # for i in 1:C
+    #     normals[:,i] /= norm(normals[:,i])
+    # end
+    # normals = Vec{C,PT}([Point(normals[:,i]) for i in 1:C])
+
+    normals = Vec{C,PT}([zero(Point{U,T}) for i in 1:C])
 
     return normals, volume
 end
@@ -126,19 +130,10 @@ end
 
 function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 
-    m = zeros(T,U,U)
-    for i in 1:D
-      for j in 1:U
-          m[j,i] = p.tangents[i][j]
-      end
-    end
+    G = [dot(p.tangents[i], p.tangents[j]) for i in 1:D, j in 1:D]
 
-    for i in 1:C
-        for j in 1:U
-            m[j,D+i] = p.normals[i][j]
-        end
-    end
+    w = [dot(p.tangents[i], cart - p.vertices[end]) for i in 1:D]
+    u = G \ w
 
-    return inv(Mat{U,U,T}(m)) * Vec(cart - p.vertices[N])
-
+    return Vec(u)
 end

@@ -1,5 +1,45 @@
 export barycentric_refinement
 
+function barycentric_refinement{T,U}(mesh::Mesh{U,2,T})
+
+    PointType = eltype(mesh.vertices)
+    CellType = eltype(mesh.faces)
+
+    Verts = cells(mesh, 0)
+    Edges = cells(mesh, 1)
+
+    NV, NE = numcells(Verts), numcells(Edges)
+
+    nv = NV + NE
+    ne = 2NE
+
+    verts = zeros(PointType, nv)
+    for i in 1:NV
+        verts[i] = mesh.vertices[i]
+    end
+
+    for i in 1:NE
+        v = mesh.vertices[mesh.faces[i]]
+        verts[NV+i] = (v[1] + v[2]) / 2
+    end
+
+    # build the edge to vertex lookup table
+    D = connectivity(mesh, 0, Verts, Edges)
+    D = transpose(D)
+
+    edges = zeros(CellType, ne)
+    rows, vals = rowvals(D), nonzeros(D)
+    for E in 1:NE
+        c = NV + E
+        a = Edges.faces[E][1]
+        b = Edges.faces[E][2]
+        edges[2(E-1) + 1] = Vec(a,c)
+        edges[2(E-1) + 2] = Vec(c,b)
+    end
+
+    return Mesh(verts, edges)
+end
+
 function barycentric_refinement{T}(mesh::Mesh{3,3,T})
 
     U, D1 = 3, 3
