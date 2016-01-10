@@ -2,7 +2,7 @@ export numcells
 export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle
 export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
-export relorientation, universedimension
+export relorientation, universedimension, meshfromfile
 
 export Mesh
 

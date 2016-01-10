@@ -1,4 +1,5 @@
-export submesh, overlap_predicate, octree, boundingbox
+export submesh, octree, boundingbox
+export overlap_predicate, interior_predicate
 
 using CollisionDetection
 
