@@ -7,5 +7,6 @@ include("test_patches.jl")
 include("test_submesh.jl")
 include("test_overlap.jl")
 include("test_intersect.jl")
+include("test_isinside.jl")
 
 end
