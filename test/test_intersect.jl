@@ -2,7 +2,6 @@ using Base.Test
 using FixedSizeArrays
 
 using CompScienceMeshes
-using BoundaryElements
 
 const e0 = Point(0.0,0.0,0.0)
 const e1 = Point(1.0,0.0,0.0)
