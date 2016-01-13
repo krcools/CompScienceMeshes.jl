@@ -92,10 +92,16 @@ end
 
 
 """
+    overlap_predicate(bigmesh, smallmesh)
+
 Create a predicate that tests wheter a k-cell of bigmesh is
 included in smallmesh.
 """
 function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
+
+    if numcells(smallmesh) == 0
+        return simplex -> false
+    end
 
     # build an octree with the k-cells of smallmesh
     tree = octree(smallmesh)
