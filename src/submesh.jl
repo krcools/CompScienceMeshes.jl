@@ -1,4 +1,4 @@
-export submesh, octree, boundingbox
+export submesh, octree, boundingbox, interior
 export overlap_predicate, interior_predicate
 
 using CollisionDetection
@@ -147,5 +147,11 @@ function interior_predicate(mesh::Mesh)
     return pred
 end
 
+function interior(mesh::Mesh)
+    D = dimension(mesh)
+    edges = cells(mesh, D-1)
+    pred = interior_predicate(mesh)
+    submesh(pred, edges)
+end
 
 submesh(sm::Mesh, bm::Mesh) = submesh(overlap_predicate(bm, sm), bm)
