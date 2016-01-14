@@ -6,7 +6,7 @@ using CompScienceMeshes
 const e0 = Point(0.0,0.0,0.0)
 const e1 = Point(1.0,0.0,0.0)
 const e2 = Point(0.0,1.0,0.0)
-const e3 = Point(0.0,0.0,0.1)
+const e3 = Point(0.0,0.0,1.0)
 
 p = patch([e0, e1], Val{1})
 q = patch([(e0+e1)/2, (-e0+3*e1)/2], Val{1})

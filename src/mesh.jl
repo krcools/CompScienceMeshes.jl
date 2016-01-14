@@ -24,8 +24,8 @@ numcells(m::Mesh) = length(m.faces)
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
 universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
-function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
+function meshsegment{T<:Real}(L::T, delta::T, udim=2)
     num_segments = ceil(Int, L/delta)
     actual_delta = L/num_segments
     x = collect(0:num_segments) * actual_delta
@@ -254,7 +254,7 @@ function cells(pred, mesh::AbstractMesh, dim::Integer)
 
         cell = mesh.faces[c]
         for simplex in combinations(cell,dim+1)
-            if pred(simplex)
+            if pred(Vec{dim+1,Int}(simplex))
                 simplices[n] = sort(simplex)
                 n += 1
             end
@@ -267,30 +267,6 @@ function cells(pred, mesh::AbstractMesh, dim::Integer)
     Mesh(mesh.vertices, simplices)
 end
 
-# function cells(f, mesh::AbstractMesh, k::Integer)
-#
-#     @assert 0 <= k <= dimension(mesh)
-#
-#     # compute upper bound for the number cells and allocate memory
-#     nc = numcells(mesh)
-#     kcells = zeros(Int, k+1, nc*binomial(dimension(mesh)+1, k+1))
-#
-#     n = 1
-#     for c in 1 : nc
-#
-#         dcell = mesh.faces[:,c]
-#         for kcell in combinations(dcell, k+1)
-#
-#             if f(kcell)
-#                 kcells[:,n] = sort(kcell)
-#                 n += 1
-#             end
-#         end
-#     end
-#
-#     kcells = kcells[:,1:n-1]
-#     kcells = unique(kcells,2)
-# end
 
 function findfirst{T}(A, V::Array{T,1})
     I = zeros(Int, length(V))

@@ -2,7 +2,7 @@ import PyPlot
 import CompScienceMeshes
 CM = CompScienceMeshes
 
-function plot(mesh::CM.Mesh{3,3,Float64})
+function plotmesh(mesh::CM.Mesh{3,3,Float64})
     X = [mesh.vertices[i][1] for i in 1 : CM.numvertices(mesh)]
     Y = [mesh.vertices[i][2] for i in 1 : CM.numvertices(mesh)]
     Z = [mesh.vertices[i][3] for i in 1 : CM.numvertices(mesh)]
@@ -10,7 +10,7 @@ function plot(mesh::CM.Mesh{3,3,Float64})
     PyPlot.plot_trisurf(X,Y,Z,triangles=T)
 end
 
-function plot(mesh::CM.Mesh{3,2,Float64})
+function plotmesh(mesh::CM.Mesh{3,2,Float64})
     X = [mesh.vertices[i][1] for i in 1 : CM.numvertices(mesh)]
     Y = [mesh.vertices[i][2] for i in 1 : CM.numvertices(mesh)]
     Z = [mesh.vertices[i][3] for i in 1 : CM.numvertices(mesh)]
