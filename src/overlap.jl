@@ -78,8 +78,8 @@ function overlap{T}(p::FlatCellNM{3,2,1,3,T}, q::FlatCellNM{3,2,1,3,T})
     minp, maxp = extrema(sp)
     minq, maxq = extrema(sq)
 
-    maxq <= minp && return false
-    maxp <= minq && return false
+    maxq <= minp + tol && return false
+    maxp <= minq + tol && return false
   end
 
   return true

@@ -24,8 +24,8 @@ numcells(m::Mesh) = length(m.faces)
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
 universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
-function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
+function meshsegment{T<:Real}(L::T, delta::T, udim=2)
     num_segments = ceil(Int, L/delta)
     actual_delta = L/num_segments
     x = collect(0:num_segments) * actual_delta
