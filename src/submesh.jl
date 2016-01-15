@@ -91,32 +91,53 @@ end
 
 
 
-"""
-    overlap_predicate(bigmesh, smallmesh)
+# function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
+#
+#     if numcells(smallmesh) == 0
+#         return simplex -> false
+#     end
+#
+#     # build an octree with the k-cells of smallmesh
+#     tree = octree(smallmesh)
+#
+#     function pred(simplex)
+#
+#         # create a patch object
+#         p1 = patch(vertices(bigmesh, simplex), Val{1})
+#
+#         # find all simplices of the small mesh that potentially
+#         # collide with this patch
+#         c1, s1 = boundingbox(p1)
+#         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
+#             for i in box.data
+#                 p2 = patch(smallmesh.vertices[smallmesh.faces[i]], Val{1})
+#                 overlap(p1,p2) && return true
+#             end
+#         end
+#
+#         return false
+#     end
+#
+#     return pred
+# end
 
-Create a predicate that tests wheter a k-cell of bigmesh is
-included in smallmesh.
-"""
-function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
+function overlap_predicate(γ::Mesh)
 
-    if numcells(smallmesh) == 0
+    if numcells(γ) == 0
         return simplex -> false
     end
 
     # build an octree with the k-cells of smallmesh
-    tree = octree(smallmesh)
+    tree = octree(γ)
 
-    function pred(simplex)
-
-        # create a patch object
-        p1 = patch(vertices(bigmesh, simplex), Val{1})
+    function pred(p1)
 
         # find all simplices of the small mesh that potentially
         # collide with this patch
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box.data
-                p2 = patch(smallmesh.vertices[smallmesh.faces[i]], Val{1})
+                p2 = patch(γ.vertices[γ.faces[i]], Val{1})
                 overlap(p1,p2) && return true
             end
         end
@@ -125,6 +146,22 @@ function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
     end
 
     return pred
+end
+
+"""
+overlap_predicate(bigmesh, smallmesh)
+
+Create a predicate that tests wheter a k-cell of bigmesh is
+included in smallmesh.
+"""
+function overlap_predicate(Ω::Mesh, Γ::Mesh)
+
+    pred0 = overlap_predicate(Γ::Mesh)
+    function pred1(s::Vec)
+        return pred0(patch(vertices(Ω, s), Val{1}))
+    end
+
+    return pred1
 end
 
 """
