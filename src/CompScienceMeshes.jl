@@ -14,6 +14,7 @@ include("meshpoints.jl")
 include("baryref.jl")
 include("intersect.jl")
 include("isinside.jl")
+include("weld.jl")
 
 include("utils.jl")
 
