@@ -33,7 +33,7 @@ function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})
     numpoints = size(uv, 2)
     mps = Array(MeshPointNM{U,D,C,N,T}, numpoints)
     for i in 1:numpoints
-        #bary = uv[:,i]
+        meshpoint(p, uv[:,i])
         mps[i] = meshpoint(p, uv[:,i])
     end
     return mps

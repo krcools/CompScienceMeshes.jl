@@ -3,8 +3,9 @@ export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle
 export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation, universedimension, meshfromfile
-
 export Mesh
+
+using MATLAB
 
 abstract AbstractMesh{T}
 valuetype{T}(m::AbstractMesh{T}) = T
@@ -110,6 +111,20 @@ function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
     end
 
     Mesh(vertices, faces)
+end
+
+function meshsphere(radius, h)
+
+    @mput radius h
+    @matlab begin
+        m = Mesh.sphere(radius, h)
+        V = m.vertices
+        F = m.faces
+    end
+    @mget V F
+    v = Point{3,Float64}[Point(V[i,1],V[i,2],V[i,3]) for i in 1:size(V,1)]
+    f = Vec{3,Int}[Vec(F[i,1],F[i,2],F[i,3]) for i in 1:size(F,1)]
+    return Mesh(v,f)
 end
 
 
