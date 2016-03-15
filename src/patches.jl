@@ -118,14 +118,23 @@ function patch{U,D1,T}(verts::Vec{D1,Point{U,T}})
     patch(Array(verts), Val{D1-1})
 end
 
-
-
+"""
+  barytocart(mani, u) -> p
+"""
 function barytocart(mani::FlatCellNM, u)
     r = last(mani.vertices)
     for i in 1 : dimension(mani)
         r += mani.tangents[i] * u[i]
     end
     return r
+end
+
+function barytocart(mani::Array, u)
+  r = mani[:,end]
+  for i in 1 : size(mani,2)-1
+    r += (mani[:,i] - mani[:,end]) * u[i]
+  end
+  return r
 end
 
 function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
