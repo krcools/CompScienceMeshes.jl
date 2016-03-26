@@ -38,3 +38,14 @@ end
         $expr
     end
 end
+
+# mixed type multiplication
+@generated function *{U,T,M,N,K}(a::Mat{M,N,T}, b::Mat{N,K,U})
+    Expr(:call, :Mat,[
+        Expr(:tuple, [
+            Expr(:call, :+, [
+                :(a[$m,$n]*b[$n,$k])
+                for n in 1:N]...)
+            for m = 1:M]...)
+        for k in 1:K]...)
+end

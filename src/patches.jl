@@ -19,6 +19,7 @@ vertices(p::FlatCell) = p.vertices
 tangents(p::FlatCell) = p.tangents
 volume(p::FlatCell) = p.volume
 dimension(p::FlatCell) = size(p.vertices, 2) - 1
+getindex(p::FlatCell, I) = p.vertices[I]
 
 
 # U: the dimension of the universe
@@ -34,6 +35,7 @@ immutable FlatCellNM{U,D,C,N,T} <: FlatCell{T}
 end
 
 dimension{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) = D
+normal(p::FlatCellNM) = p.normals[1]
 
 function patch{U,D,T}(verts::Array{Point{U,T}, 1}, ::Type{Val{D}})
 
