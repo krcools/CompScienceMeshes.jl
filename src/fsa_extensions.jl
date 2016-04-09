@@ -1,10 +1,11 @@
 export dot
 export *
-
+export cross
 
 using FixedSizeArrays
 import Base.dot
 import Base.*
+import Base.cross
 
 @generated function *{T, M, N}(a::Mat{M, N, T}, b::Point{N,T})
     expr = [:(bilindot(row(a, $i), b.(1))) for i=1:M]
@@ -48,4 +49,12 @@ end
                 for n in 1:N]...)
             for m = 1:M]...)
         for k in 1:K]...)
+end
+
+function cross{T,U}(p::Point{3,T}, q::Point{3,U})
+  return Point(
+    p[2]*q[3] - p[3]*q[2],
+    p[3]*q[1] - p[1]*q[3],
+    p[1]*q[2] - p[2]*q[1],
+  )
 end
