@@ -65,3 +65,6 @@ for i in 1:MUT.numcells(m)
     c = (p.vertices[1] + p.vertices[2]) / 2
     @test dot(c, p.normals[1]) > 0
 end
+
+# test getcommonedge
+#e1, e2 = CM.getcommonedge([39,236,38],[38,66,39])

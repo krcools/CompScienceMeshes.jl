@@ -5,8 +5,6 @@ export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation, universedimension, meshfromfile
 export Mesh
 
-using MATLAB
-
 abstract AbstractMesh{T}
 valuetype{T}(m::AbstractMesh{T}) = T
 
@@ -26,106 +24,7 @@ dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
 universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
 
-function meshsegment{T<:Real}(L::T, delta::T, udim=2)
-    num_segments = ceil(Int, L/delta)
-    actual_delta = L/num_segments
-    x = collect(0:num_segments) * actual_delta
 
-    vertices = zeros(Point{udim,T}, num_segments+1)
-    for i in 1 : length(vertices)
-        a = zeros(T, udim)
-        a[1] = x[i]
-        vertices[i] = Point{udim,T}(a)
-    end
-
-    faces = Array(Vec{2,Int}, num_segments)
-    for i in 1 : length(faces)
-        faces[i] = Vec(i, i+1)
-    end
-
-    return Mesh(vertices, faces)
-end
-
-function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
-
-    circumf = 2 * pi *radius
-    num_segments = ceil(Int, circumf / delta)
-    delta = circumf / num_segments
-    dalpha = delta / radius
-    alpha = collect(0 : num_segments-1) * dalpha
-
-    vertices = Array(Point{udim,T}, num_segments)
-    for i in 1 : num_segments
-        a = zeros(T, udim)
-        a[1] = radius * cos(alpha[i])
-        a[2] = radius * sin(alpha[i])
-        vertices[i] = Point{udim,T}(a)
-    end
-
-    faces = Array(Vec{2,Int}, num_segments)
-    for i in 1 : length(faces)-1
-        faces[i] = Vec{2,Int}(i, i+1)
-    end
-    faces[end] = Vec{2,Int}(num_segments, 1)
-
-    return Mesh(vertices, faces)
-end
-
-function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
-
-    @assert 2 <= udim
-
-    UDim = 3
-    MDim = 2
-
-    nx = round(Int, ceil(width/delta));  nx = max(nx,1); dx = width/nx
-    ny = round(Int, ceil(height/delta)); ny = max(ny,1); dy = height/ny
-
-    xs = (0:nx) * dx
-    ys = (0:ny) * dy
-
-    vertices = zeros(Point{UDim, T}, (nx+1)*(ny+1))
-    k = 1
-    for x in xs
-        for y in ys
-            p = zeros(T, UDim)
-            p[1] = x
-            p[2] = y
-            vertices[k] = Point(p)
-            k += 1
-        end
-    end
-
-    faces = zeros(Vec{3, Int}, 2*nx*ny)
-    k = 1
-    for i in 1 : nx
-        for j in 1 : ny
-            v11 = (i-1)*(ny+1) + j
-            v12 = i*(ny+1) + j
-            v21 = (i-1)*(ny+1) + (j+1)
-            v22 = i*(ny+1) + (j+1)
-            faces[k]   = Vec(v11,v21,v12)
-            faces[k+1] = Vec(v21,v22,v12)
-            k += 2
-        end
-    end
-
-    Mesh(vertices, faces)
-end
-
-function meshsphere(radius, h)
-
-    @mput radius h
-    @matlab begin
-        m = Mesh.sphere(radius, h)
-        V = m.vertices
-        F = m.faces
-    end
-    @mget V F
-    v = Point{3,Float64}[Point(V[i,1],V[i,2],V[i,3]) for i in 1:size(V,1)]
-    f = Vec{3,Int}[Vec(F[i,1],F[i,2],F[i,3]) for i in 1:size(F,1)]
-    return Mesh(v,f)
-end
 
 
 function meshfromfile(filename)

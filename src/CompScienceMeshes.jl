@@ -4,8 +4,10 @@ using FixedSizeArrays
 
 include("fsa_extensions.jl")
 
-include("simplex.jl")
 include("mesh.jl")
+include("gmsh.jl")
+include("primitives.jl")
+include("simplex.jl")
 include("geometry.jl")
 include("patches.jl")
 include("overlap.jl")
