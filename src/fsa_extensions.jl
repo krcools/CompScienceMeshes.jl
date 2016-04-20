@@ -51,20 +51,10 @@ end
         for k in 1:K]...)
 end
 
-<<<<<<< HEAD
-# mixed type cross product
-function cross{T,U}(p::FixedArray{T,1,Tuple{3}}, q::FixedArray{U,1,Tuple{3}})
-    return Point(
-        p[2]*q[3] - p[3]*q[2],
-        p[3]*q[1] - p[1]*q[3],
-        p[1]*q[2] - p[2]*q[1],
-    )
-=======
 function cross{T,U}(p::Point{3,T}, q::Point{3,U})
   return Point(
     p[2]*q[3] - p[3]*q[2],
     p[3]*q[1] - p[1]*q[3],
     p[1]*q[2] - p[2]*q[1],
   )
->>>>>>> 34ecca4f2a6565b4500ae34633278e5a3dec97cd
 end
