@@ -1,7 +1,7 @@
 export numcells
 export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle, meshsphere
-export readmesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
+export readmesh, writemesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation, universedimension, meshfromfile
 export Mesh
 
@@ -52,6 +52,20 @@ function meshfromfile(filename)
         end
 
         Mesh(vertices, faces)
+    end
+end
+
+function writemesh(mesh, filename)
+    dl = '\t'
+    open(filename, "w") do f
+        println(f, 1)
+        println(f, numvertices(mesh), dl, numcells(mesh))
+        for v in mesh.vertices
+            println(f, v[1], dl, v[2], dl, v[3])
+        end
+        for c in mesh.faces
+            println(f, c[1], dl, c[2], dl, c[3])
+        end
     end
 end
 
