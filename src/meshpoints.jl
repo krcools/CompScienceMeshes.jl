@@ -1,9 +1,12 @@
-export cartesian, jacobian, unormal, utangent, tangent, meshpoint, meshpoints
+export cartesian, parametric, barycentric, jacobian, unormal, utangent, tangent, meshpoint, meshpoints
 export MeshPoint, MeshPointNM
 
 abstract MeshPoint{T}
 
 cartesian(mp::MeshPoint) = mp.cart
+parametric(mp::MeshPoint) = mp.bary
+barycentric(mp::MeshPoint) = Point(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
+
 jacobian(mp::MeshPoint) = volume(mp.cell) * factorial(dimension(mp.cell))
 unormal(mp::MeshPoint) = mp.cell.unormal
 utangent(mp::MeshPoint, i) = column(mp.cell.utangents, i)
@@ -33,7 +36,6 @@ function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})
     numpoints = size(uv, 2)
     mps = Array(MeshPointNM{U,D,C,N,T}, numpoints)
     for i in 1:numpoints
-        meshpoint(p, uv[:,i])
         mps[i] = meshpoint(p, uv[:,i])
     end
     return mps

@@ -2,6 +2,8 @@ module CompScienceMeshes
 
 using FixedSizeArrays
 
+import Base.getindex
+
 include("fsa_extensions.jl")
 
 include("mesh.jl")
