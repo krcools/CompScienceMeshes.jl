@@ -3,6 +3,7 @@ export numvertices, dimension, vertices
 export meshsegment, meshrectangle, meshcircle, meshsphere
 export readmesh, writemesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation, universedimension, meshfromfile
+export translate, translate!
 export Mesh
 
 abstract AbstractMesh{T}
@@ -17,15 +18,23 @@ type Mesh{U,D1,T} <: AbstractMesh{T}
 end
 
 vertextype{U,D1,T}(m::Mesh{U,D1,T}) = Point{U,T}
-vertices(m::Mesh, I) = m.vertices[I]
-numvertices(m::Mesh) = length(m.vertices)
-numcells(m::Mesh) = length(m.faces)
+
 dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
 universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
 
+vertices(m::Mesh) = m.vertices
+vertices(m::Mesh, I) = m.vertices[I]
+numvertices(m::Mesh) = length(m.vertices)
 
+numcells(m::Mesh) = length(m.faces)
 
-
+translate(Γ::Mesh, v) = Mesh(Γ.vertices+v, Γ.faces)
+function translate!(Γ::Mesh, v)
+    for i in 1:length(Γ.vertices)
+        Γ.vertices[i] += v
+    end
+    Γ
+end
 
 function meshfromfile(filename)
     open(filename) do f
