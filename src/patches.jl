@@ -1,5 +1,7 @@
 # overload, don't overwrite!
-import CompScienceMeshes.dimension
+# import CompScienceMeshes.dimension
+
+import Base.getindex
 
 # Factory methods
 export patch
@@ -12,50 +14,62 @@ export tangents, dimension, centroid
 export FlatCellNM
 
 
-abstract Patch{T}
-abstract FlatCell{T} <: Patch{T}
-
-vertices(p::FlatCell) = p.vertices
-tangents(p::FlatCell) = p.tangents
-volume(p::FlatCell) = p.volume
-dimension(p::FlatCell) = size(p.vertices, 2) - 1
-getindex(p::FlatCell, I) = p.vertices[I]
-
+#abstract Patch{T}
+#abstract FlatCell{T} <: Patch{T}
 
 # U: the dimension of the universe
 # D: the dimension of the manifold
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-immutable FlatCellNM{U,D,C,N,T} <: FlatCell{T}
-    vertices::Vec{N,Point{U,T}}
-    tangents::Vec{D,Point{U,T}}
-    normals::Vec{C,Point{U,T}}
+immutable FlatCellNM{U,D,C,N,T} #<: FlatCell{T}
+    vertices::Vec{N,Vec{U,T}}
+    tangents::Vec{D,Vec{U,T}}
+    normals::Vec{C,Vec{U,T}}
     volume::T
 end
 
-dimension{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) = D
+coordtype(p::FlatCellNM) = eltype(eltype(p.vertices))
+
+vertices(p::FlatCellNM) = p.vertices
+tangents(p::FlatCellNM) = p.tangents
 normal(p::FlatCellNM) = p.normals[1]
+volume(p::FlatCellNM) = p.volume
+dimension(p::FlatCellNM) = length(p.vertices) - 1
+getindex(p::FlatCellNM, I) = p.vertices[I]
 
-function patch{U,D,T}(verts::Array{Point{U,T}, 1}, ::Type{Val{D}})
 
-    # compute the tangents
-    PT = eltype(verts)
-    vertices = Vec{D+1,PT}(verts)
-    tangents = Vec{D,PT}([verts[i]-verts[end] for i in 1:D])
+#dimension{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) = D
 
-    normals, volume = _normals(tangents, Val{U-D})
 
-    return FlatCellNM{U,D,U-D,D+1,T}(vertices, tangents, normals, volume)
+function patch{P<:FixedArray,D}(verts::Vector{P}, ::Type{Val{D}})
+  @assert length(verts) == D+1
+  #PT = eltype(verts)
+  U = length(P)
+  T = eltype(P)
+  # TODO: to this in a generated function
+  vertices = Vec{D+1,P}(verts)
+  tangents = Vec{D,P}([verts[i]-verts[end] for i in 1:D])
+  normals, volume = _normals(tangents, Val{U-D})
+  #return FlatCellNM{U,D,U-D,D+1,T}(vertices, tangents, normals, volume)
+  FlatCellNM(vertices, tangents, normals, volume)
 end
 
-function patch{T}(verts::Array{Point{3,T},1}, ::Type{Val{2}})
-    PT = eltype(verts)
-    vertices = Vec{3,PT}(verts)
-    tangents = Vec{2,PT}((verts[1]-verts[3], verts[2]-verts[3]))
-    normals, volume = _normals(tangents, Val{1})
-    return FlatCellNM{3,2,1,3,T}(vertices, tangents, normals, volume)
+function patch{T}(verts::Vector{Vec{3,T}}, ::Type{Val{2}})
+  @assert length(verts) == 3
+  PT = eltype(verts)
+  #vertices = Vec{3,PT}(verts)
+  vertices = Vec{3,PT}((verts[1], verts[2], verts[3]))
+  tangents = Vec{2,PT}((verts[1]-verts[3], verts[2]-verts[3]))
+  normals, volume = _normals(tangents, Val{1})
+  #FlatCellNM{3,2,1,3,T}(vertices, tangents, normals, volume)
+  FlatCellNM(vertices, tangents, normals, volume)
 end
+
+function patch{D1}(verts::Vec{D1})
+    patch(Array(verts), Val{D1-1})
+end
+
 
 
 function _normals(tangents, ::Type{Val{1}})
@@ -99,26 +113,15 @@ function _normals{C}(tangents, ::Type{Val{C}})
     T  = eltype(PT)
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
-    volume = sqrt(abs(det(metric))) /  D
+    volume = sqrt(abs(det(metric))) / D
 
-    # temp = [tangents[j][i] for i in 1:U, j in 1:D]
-    # imetric = inv(metric)
-    # normals = nullspace(temp * imetric * temp')
-    # for i in 1:C
-    #     normals[:,i] /= norm(normals[:,i])
-    # end
-    # normals = Vec{C,PT}([Point(normals[:,i]) for i in 1:C])
-
-    normals = Vec{C,PT}([zero(Point{U,T}) for i in 1:C])
+    # Fix this. This function needs to become gneerated
+    normals = Vec{C,PT}([zero(PT) for i in 1:C])
 
     return normals, volume
 end
 
 
-
-function patch{U,D1,T}(verts::Vec{D1,Point{U,T}})
-    patch(Array(verts), Val{D1-1})
-end
 
 """
   barytocart(mani, u) -> p

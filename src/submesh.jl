@@ -37,13 +37,16 @@ Store the k-cells of a mesh in an octree.
 
     function octree{U,D,T}(mesh::Mesh{U,D,T}, kcells::Array{Int,2})
 """
-function octree{U,D1,T}(mesh::Mesh{U,D1,T})
+function octree(mesh)
 
-    nverts = D1             # number of vertices per cell
+    nverts = dimension(mesh) + 1 # number of vertices per cell
     kcells = mesh.faces
-    ncells = length(kcells)  # number of cells to store
+    ncells = numcells(mesh)
+    #ncells = length(kcells)  # number of cells to store
 
-    points = zeros(Point{U,T}, ncells)
+    P = vertextype(mesh)
+    T = eltype(P)
+    points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
     for i in 1 : ncells

@@ -2,6 +2,9 @@ using Base.Test
 using FixedSizeArrays
 MUT = CompScienceMeshes
 
+T = Float64
+P = MUT.defaultpointtype(T,3)
+
 width, height = 1.0, 1.0
 mesh = MUT.meshrectangle(width, height, 0.5)
 
@@ -19,7 +22,8 @@ end
 
 # Test if meshes can be intersected
 line = MUT.meshsegment(width, 1/3, 3)
-line.vertices += Point(0.0, height, 0.0) # translation
+MUT.translate!(line, P(0.0, height, 0.0))
+#line.vertices += Point(0.0, height, 0.0) # translation
 
 edges = MUT.cells(mesh, 1)
 γ1 = MUT.submesh(line, edges)

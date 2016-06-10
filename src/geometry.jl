@@ -7,7 +7,7 @@ export cartesian, jacobian, unormal, meshpoint
 export utangent, cellenumeration
 
 export numcells
-function numcells{U,M,T}(geo::Array{Mesh{U,M,T},1})
+function numcells{M<:Mesh}(geo::Vector{M})
     nc = 0
     for mesh in geo
         nc += numcells(mesh)

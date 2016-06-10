@@ -1,22 +1,24 @@
 export cartesian, parametric, barycentric, jacobian, unormal, utangent, tangent, meshpoint, meshpoints
 export MeshPoint, MeshPointNM
 
-abstract MeshPoint{T}
+#abstract MeshPoint{T}
 
-cartesian(mp::MeshPoint) = mp.cart
-parametric(mp::MeshPoint) = mp.bary
-barycentric(mp::MeshPoint) = Point(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
-
-jacobian(mp::MeshPoint) = volume(mp.cell) * factorial(dimension(mp.cell))
-unormal(mp::MeshPoint) = mp.cell.unormal
-utangent(mp::MeshPoint, i) = column(mp.cell.utangents, i)
-
-
-immutable MeshPointNM{U,D,C,N,T} <: MeshPoint{T}
+immutable MeshPointNM{U,D,C,N,T} #<: MeshPoint{T}
     patch::FlatCellNM{U,D,C,N,T}
-    bary::Point{D,T}
-    cart::Point{U,T}
+    bary::Vec{D,T}
+    cart::Vec{U,T}
 end
+
+paramtype{U,D,C,N,T}(::MeshPointNM{U,D,C,N,T}) = Vec{D,T}
+pointtype{U,D,C,N,T}(::MeshPointNM{U,D,C,N,T}) = Vec{U,T}
+
+cartesian(mp::MeshPointNM) = mp.cart
+parametric(mp::MeshPointNM) = mp.bary
+barycentric(mp::MeshPointNM) = Vec(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
+
+jacobian(mp::MeshPointNM) = volume(mp.cell) * factorial(dimension(mp.cell))
+unormal(mp::MeshPointNM) = mp.cell.unormal
+utangent(mp::MeshPointNM, i) = column(mp.cell.utangents, i)
 
 tangent(mp::MeshPointNM, i) = mp.patch.tangents[i]
 function utangent(mp::MeshPointNM, i)
@@ -24,12 +26,14 @@ function utangent(mp::MeshPointNM, i)
     return tang / norm(tang)
 end
 unormal(mp::MeshPointNM) = mp.patch.normals[1]
-jacobian(mp::MeshPoint) = volume(mp.patch) * factorial(dimension(mp.patch))
+#jacobian(mp::MeshPoint) = volume(mp.patch) * factorial(dimension(mp.patch))
 
-function meshpoint{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, bary)
-    cart = barytocart(p, bary)
-    #D = dimension(p)
-    MeshPointNM(p, Point{D,T}(bary), cart)
+function meshpoint(p::FlatCellNM, bary)
+  D = dimension(p)
+  T = coordtype(p)
+  P = Vec{D,T}
+  cart = barytocart(p, bary)
+  MeshPointNM(p, P(bary), cart)
 end
 
 function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})

@@ -4,7 +4,30 @@ using FixedSizeArrays
 
 import Base.getindex
 
-include("fsa_extensions.jl")
+#include("fsa_extensions.jl")
+
+export euclidianbasis, defaultpointtype
+
+"""
+  defaultpointtype(T, dim) = Vec{T,dim}
+
+Returns the default point type used by package `CompScienceMeshes`
+"""
+defaultpointtype(T, dim) = Vec{dim,T}
+
+"""
+  euclidian_basis(type, dim)
+
+Returns an arrays of length (dim+1) containing the origin and the dim
+Euclidian unit vectors with coordinate type `type`.
+"""
+function euclidianbasis(T::DataType, dim)
+  P = Vec{dim,T}
+  id = eye(dim)
+  r = P[ P(id[:,i]...) for i in 1:dim ]
+  z = P(zeros(T,dim)...)
+  return [z; r]
+end
 
 include("mesh.jl")
 include("gmsh.jl")

@@ -6,26 +6,26 @@ export relorientation, universedimension, meshfromfile
 export translate, translate!
 export Mesh
 
-abstract AbstractMesh{T}
-valuetype{T}(m::AbstractMesh{T}) = T
+#abstract AbstractMesh{T}
+#valuetype{T}(m::AbstractMesh{T}) = T
 
-# U: the dimension of the embedding space
-# D1: the dimension of the mesh + 1 (!)
-# T: the type of the coordinates of the vertices
-type Mesh{U,D1,T} <: AbstractMesh{T}
-    vertices::Array{Point{U,T},1}
-    faces::Array{Vec{D1,Int},1}
+# P is the point type supporting eltype(P) and length(P)
+# C is the index type supporting length(C)
+type Mesh{P,C} #<: AbstractMesh{T}
+    vertices::Vector{P}
+    faces::Vector{C}
 end
 
-vertextype{U,D1,T}(m::Mesh{U,D1,T}) = Point{U,T}
+vertextype{P,C}(m::Mesh{P,C}) = P
+celltype{P,C}(m::Mesh{P,C}) = C
 
-dimension{U,D1,T}(m::Mesh{U,D1,T}) = D1 - 1
-universedimension{U,D1,T}(m::Mesh{U,D1,T}) = U
+dimension{P,C}(m::Mesh{P,C}) = length(C)-1
+universedimension{P,C}(m::Mesh{P,C}) = length(P)
 
 vertices(m::Mesh) = m.vertices
 vertices(m::Mesh, I) = m.vertices[I]
-numvertices(m::Mesh) = length(m.vertices)
 
+numvertices(m::Mesh) = length(m.vertices)
 numcells(m::Mesh) = length(m.faces)
 
 translate(Γ::Mesh, v) = Mesh(Γ.vertices+v, Γ.faces)
@@ -48,13 +48,18 @@ function meshfromfile(filename)
         num_vertices = parse(Int, sl[1])
         num_faces    = parse(Int, sl[2])
 
-        vertices = zeros(Point{3,Float64}, num_vertices)
+        # TODO: remove explicit reference to 3D
+        T = Float64
+        P = Vec{3,T}
+        vertices = zeros(P, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
             vertices[i] = Point(float(split(l)))
         end
 
-        faces = zeros(Vec{3,Int}, num_faces)
+        # TODO: remove explicit reference to dimension
+        C = Vec{3,Int}
+        faces = zeros(C, num_faces)
         for i in 1 : num_faces
             l = readline(f)
             faces[i] = Vec([parse(Int,s) for s in split(l)])
@@ -85,9 +90,9 @@ the boundary and a array containing the indices of the
 vertices of the original mesh that corresond to he
 vertices of the boundary mesh.
 """
-function boundary{U,D1,T}(mesh::Mesh{U,D1,T})
+function boundary(mesh)
 
-    D = D1 - 1
+    D = dimension(mesh)
 
     # vertices have no boundary
     @assert 0 < D
@@ -117,7 +122,7 @@ an array of length numvertices(mesh) containing the number of cells each
 vertex is a member of.
 """
 #function vertextocellmap(mesh::Mesh, cells=mesh.faces)
-function vertextocellmap(mesh::Mesh)
+function vertextocellmap(mesh)
 
     cells = mesh.faces
 
@@ -150,7 +155,7 @@ is the number of cells of dimension k. The integers in this array represent
 indices into the vertex buffer of the input mesh. Note that for the special
 case k == 0 this function does not return any floating vertices.
 """
-function cells(mesh::AbstractMesh, dim::Integer)
+function cells(mesh, dim::Integer)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
@@ -159,11 +164,13 @@ function cells(mesh::AbstractMesh, dim::Integer)
         return mesh
     end
 
-    C = numcells(mesh)
-    simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
+    #C = celltype(mesh)
+    nc = numcells(mesh)
+    C = Vec{dim+1,Int}
+    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
     n = 1
-    for c = 1 : C
+    for c = 1 : nc
 
         cell = mesh.faces[c]
         for simplex in combinations(cell,dim+1)
@@ -178,16 +185,17 @@ end
 
 
 
-function cells(pred, mesh::AbstractMesh, dim::Integer)
+function cells(pred, mesh, dim)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
 
-    C = numcells(mesh)
-    simplices = zeros(Vec{dim+1,Int}, C*binomial(meshdim+1,dim+1))
+    C = celltype(mesh)
+    nc = numcells(mesh)
+    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
     n = 1
-    for c = 1 : C
+    for c = 1 : nc
 
         cell = mesh.faces[c]
         for simplex in combinations(cell,dim+1)
@@ -224,7 +232,6 @@ end
 
 
 
-# not exported
 const levicivita_lut = cat(3,
     [0 0  0;  0 0 1; 0 -1 0],
     [0 0 -1;  0 0 0; 1  0 0],
@@ -234,7 +241,7 @@ const levicivita_lut = cat(3,
 # The parity is computed by using the fact that a permutation is odd if and
 # only if the number of even-length cycles is odd.
 # Returns 1 is the permutarion is even, -1 if it is odd and 0 otherwise.
-function levicivita{T<:Integer}(p::AbstractVector{T})
+function levicivita(p)
     n = length(p)
 
     if n == 3
@@ -301,7 +308,7 @@ end
 Computes a dimm x dimk sparse matrix D with D[i,j] = +/-1 if m-cell i
 has k-cell j as a face. The sign depends on the relative orientation.
 """
-function connectivity(mesh::Mesh, k, kcells, mcells; op = sign)
+function connectivity(mesh, k, kcells, mcells; op = sign)
 
     if !( -1 <= k <= dimension(mesh))
         throw(ErrorException("k needs to be between zero and dim(mesh)"))
@@ -351,7 +358,7 @@ in the mesh structure. If the second number `id` is negative, this
 means that the coresponding edge lies on the boundary and that
 this edge has local index `-id` in the cell refererred to by the first index
 """
-function buildvolmpairs(mesh::Mesh, edges)
+function buildvolmpairs(mesh, edges)
 
     @assert dimension(edges)+1 == dimension(mesh)
 

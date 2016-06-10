@@ -10,11 +10,12 @@ function read_gmsh_mesh(io)
     NV = parse(Int, s[1])
 
     #v = readdlm(io, Float64; dims=(NV,4))
-    v = Vector{Point{3,Float64}}(NV)
+    P = Vec{3,Float64}
+    v = Vector{P}(NV)
     for i in 1:NV
         thisLine = io |> readline |>  strip
         d = readdlm(IOBuffer(thisLine), Float64)
-        v[i] = Point(d[2], d[3], d[4])
+        v[i] = P(d[2], d[3], d[4])
     end
 
     while thisLine != "\$Elements"

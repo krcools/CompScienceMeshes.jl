@@ -49,6 +49,8 @@ end
 #function intersectlines(p,q)
 function intersectlines(a,b,p,q)
 
+    P = typeof(a)
+
     d1 = det(@fsa [a[1] a[2]; b[1] b[2]])
     d2 = det(@fsa [p[1] p[2]; q[1] q[2]])
 
@@ -61,7 +63,7 @@ function intersectlines(a,b,p,q)
 
     den = det(@fsa [d1x d1y; d2x d2y])
 
-    Point(
+    P(
         det(@fsa [d1 d1x; d2 d2x]) / den,
         det(@fsa [d1 d1y; d2 d2y]) / den,
     )
@@ -126,14 +128,16 @@ function sutherlandhodgman(subject,clipper)
 end
 
 function sutherlandhodgman3d(subject, clipper)
-    T = eltype(eltype(subject))
 
-    subject2d = zeros(Point{2,T},length(subject))
+    T = eltype(eltype(subject))
+    P = Vec{2,T}
+
+    subject2d = zeros(P,length(subject))
     for i in 1:length(subject)
         subject2d[i] = carttobary(subject[i])
     end
 
-    clipper2d = zeros(Point{2,T},length(clipper))
+    clipper2d = zeros(P,length(clipper))
     for i in 1:length(clipper)
         clipper2d[i] = carttobary(clipper[i])
     end

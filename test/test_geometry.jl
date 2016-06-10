@@ -28,10 +28,13 @@ internal_edges = count(x->x>0, vp[2,:])
 @test MUT.relorientation([1,3,2],[1,2,3,4]) == +4
 @test MUT.relorientation([2,4,3],[1,2,3,4]) == -1
 
-v = [
-    Point(0.0, 0.0, 0.0),
-    Point(1.0, 0.0, 0.0),
-    Point(0.0, 1.0, 0.0)]
+o, e1, e2, e3 = MUT.euclidianbasis(Float64, 3)
+v = [o, e1, e2]
+
+# v = [
+#     Vec(0.0, 0.0, 0.0),
+#     Vec(1.0, 0.0, 0.0),
+#     Vec(0.0, 1.0, 0.0)]
 cell = MUT.patch(v, Val{2})
 
 A  = MUT.volume(cell)
@@ -39,14 +42,12 @@ A  = MUT.volume(cell)
 
 mp = MUT.meshpoint(cell,[third, third]);
 r = MUT.cartesian(mp)
-@test norm(r - Point(third, third, zero(T))) < tol
+@test norm(r - Vec(third, third, zero(T))) < tol
 
 
 # repeat the test but now on a random cell
-v = [
-    Point(2*rand(T,3)-1),
-    Point(2*rand(T,3)-1),
-    Point(2*rand(T,3)-1)]
+P = MUT.defaultpointtype(Float64,3)
+v = [ P(2*rand(T,3)-1), P(2*rand(T,3)-1), P(2*rand(T,3)-1) ]
 cell = MUT.patch(v, Val{2})
 
 mp = MUT.meshpoint(cell,[third, third]);
