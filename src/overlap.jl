@@ -3,7 +3,7 @@ export overlap
 using FixedSizeArrays
 
 import FixedSizeArrays.cross
-cross{T}(a::Point{2,T}, b::Point{2,T}) = a[1]*b[2] - a[2]*b[1]
+cross{T}(a::Pt{2,T}, b::Pt{2,T}) = a[1]*b[2] - a[2]*b[1]
 
 """
 Compute whether two flat patches of the same dimension overlap or not

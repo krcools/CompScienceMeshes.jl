@@ -6,7 +6,37 @@ import Base.getindex
 
 #include("fsa_extensions.jl")
 
-export euclidianbasis, defaultpointtype
+export euclidianbasis, defaultpointtype, Pt, point
+
+
+typealias Pt{N,T} FixedSizeArrays.Vec{N,T}
+
+"""
+    point(xs...)
+
+Create point object of `CompScienceMeshes` default point class
+and with coordinate type `Float64`
+"""
+point(xs...) = point(Float64, xs...)
+
+
+
+"""
+    point(type, xs...)
+
+Create point object of `CompScienceMeshes` default point class
+and with coordinate type `type`
+"""
+@generated function point(T::Type,xs...)
+    D = length(xs)
+    xp = :(Vec{$D,T}())
+    for d in 1:D
+        push!(xp.args, :(xs[$d]))
+    end
+    return xp
+end
+
+
 
 """
   defaultpointtype(T, dim) = Vec{T,dim}
@@ -14,6 +44,8 @@ export euclidianbasis, defaultpointtype
 Returns the default point type used by package `CompScienceMeshes`
 """
 defaultpointtype(T, dim) = Vec{dim,T}
+
+
 
 """
   euclidian_basis(type, dim)

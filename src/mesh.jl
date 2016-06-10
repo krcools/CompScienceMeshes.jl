@@ -1,5 +1,5 @@
 export numcells
-export numvertices, dimension, vertices
+export numvertices, dimension, vertices, coordtype
 export meshsegment, meshrectangle, meshcircle, meshsphere
 export readmesh, writemesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
 export relorientation, universedimension, meshfromfile
@@ -11,16 +11,30 @@ export Mesh
 
 # P is the point type supporting eltype(P) and length(P)
 # C is the index type supporting length(C)
-type Mesh{P,C} #<: AbstractMesh{T}
-    vertices::Vector{P}
-    faces::Vector{C}
+type Mesh{U,D1,T} #<: AbstractMesh{T}
+    vertices::Vector{Vec{U,T}}
+    faces::Vector{Vec{D1,Int}}
 end
 
-vertextype{P,C}(m::Mesh{P,C}) = P
-celltype{P,C}(m::Mesh{P,C}) = C
 
-dimension{P,C}(m::Mesh{P,C}) = length(C)-1
-universedimension{P,C}(m::Mesh{P,C}) = length(P)
+
+export emptymesh
+"""
+    emptymesh(type, mdim, udim=mdim+1)
+
+Returns an empty mesh with `coordtype` equal to `type`, of dimension `mdim`
+and embedded in a universe of dimension `udim`
+"""
+emptymesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], Vec{mdim+1,Int}[])
+
+
+
+vertextype(m::Mesh) = eltype(m.vertices)
+indextype(m::Mesh) = eltype(m.faces)
+coordtype(m::Mesh) = eltype(vertextype(m))
+
+dimension(m::Mesh) = length(indextype(m)) - 1
+universedimension(m::Mesh) = length(vertextype(m))
 
 vertices(m::Mesh) = m.vertices
 vertices(m::Mesh, I) = m.vertices[I]
