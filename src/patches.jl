@@ -1,5 +1,3 @@
-# overload, don't overwrite!
-# import CompScienceMeshes.dimension
 
 import Base.getindex
 
@@ -14,15 +12,12 @@ export tangents, dimension, centroid
 export FlatCellNM
 
 
-#abstract Patch{T}
-#abstract FlatCell{T} <: Patch{T}
-
 # U: the dimension of the universe
 # D: the dimension of the manifold
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-immutable FlatCellNM{U,D,C,N,T} #<: FlatCell{T}
+immutable FlatCellNM{U,D,C,N,T}
     vertices::Vec{N,Vec{U,T}}
     tangents::Vec{D,Vec{U,T}}
     normals::Vec{C,Vec{U,T}}
@@ -39,31 +34,29 @@ dimension(p::FlatCellNM) = length(p.vertices) - 1
 getindex(p::FlatCellNM, I) = p.vertices[I]
 
 
-#dimension{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) = D
-
-
 function patch{P<:FixedArray,D}(verts::Vector{P}, ::Type{Val{D}})
   @assert length(verts) == D+1
-  #PT = eltype(verts)
   U = length(P)
   T = eltype(P)
   # TODO: to this in a generated function
   vertices = Vec{D+1,P}(verts)
   tangents = Vec{D,P}([verts[i]-verts[end] for i in 1:D])
   normals, volume = _normals(tangents, Val{U-D})
-  #return FlatCellNM{U,D,U-D,D+1,T}(vertices, tangents, normals, volume)
   FlatCellNM(vertices, tangents, normals, volume)
 end
 
 function patch{T}(verts::Vector{Vec{3,T}}, ::Type{Val{2}})
   @assert length(verts) == 3
   PT = eltype(verts)
-  #vertices = Vec{3,PT}(verts)
   vertices = Vec{3,PT}((verts[1], verts[2], verts[3]))
   tangents = Vec{2,PT}((verts[1]-verts[3], verts[2]-verts[3]))
   normals, volume = _normals(tangents, Val{1})
-  #FlatCellNM{3,2,1,3,T}(vertices, tangents, normals, volume)
   FlatCellNM(vertices, tangents, normals, volume)
+end
+
+function patch{D1,U,T,D}(verts::Vec{D1,Vec{U,T}}, ::Type{Val{D}})
+    a = Array(verts)
+    patch(a, Val{2})
 end
 
 function patch{D1}(verts::Vec{D1})

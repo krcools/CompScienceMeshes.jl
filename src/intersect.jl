@@ -27,26 +27,36 @@ function clipconvex!(W, v, m)
 end
 
 """
-  function intersection{U,C,T}(p1::FlatCellNM{U,2,C,3,T}, p2::FlatCellNM{U,2,C,3,T})
+  function intersection{U,C}(p1::FlatCellNM{U,2,C,3}, p2::FlatCellNM{U,2,C,3})
 
 Returns the intersection of triangles p1 and p2. ATTENTION: The implementation
 as is assumes that either p1 is a subset of p2 or the other way around. This
 case is sufficient to compute matrices for integral operators on combinations
 of RT and BC spaces defined subordinate to the same mesh.
 """
-function intersection{U,C,T}(p1::FlatCellNM{U,2,C,3,T}, p2::FlatCellNM{U,2,C,3,T})
-  b = true
-  for v in p2.vertices
-    if !isinclosure(p1,v)
-      b = false
-      break
-    end
-  end
+function intersection{U,C}(p1::FlatCellNM{U,2,C,3}, p2::FlatCellNM{U,2,C,3})
+  # b = true
+  # for v in p2.vertices
+  #   if !isinclosure(p1,v)
+  #     b = false
+  #     break
+  #   end
+  # end
+  #
+  # b == true ? p2 : p1
 
-  b == true ? p2 : p1
+  pq = sutherlandhodgman(p1.vertices, p2.vertices)
+  return [ patch([pq[1], pq[i], pq[i+1]], Val{2}) for i in 2:length(pq)-1 ]
 end
 
-#function intersectlines(p,q)
+
+
+"""
+    intersectline(a,b,p,q)
+
+Computes the intersection of the lines (in a 2D space) defined
+by points [a,b] and [p,q]
+"""
 function intersectlines(a,b,p,q)
 
     P = typeof(a)
@@ -70,6 +80,8 @@ function intersectlines(a,b,p,q)
 
 end
 
+
+
 """
     inside(p,a,b)
 
@@ -84,8 +96,15 @@ function leftof(p,a,b)
 
 end
 
-export sutherlandhodgman
-function sutherlandhodgman(subject,clipper)
+export sutherlandhodgman2d
+
+"""
+    sutherlandhodgman2d(subject,clipper)
+
+Computes the intersection of the coplanar triangles
+subject and clipper.
+"""
+function sutherlandhodgman2d(subject,clipper)
 
     PT = eltype(subject)
 
@@ -127,21 +146,20 @@ function sutherlandhodgman(subject,clipper)
     return clipped
 end
 
-function sutherlandhodgman3d(subject, clipper)
+export sutherlandhodgman
 
-    T = eltype(eltype(subject))
-    P = Vec{2,T}
+"""
+    sutherlandhodgman(subject, clipper)
 
-    subject2d = zeros(P,length(subject))
-    for i in 1:length(subject)
-        subject2d[i] = carttobary(subject[i])
-    end
+Compute the intersection of two coplanar triangles, potentially
+embedded in a higher dimensional space.
+"""
+function sutherlandhodgman(subject, clipper)
 
-    clipper2d = zeros(P,length(clipper))
-    for i in 1:length(clipper)
-        clipper2d[i] = carttobary(clipper[i])
-    end
-
-    isct = surtherlandhodgman(subject2d, clipper2d)
-
+    triangle = patch(clipper, Val{2})
+    subject2d = [carttobary(triangle,p) for p in subject]
+    clipper2d = [carttobary(triangle,q) for q in clipper]
+    clipped2d = sutherlandhodgman2d(subject2d, clipper2d)
+    clipped = [barytocart(triangle,q) for q in clipped2d ]
+    
 end
