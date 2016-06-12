@@ -92,7 +92,7 @@ function leftof(p,a,b)
 
     ap = @fsa [ p[1]-a[1], p[2]-a[2] ]
     ab = @fsa [ b[1]-a[1], b[2]-a[2] ]
-    ap[1]*ab[2] - ap[2]*ab[1] <= 0 ? true : false
+    ap[1]*ab[2] - ap[2]*ab[1] < 0 ? true : false
 
 end
 
@@ -161,5 +161,5 @@ function sutherlandhodgman(subject, clipper)
     clipper2d = [carttobary(triangle,q) for q in clipper]
     clipped2d = sutherlandhodgman2d(subject2d, clipper2d)
     clipped = [barytocart(triangle,q) for q in clipped2d ]
-    
+
 end
