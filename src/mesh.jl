@@ -204,8 +204,8 @@ function cells(pred, mesh, dim)
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
 
-    C = celltype(mesh)
     nc = numcells(mesh)
+    C = Vec{dim+1,Int}
     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
     n = 1
