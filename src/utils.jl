@@ -21,11 +21,11 @@ function getindex{T,N}(A::AbstractArray{T}, I::Vec{N})
     return B
 end
 
-function setindex!{T,N}(A::AbstractArray{T}, v, I::Vec{N})
-    for i in 1:N
-        A[I[i]] = v
-    end
-end
+# function setindex!{T,N}(A::AbstractArray{T}, v, I::Vec{N})
+#     for i in 1:N
+#         A[I[i]] = v
+#     end
+# end
 
 function setindex!{N}(A::AbstractArray, V::AbstractArray, I::Vec{N})
     for i in 1:N
@@ -39,7 +39,6 @@ function searchsortedfirst(v, x, lo, hi, by, lt)
     @inbounds while lo < hi-1
         m = (lo+hi)>>>1
         if lt(by(v[m]), x)
-        #if lt(o, v[m], x)
             lo = m
         else
             hi = m
@@ -48,13 +47,9 @@ function searchsortedfirst(v, x, lo, hi, by, lt)
     return hi
 end
 
-function colsearchsortedfirst(A, col)
-
-    n = size(A,2)
-    v =  collect(1:n)
-    searchsortedfirst(v, col, 1, n, i->A[:,i], lexless)
-
-end
+#n = size(A,2)
+#v =  collect(1:n)
+colsearchsortedfirst(A, col) = searchsortedfirst(1:n, col, 1, size(A,2), i->A[:,i], lexless)
 
 """
 Move the s-th element right after the d-th

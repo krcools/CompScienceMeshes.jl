@@ -17,7 +17,8 @@ function intersection{U,C,T}(p1::FlatCellNM{U,1,C,2,T}, p2::FlatCellNM{U,1,C,2,T
     # For consistency an array needs to be return. In higher
     # dimensions the intersection could be the union of
     # multiple simplices.
-    return [patch(W, Val{1})]
+    #return [patch(W, Val{1})]
+    [simplex(W[1], W[2])]
 end
 
 function clipconvex!(W, v, m)
@@ -49,7 +50,8 @@ function intersection{U,C}(p1::FlatCellNM{U,2,C,3}, p2::FlatCellNM{U,2,C,3})
   # b == true ? p2 : p1
 
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
-  return [ patch([pq[1], pq[i], pq[i+1]], Val{2}) for i in 2:length(pq)-1 ]
+  #return [ patch([pq[1], pq[i], pq[i+1]], Val{2}) for i in 2:length(pq)-1 ]
+  [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end
 
 
@@ -174,7 +176,8 @@ embedded in a higher dimensional space.
 """
 function sutherlandhodgman(subject, clipper)
 
-    triangle = patch(clipper, Val{2})
+    #triangle = patch(clipper, Val{2})
+    triangle = simplex(clipper, Val{2})
     subject2d = [carttobary(triangle,p) for p in subject]
     for p in subject2d for x in p @assert !isinf(x) end end
     clipper2d = [carttobary(triangle,q) for q in clipper]

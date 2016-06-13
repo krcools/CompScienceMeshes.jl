@@ -140,7 +140,8 @@ function overlap_predicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box.data
-                p2 = patch(γ.vertices[γ.faces[i]], Val{1})
+                #p2 = patch(γ.vertices[γ.faces[i]], Val{1})
+                p2 = simplex(γ.vertices[γ.faces[i]], Val{1})
                 overlap(p1,p2) && return true
             end
         end
@@ -161,7 +162,8 @@ function overlap_predicate(Ω::Mesh, Γ::Mesh)
 
     pred0 = overlap_predicate(Γ::Mesh)
     function pred1(s::Vec)
-        return pred0(patch(vertices(Ω, s), Val{1}))
+        #return pred0(patch(vertices(Ω, s), Val{1}))
+        pred0(simplex(vertices(Ω, s), Val{1}))
     end
 
     return pred1

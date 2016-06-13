@@ -1,43 +1,40 @@
-using FixedSizeArrays
 using Base.Test
-MUT = CompScienceMeshes
+using CompScienceMeshes
 
-rectangle = MUT.meshrectangle(1.0, 1.0, 1.0);
+rectangle = meshrectangle(1.0, 1.0, 1.0);
 
-@test MUT.vertices(rectangle, Vec(1,2,3)) == [
-    Point(0.0, 0.0, 0.0),
-    Point(0.0, 1.0, 0.0),
-    Point(1.0, 0.0, 0.0)
-]
+@test vertices(rectangle,1) == point(0.0, 0.0, 0.0)
+@test vertices(rectangle,2) == point(0.0, 1.0, 0.0)
+@test vertices(rectangle,3) == point(1.0, 0.0, 0.0)
 
-@test MUT.numvertices(rectangle) == 4
-@test MUT.numcells(rectangle) == 2
-@test MUT.dimension(rectangle) == 2
+@test numvertices(rectangle) == 4
+@test numcells(rectangle) == 2
+@test dimension(rectangle) == 2
 
-faces = MUT.cells(rectangle, 2)
-edges = MUT.cells(rectangle, 1)
-verts = MUT.cells(rectangle, 0)
+faces = cells(rectangle, 2)
+edges = cells(rectangle, 1)
+verts = cells(rectangle, 0)
 
-@test MUT.numcells(verts) == 4
-@test MUT.numcells(edges) == 5
-@test MUT.numcells(faces) == 2
+@test numcells(verts) == 4
+@test numcells(edges) == 5
+@test numcells(faces) == 2
 
-Λ  = MUT.connectivity(rectangle, 0, verts, edges)
-Σᵀ = MUT.connectivity(rectangle, 1, edges, faces)
+Λ  = connectivity(rectangle, 0, verts, edges)
+Σᵀ = connectivity(rectangle, 1, edges, faces)
 
 @test size(Λ)  == (5,4)
 @test size(Σᵀ) == (2,5)
 
 @test_approx_eq(norm(Σᵀ*Λ, Inf), 0)
 
-bnd = MUT.boundary(rectangle)
+bnd = boundary(rectangle)
 
-@test MUT.dimension(bnd) == 1
-@test MUT.numvertices(bnd) == 4
-@test MUT.numcells(bnd) == 4
+@test dimension(bnd) == 1
+@test numvertices(bnd) == 4
+@test numcells(bnd) == 4
 
-vtoe, num_vtoe = MUT.vertextocellmap(edges)
-vtof, num_vtof = MUT.vertextocellmap(faces)
+vtoe, num_vtoe = vertextocellmap(edges)
+vtof, num_vtof = vertextocellmap(faces)
 
 @test size(vtoe) == (4,3)
 @test size(vtof) == (4,2)
@@ -45,7 +42,7 @@ vtof, num_vtof = MUT.vertextocellmap(faces)
 @test size(num_vtoe) == (4,)
 @test size(num_vtof) == (4,)
 
-file = joinpath(Pkg.dir("CompScienceMeshes"),"test","sphere.in")
-sphere = MUT.meshfromfile(file)
-@test MUT.numvertices(sphere) == 335
-@test MUT.numcells(sphere) == 666
+file = Pkg.dir("CompScienceMeshes","test","sphere.in")
+sphere = meshfromfile(file)
+@test numvertices(sphere) == 335
+@test numcells(sphere) == 666

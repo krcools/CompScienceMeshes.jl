@@ -1,13 +1,13 @@
-using FixedSizeArrays
+#using FixedSizeArrays
 using CompScienceMeshes
 using Base.Test
 
-p = @fsa [0.0, 1.0]
-q = @fsa [2.0, 1.0]
-r = @fsa [2.0, 2.0]
-a = @fsa [1.0, 0.0]
-b = @fsa [2.0, 0.0]
-c = @fsa [1.0, 2.0]
+p = point(0.0, 1.0)
+q = point(2.0, 1.0)
+r = point(2.0, 2.0)
+a = point(1.0, 0.0)
+b = point(2.0, 0.0)
+c = point(1.0, 2.0)
 
 @test CompScienceMeshes.leftof(p, a,b) == true
 @test CompScienceMeshes.intersectlines(p,r, a,c) == [1.0, 1.5]
@@ -23,24 +23,28 @@ c = @fsa [1.0, 2.0]
 @test length(β) == length(α)
 for i in eachindex(β) @test β[i] == α[i] end
 
-P = patch([p,q,r], Val{2})
-Q = patch([a,b,c], Val{2})
+#P = patch([p,q,r], Val{2})
+P = simplex(p, q, r)
+#Q = patch([a,b,c], Val{2})
+Q = simplex(a, b, c)
 R = intersection(P,Q)
 
 @test length(R) == 2
 @test R[1].vertices == [α[1], α[2], α[3]]
 @test R[2].vertices == [α[1], α[3], α[4]]
 
-t = @fsa [1.0, 2.0, 3.0]
-p = (@fsa [0.0, 1.0, 0.0]) + t
-q = (@fsa [2.0, 1.0, 0.0]) + t
-r = (@fsa [2.0, 2.0, 0.0]) + t
-a = (@fsa [1.0, 0.0, 0.0]) + t
-b = (@fsa [2.0, 0.0, 0.0]) + t
-c = (@fsa [1.0, 2.0, 0.0]) + t
+t = point(1.0, 2.0, 3.0)
+p = point(0.0, 1.0, 0.0) + t
+q = point(2.0, 1.0, 0.0) + t
+r = point(2.0, 2.0, 0.0) + t
+a = point(1.0, 0.0, 0.0) + t
+b = point(2.0, 0.0, 0.0) + t
+c = point(1.0, 2.0, 0.0) + t
 
-P = patch([p,q,r], Val{2})
-Q = patch([a,b,c], Val{2})
+#P = patch([p,q,r], Val{2})
+#Q = patch([a,b,c], Val{2})
+P = simplex(p,q,r)
+Q = simplex(a,b,c)
 S = intersection(P,Q)
 
 # Test whether translation and intersection commute
