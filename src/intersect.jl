@@ -14,7 +14,10 @@ function intersection{U,C,T}(p1::FlatCellNM{U,1,C,2,T}, p2::FlatCellNM{U,1,C,2,T
     clipconvex!(W, p1.vertices[1],  p1.tangents[1])
     clipconvex!(W, p1.vertices[2], -p1.tangents[1])
 
-    return patch(W, Val{1})
+    # For consistency an array needs to be return. In higher
+    # dimensions the intersection could be the union of
+    # multiple simplices.
+    return [patch(W, Val{1})]
 end
 
 function clipconvex!(W, v, m)
@@ -73,6 +76,20 @@ function intersectlines(a,b,p,q)
 
     den = det(@fsa [d1x d1y; d2x d2y])
 
+    @assert !isinf(1/den)
+    #
+    # if isnan(d2)
+    #     @show p
+    #     @show q
+    # end
+    # @assert !isnan(d1)
+    # @assert !isnan(d2)
+    # @assert !isnan(d1x)
+    # @assert !isnan(d2x)
+    # @assert !isnan(d1y)
+    # @assert !isnan(d2y)
+    # @assert !isnan(den)
+
     P(
         det(@fsa [d1 d1x; d2 d2x]) / den,
         det(@fsa [d1 d1y; d2 d2y]) / den,
@@ -90,9 +107,10 @@ assuming that the boundary is oriented counter-clockwise.
 """
 function leftof(p,a,b)
 
+    tol = sqrt(eps(eltype(a)))
     ap = @fsa [ p[1]-a[1], p[2]-a[2] ]
     ab = @fsa [ b[1]-a[1], b[2]-a[2] ]
-    ap[1]*ab[2] - ap[2]*ab[1] < 0 ? true : false
+    ap[1]*ab[2] - ap[2]*ab[1] <= tol ? true : false
 
 end
 
@@ -158,7 +176,9 @@ function sutherlandhodgman(subject, clipper)
 
     triangle = patch(clipper, Val{2})
     subject2d = [carttobary(triangle,p) for p in subject]
+    for p in subject2d for x in p @assert !isinf(x) end end
     clipper2d = [carttobary(triangle,q) for q in clipper]
+    for p in clipper2d for x in p @assert !isinf(x) end end
     clipped2d = sutherlandhodgman2d(subject2d, clipper2d)
     clipped = [barytocart(triangle,q) for q in clipped2d ]
 

@@ -19,8 +19,6 @@ and with coordinate type `Float64`
 """
 point(xs...) = point(Float64, xs...)
 
-
-
 """
     point(type, xs...)
 
@@ -36,6 +34,8 @@ and with coordinate type `type`
     return xp
 end
 
+export index
+index(is...) = Vec{length(is),Int}(is...)
 
 
 """
