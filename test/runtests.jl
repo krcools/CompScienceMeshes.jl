@@ -15,5 +15,6 @@ include("test_overlap.jl")
 include("test_intersect.jl")
 include("test_sh_intersection.jl")
 include("test_isinside.jl")
+include("test_weld.jl")
 
 end

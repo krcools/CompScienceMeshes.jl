@@ -1,13 +1,12 @@
 using Base.Test
-using FixedSizeArrays
 
-import CompScienceMeshes
-CM = CompScienceMeshes
+using CompScienceMeshes
 
-m1 = CM.meshrectangle(1.0, 1.0, 0.5)
-m2 = CM.meshrectangle(1.0, 1.0, 0.5)
-m2.vertices += Point(0.0, 1.0, 0.0)
+m1 = meshrectangle(1.0, 1.0, 0.5)
+m2 = meshrectangle(1.0, 1.0, 0.5)
+translate!(m2, point(0,1,0))
+#m2.vertices += point(0.0, 1.0, 0.0)
 
-m = CM.weld(m1, m2)
+m = weld(m1, m2)
 
-@test length(CM.cells(m,0)) == 15
+@test numcells(skeleton(m,0)) == 15

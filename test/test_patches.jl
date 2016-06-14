@@ -2,7 +2,7 @@ using Base.Test
 using CompScienceMeshes
 
 mesh = meshrectangle(1.0, 1.0, 1.0)
-faces = cells(mesh, 2)
+faces = skeleton(mesh, 2)
 verts = vertices(mesh, faces.faces[1])
 p = simplex(verts)
 

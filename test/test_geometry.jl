@@ -13,19 +13,19 @@ m = meshrectangle(1.0,1.0,0.5);
 @test numcells(m) == 8
 
 # test edge detection
-edges = cells(m, 1)
+edges = skeleton(m, 1)
 @test numcells(edges) == 16
 
 # test volume pair construction from a list of edges
-vp = buildvolmpairs(m,edges)
+vp = cellpairs(m,edges)
 internal_edges = count(x->x>0, vp[2,:])
 @test internal_edges == 8
 
 # test the relative orientation routine
-@test relorientation([1,2,3],[1,2,3,4]) == -4
-@test relorientation([2,3,4],[1,2,3,4]) == +1
-@test relorientation([1,3,2],[1,2,3,4]) == +4
-@test relorientation([2,4,3],[1,2,3,4]) == -1
+@test CompScienceMeshes.relorientation([1,2,3],[1,2,3,4]) == -4
+@test CompScienceMeshes.relorientation([2,3,4],[1,2,3,4]) == +1
+@test CompScienceMeshes.relorientation([1,3,2],[1,2,3,4]) == +4
+@test CompScienceMeshes.relorientation([2,4,3],[1,2,3,4]) == -1
 
 o, e1, e2, e3 = euclidianbasis(Float64, 3)
 cell = simplex(o, e1, e2)

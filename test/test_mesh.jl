@@ -11,16 +11,18 @@ rectangle = meshrectangle(1.0, 1.0, 1.0);
 @test numcells(rectangle) == 2
 @test dimension(rectangle) == 2
 
-faces = cells(rectangle, 2)
-edges = cells(rectangle, 1)
-verts = cells(rectangle, 0)
+faces = skeleton(rectangle, 2)
+edges = skeleton(rectangle, 1)
+verts = skeleton(rectangle, 0)
 
 @test numcells(verts) == 4
 @test numcells(edges) == 5
 @test numcells(faces) == 2
 
-Λ  = connectivity(rectangle, 0, verts, edges)
-Σᵀ = connectivity(rectangle, 1, edges, faces)
+#Λ  = connectivity(rectangle, 0, verts, edges)
+Λ  = connectivity(verts, edges)
+#Σᵀ = connectivity(rectangle, 1, edges, faces)
+Σᵀ = connectivity(edges, faces)
 
 @test size(Λ)  == (5,4)
 @test size(Σᵀ) == (2,5)
@@ -43,6 +45,6 @@ vtof, num_vtof = vertextocellmap(faces)
 @test size(num_vtof) == (4,)
 
 file = Pkg.dir("CompScienceMeshes","test","sphere.in")
-sphere = meshfromfile(file)
+sphere = readmesh(file)
 @test numvertices(sphere) == 335
 @test numcells(sphere) == 666

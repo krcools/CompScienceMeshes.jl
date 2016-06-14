@@ -197,7 +197,7 @@ end
 
 function interior(mesh::Mesh)
     D = dimension(mesh)
-    edges = cells(mesh, D-1)
+    edges = skeleton(mesh, D-1)
     pred = interior_predicate(mesh)
     submesh(pred, edges)
 end

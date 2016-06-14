@@ -5,8 +5,8 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     PointType = vertextype(mesh) #eltype(mesh.vertices)
     CellType = celltype(mesh) #eltype(mesh.faces)
 
-    Verts = cells(mesh, 0)
-    Edges = cells(mesh, 1)
+    Verts = skeleton(mesh, 0)
+    Edges = skeleton(mesh, 1)
 
     NV, NE = numcells(Verts), numcells(Edges)
 
@@ -44,13 +44,13 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
 
     D1 = 3
 
-    edges = cells(mesh,1)
-    faces = cells(mesh,2)
+    edges = skeleton(mesh,1)
+    faces = skeleton(mesh,2)
 
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
     nv = NV + NE + NF
-    verts = Array(vertextype(mesh), nv)
+    verts = Array{vertextype(mesh)}(nv)
     for V in 1 : numvertices(mesh)
         verts[V] = mesh.vertices[V]
     end
@@ -67,12 +67,13 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
         verts[NV+NE+F] = (v[1] + v[2] + v[3]) / 3
     end
 
-    D = transpose(connectivity(mesh, 1, edges, faces, op=identity))
+    #D = transpose(connectivity(mesh, 1, edges, faces, op=identity))
+    D = transpose(connectivity(edges, faces, identity))
     rows, vals = rowvals(D), nonzeros(D)
 
     # add six faces in each coarse face
     nf = 6NF
-    fcs = zeros(indextype(mesh), nf)
+    fcs = zeros(celltype(mesh), nf)
     for F in 1 : numcells(faces)
         c = NV + NE + F
 

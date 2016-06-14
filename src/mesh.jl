@@ -1,48 +1,149 @@
-export numcells
-export numvertices, dimension, vertices, coordtype
-export meshsegment, meshrectangle, meshcircle, meshsphere
-export readmesh, writemesh, boundary, vertextocellmap, cells, connectivity, buildvolmpairs
-export relorientation, universedimension, meshfromfile
-export translate, translate!
 export Mesh
 
-#abstract AbstractMesh{T}
-#valuetype{T}(m::AbstractMesh{T}) = T
+export mesh, readmesh, writemesh
+export meshsegment, meshrectangle, meshcircle, meshsphere
+export dimension, universedimension, vertextype, celltype, coordtype
+export numvertices, vertices
+export numcells, cell, cellvertices
+export translate, translate!
+export boundary, skeleton
+export vertextocellmap, connectivity, cellpairs
 
-# P is the point type supporting eltype(P) and length(P)
-# C is the index type supporting length(C)
-type Mesh{U,D1,T} #<: AbstractMesh{T}
+
+
+type Mesh{U,D1,T}
     vertices::Vector{Vec{U,T}}
     faces::Vector{Vec{D1,Int}}
 end
 
 
 
-export emptymesh
 """
-    emptymesh(type, mdim, udim=mdim+1)
+    mesh(type, mdim, udim=mdim+1)
 
 Returns an empty mesh with `coordtype` equal to `type`, of dimension `mdim`
 and embedded in a universe of dimension `udim`
 """
-emptymesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], Vec{mdim+1,Int}[])
+mesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], Vec{mdim+1,Int}[])
 
 
 
+"""
+    vertextype(mesh)
+
+Returns type of the vertices stored in the mesh
+"""
 vertextype(m::Mesh) = eltype(m.vertices)
-indextype(m::Mesh) = eltype(m.faces)
+
+
+
+"""
+    celltype(mesh)
+
+Returns the type of the index tuples stored in the mesh
+"""
+celltype(m::Mesh) = eltype(m.faces)
+
+
+
+"""
+    coordtype(mesh)
+
+Returns `eltype(vertextype(mesh))`
+"""
 coordtype(m::Mesh) = eltype(vertextype(m))
 
-dimension(m::Mesh) = length(indextype(m)) - 1
+
+
+"""
+    dimension(mesh)
+
+Returns the dimension of the mesh. Note that this is
+the dimension of the cells, not of the surrounding space.
+"""
+dimension(m::Mesh) = length(celltype(m)) - 1
+
+
+
+"""
+    universedimension(mesh)
+
+Returns the dimension of the surrounding space. Equals
+the number of coordinates required to describe a vertex.
+"""
 universedimension(m::Mesh) = length(vertextype(m))
 
+
+
+"""
+    vertices(mesh)
+
+Returns an indexable iterable to the vertices of the mesh
+"""
 vertices(m::Mesh) = m.vertices
+
+
+
+"""
+    vertices(mesh, I)
+
+Shorthand for `vertices(mesh)[I]`
+"""
 vertices(m::Mesh, I) = m.vertices[I]
 
+
+
+"""
+    numvertices(mesh)
+
+Returns the number of vertices in the mesh.
+"""
 numvertices(m::Mesh) = length(m.vertices)
+
+
+
+"""
+    numcells(mesh)
+
+Returns the number of cells in the mesh
+"""
 numcells(m::Mesh) = length(m.faces)
 
+
+
+"""
+    cell(mesh,i)
+
+Return the index tuple for cell `i` of `mesh`
+"""
+cell(mesh,i) = mesh.faces[i]
+
+
+
+"""
+    cellvertices(mesh, i)
+
+Return an indexable collection containing the vertices of cell `i`.
+Shorthand for `vertices(mesh, cell(mesh, i))`.
+"""
+cellvertices(mesh,i) = vertices(mesh, cell(mesh, i))
+
+
+
+"""
+    translate(mesh, v)
+
+Creates a new mesh by translating `mesh` over vector `v`
+"""
 translate(Γ::Mesh, v) = Mesh(Γ.vertices+v, Γ.faces)
+
+
+
+"""
+    translate!(mesh, v)
+
+Translates `mesh` over vector `v` inplace.
+"""
 function translate!(Γ::Mesh, v)
     for i in 1:length(Γ.vertices)
         Γ.vertices[i] += v
@@ -50,7 +151,29 @@ function translate!(Γ::Mesh, v)
     Γ
 end
 
-function meshfromfile(filename)
+
+
+"""
+    readmesh(filename)
+
+Reads a mesh in *in* format from `filename`. The format follows:
+
+    1
+    V C
+    x1_1    x1_2    ... x1_U
+    x2_1    x2_2    ... x2_U
+    ...
+    xV_1    xV_2    ... xV_U
+    i1_1    i1_2    ... i1_D1
+    i2_1    i2_2    ... i2_D1
+    ...
+    iC_1    iC_2    ... iC_D1
+
+where `U` is the universedimension of the mesh, `D1` the dimension
+of the mesh plus one, `V` the number of vertices, and `C` the number
+of cells in the mesh.
+"""
+function readmesh(filename)
     open(filename) do f
         # multi-mesh files are not supported
         readline(f)
@@ -83,6 +206,13 @@ function meshfromfile(filename)
     end
 end
 
+
+
+"""
+    writemesh(mesh, filename)
+
+Write `mesh` to `filename` in the *in* format (see `readmesh`).
+"""
 function writemesh(mesh, filename)
     dl = '\t'
     open(filename, "w") do f
@@ -97,12 +227,12 @@ function writemesh(mesh, filename)
     end
 end
 
+
+
 """
-function to determine the boundary of a manifold.
-Given a D-manifold, return a D-1 manifold representing
-the boundary and a array containing the indices of the
-vertices of the original mesh that corresond to he
-vertices of the boundary mesh.
+    boundary(mesh)
+
+Returns the boundary of `mesh` as a mesh of lower dimension.
 """
 function boundary(mesh)
 
@@ -112,11 +242,11 @@ function boundary(mesh)
     @assert 0 < D
 
     # build a list of D-1 cells
-    edges = cells(mesh, D-1)
-    faces = cells(mesh, D)
+    edges = skeleton(mesh, D-1)
+    faces = skeleton(mesh, D)
 
     # get the edge-face connection matrix
-    conn = connectivity(mesh, D-1, edges, faces)
+    conn = connectivity(edges, faces)
 
     # find the edges that only have one edjacent face
     i = find(x -> x < 2, sum(abs(conn), 1))
@@ -125,17 +255,20 @@ function boundary(mesh)
     bnd = Mesh(mesh.vertices, edges.faces[i])
 end
 
-"""
-    vertextocellmap(mesh::Mesh)
 
-This function takes an array of indices into the mesh vertex buffer
-representing cells of a fixed dimension and returns an array of size
-numvertices(mesh) x nmax integers containing in row i the indices
-of the cells containing the i-th vertex. In addition the function returns
-an array of length numvertices(mesh) containing the number of cells each
-vertex is a member of.
+
 """
-#function vertextocellmap(mesh::Mesh, cells=mesh.faces)
+    vertextocellmap(mesh) -> vertextocells, numneighbors
+
+Computed an V×M array `vertextocells` where V is the number of vertices
+and M is the maximum number of cells adjacent to any given vertex such
+that `vertextocells[v,i]` is the index in the cells of `mesh` of the `i`th
+cell adjacent to teh `v`-th vertex. `numneighbors[v]` contains the number
+of cells adjacent to the `v`-th vertex.
+
+This method allows e.g. for the efficient computation of the connectivity
+matrix of the mesh.
+"""
 function vertextocellmap(mesh)
 
     cells = mesh.faces
@@ -153,7 +286,6 @@ function vertextocellmap(mesh)
     for i = 1 : numcells
         cell = cells[i]
         for j = 1 : length(cell)
-            #v = cells[j,i]
             v = cell[j]
             k = (numneighbors[v] += 1)
             vertstocells[v,k] = i
@@ -163,13 +295,17 @@ function vertextocellmap(mesh)
     vertstocells, numneighbors
 end
 
+
+
 """
+    skeleton(mesh, dim)
+
 Returns the cells of dimension k as an integer array of size k x N where N
 is the number of cells of dimension k. The integers in this array represent
 indices into the vertex buffer of the input mesh. Note that for the special
 case k == 0 this function does not return any floating vertices.
 """
-function cells(mesh, dim::Integer)
+function skeleton(mesh, dim::Integer)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
@@ -178,7 +314,6 @@ function cells(mesh, dim::Integer)
         return mesh
     end
 
-    #C = celltype(mesh)
     nc = numcells(mesh)
     C = Vec{dim+1,Int}
     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
@@ -199,7 +334,13 @@ end
 
 
 
-function cells(pred, mesh, dim)
+"""
+    skeleton(pred, mesh, dim)
+
+Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
+returns true are withheld.
+"""
+function skeleton(pred, mesh, dim)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
@@ -227,6 +368,7 @@ function cells(pred, mesh, dim)
 end
 
 
+
 function findfirst{T}(A, V::Array{T,1})
     I = zeros(Int, length(V))
     for (k,v) in enumerate(V)
@@ -245,11 +387,12 @@ end
 
 
 
-
 const levicivita_lut = cat(3,
     [0 0  0;  0 0 1; 0 -1 0],
     [0 0 -1;  0 0 0; 1  0 0],
     [0 1  0; -1 0 0; 0  0 0])
+
+
 
 # Levi-Civita symbol of a permutation.
 # The parity is computed by using the fact that a permutation is odd if and
@@ -284,6 +427,8 @@ function levicivita(p)
     return iseven(flips) ? 1 : -1
 end
 
+
+
 # given a simplex and a face returns:
 # +v if face is the v-th face of the simplex oriented according to the simplex
 # -v if face is the v-th face of the simplex oriented oppositely to the simplex
@@ -308,7 +453,6 @@ function relorientation(face, simplex)
     for j in i : length(simplex)-1
         face2[j] = simplex[j+1]
     end
-    #face2 = [ simplex[1:i-1]; simplex[i+1:end]]
 
     # get the permutation that maps face to face2
     p = findfirst(face2,face)
@@ -316,45 +460,41 @@ function relorientation(face, simplex)
     return s * levicivita(p) * i
 end
 
+
+
 """
-    connectivity(mesh::Mesh, k, kcells, mcells)
+    connectivity(faces, cells, op=sign)
 
-Computes a dimm x dimk sparse matrix D with D[i,j] = +/-1 if m-cell i
-has k-cell j as a face. The sign depends on the relative orientation.
+Create a sparse matrix `D` of size `numcells(cells)` by `numcells(faces)` that
+contiains the connectivity info of the mesh. In particular `D[m,k]` is `op(r)`
+where `r` is the local index of face `k` in cell `m`. The sign of `r` is
+positive or negative depending on the relative orientation of face `k` in cell
+`m`.
+
+For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
+the graph version of the exterior derivative.
 """
-function connectivity(mesh, k, kcells, mcells; op = sign)
-
-    if !( -1 <= k <= dimension(mesh))
-        throw(ErrorException("k needs to be between zero and dim(mesh)"))
-    end
-
-    if k == -1
-        return zeros(Int, numvertices(mesh), 0)
-    end
-
-    if k == dimension(mesh)
-        return zeros(Int, 0, numcells(mesh))
-    end
+function connectivity(kcells, mcells, op = sign)
 
     vtok, _ = vertextocellmap(kcells)
     vtom, _ = vertextocellmap(mcells)
 
-    const npos = -1
+    npos = -1
 
     dimk = numcells(kcells)
     dimm = numcells(mcells)
 
     D = spzeros(Int, dimm, dimk)
 
-    for v in 1 : numvertices(mesh)
+    #for v in 1 : numvertices(mesh)
+    for v in 1:numvertices(kcells)
         for i in vtok[v,:]
             i == npos && break
-            kcell = kcells.faces[i]
+            kcell = cell(kcells, i)
             for j in vtom[v,:]
                 j == npos && break
-                mcell = mcells.faces[j]
-                relo = relorientation(kcell, mcell)
-                D[j,i] = op(relo)
+                mcell = cell(mcells, j)
+                D[j,i] = op(relorientation(kcell, mcell))
             end
         end
     end
@@ -362,6 +502,8 @@ function connectivity(mesh, k, kcells, mcells; op = sign)
     return D
 
 end
+
+
 
 """
 create pairs of volume cells from hypercells
@@ -372,7 +514,7 @@ in the mesh structure. If the second number `id` is negative, this
 means that the coresponding edge lies on the boundary and that
 this edge has local index `-id` in the cell refererred to by the first index
 """
-function buildvolmpairs(mesh, edges)
+function cellpairs(mesh, edges)
 
     @assert dimension(edges)+1 == dimension(mesh)
 

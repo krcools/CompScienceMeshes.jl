@@ -25,7 +25,7 @@ end
 line = meshsegment(width, 1/3, 3)
 translate!(line, P(0.0, height, 0.0))
 
-edges = cells(mesh, 1)
+edges = skeleton(mesh, 1)
 γ1 = submesh(line, edges)
 @test numcells(γ1) == 2
 @test γ1.faces == [

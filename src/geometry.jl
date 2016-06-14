@@ -54,9 +54,10 @@ function next(cellenum::CellEnumerator, state)
     mesh  = geometry[state.meshid]
 
     index = state.counter
-    simplex = mesh.faces[state.cellid]
-    verts = mesh.vertices[simplex]
-    value = patch(verts, Val{CompScienceMeshes.dimension(mesh)})
+    indcs = mesh.faces[state.cellid]
+    verts = mesh.vertices[indcs]
+    #value = patch(verts, Val{CompScienceMeshes.dimension(mesh)})
+    value = simplex(verts, Val{dimension(mesh)})
 
     newcellid = state.cellid + 1
     newmeshid = state.meshid
