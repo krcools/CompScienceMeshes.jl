@@ -19,7 +19,8 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     end
 
     for i in 1:NE
-        v = mesh.vertices[mesh.faces[i]]
+        #v = mesh.vertices[mesh.faces[i]]
+        v = cellvertices(mesh,i)
         verts[NV+i] = (v[1] + v[2]) / 2
     end
 
@@ -33,8 +34,10 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
         c = NV + E
         a = Edges.faces[E][1]
         b = Edges.faces[E][2]
-        edges[2(E-1) + 1] = Vec(a,c)
-        edges[2(E-1) + 2] = Vec(c,b)
+        #edges[2(E-1) + 1] = Vec(a,c)
+        edges[2(E-1) + 1] = index(a,c)
+        #edges[2(E-1) + 2] = Vec(c,b)
+        edges[2(E-1) + 2] = index(c,b)
     end
 
     return Mesh(verts, edges)
@@ -57,13 +60,15 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
 
     # add a vertex in each edge centroid
     for E in 1 : numcells(edges)
-        v = edges.vertices[edges.faces[E]]
+        #v = edges.vertices[edges.faces[E]]
+        v = cellvertices(edges, E)
         verts[NV+E] = (v[1] + v[2]) / 2
     end
 
     # add a vertex in each face centroid
     for F in 1 : numcells(faces)
-        v = faces.vertices[faces.faces[F]]
+        #v = faces.vertices[faces.faces[F]]
+        v = cellvertices(faces, F)
         verts[NV+NE+F] = (v[1] + v[2] + v[3]) / 3
     end
 
@@ -85,8 +90,10 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
             a = mesh.faces[F][mod1(j+1,3)]
             b = mesh.faces[F][mod1(j+2,3)]
 
-            fcs[6(F-1)+2(j-1)+1] = Vec(a,e,c)
-            fcs[6(F-1)+2(j-1)+2] = Vec(b,c,e)
+            # fcs[6(F-1)+2(j-1)+1] = Vec(a,e,c)
+            # fcs[6(F-1)+2(j-1)+2] = Vec(b,c,e)
+            fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
+            fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
         end
     end
 

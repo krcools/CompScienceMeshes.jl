@@ -54,9 +54,7 @@ function next(cellenum::CellEnumerator, state)
     mesh  = geometry[state.meshid]
 
     index = state.counter
-    indcs = mesh.faces[state.cellid]
-    verts = mesh.vertices[indcs]
-    #value = patch(verts, Val{CompScienceMeshes.dimension(mesh)})
+    verts = cellvertices(mesh, state.cellid)
     value = simplex(verts, Val{dimension(mesh)})
 
     newcellid = state.cellid + 1
@@ -77,5 +75,3 @@ function done(cellenum::CellEnumerator, state)
     if state.cellid > numcells(geometry[state.meshid]) return true end
     false
 end
-
-# not exported

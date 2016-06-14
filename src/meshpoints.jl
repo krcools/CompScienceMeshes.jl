@@ -1,9 +1,7 @@
 export cartesian, parametric, barycentric, jacobian, unormal, utangent, tangent, meshpoint, meshpoints
 export MeshPoint, MeshPointNM
 
-#abstract MeshPoint{T}
-
-immutable MeshPointNM{U,D,C,N,T} #<: MeshPoint{T}
+immutable MeshPointNM{U,D,C,N,T}
     patch::FlatCellNM{U,D,C,N,T}
     bary::Vec{D,T}
     cart::Vec{U,T}
@@ -16,7 +14,6 @@ cartesian(mp::MeshPointNM) = mp.cart
 parametric(mp::MeshPointNM) = mp.bary
 barycentric(mp::MeshPointNM) = Vec(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
 
-#jacobian(mp::MeshPointNM) = volume(mp.cell) * factorial(dimension(mp.cell))
 jacobian(mp::MeshPointNM) = volume(mp.patch) * factorial(dimension(mp.patch))
 unormal(mp::MeshPointNM) = mp.cell.unormal
 utangent(mp::MeshPointNM, i) = column(mp.cell.utangents, i)

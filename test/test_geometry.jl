@@ -54,7 +54,8 @@ r = cartesian(mp)
 # test that the normal is directed outwards
 m = meshcircle(1.0, 2π/51)
 for i in 1:numcells(m)
-    p = simplex(m.vertices[m.faces[i]], Val{1})
+    p = simplex(cellvertices(m,i))
+    #p = simplex(m.vertices[m.faces[i]], Val{1})
     c = (p.vertices[1] + p.vertices[2]) / 2
     @test dot(c, p.normals[1]) > 0
 end

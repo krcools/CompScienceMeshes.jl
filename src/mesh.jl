@@ -4,7 +4,7 @@ export mesh, readmesh, writemesh
 export meshsegment, meshrectangle, meshcircle, meshsphere
 export dimension, universedimension, vertextype, celltype, coordtype
 export numvertices, vertices
-export numcells, cell, cellvertices
+export numcells, cells, cellvertices
 export translate, translate!
 export boundary, skeleton
 export vertextocellmap, connectivity, cellpairs
@@ -85,11 +85,23 @@ vertices(m::Mesh) = m.vertices
 
 
 """
+    vertices(mesh, i)
     vertices(mesh, I)
 
-Shorthand for `vertices(mesh)[I]`
+Select one or multiple vertices from the mesh. In the second
+form, only statically sized arrays are allowed to discourage
+memory allocation. The returned vector in that case will also
+be statically typed and of the same size as `I`.
 """
-vertices(m::Mesh, I) = m.vertices[I]
+vertices(m::Mesh, i::Number) = m.vertices[i]
+@generated function vertices(m::Mesh, I::Vec)
+    N = length(I)
+    xp = :(())
+    for i in 1:N
+        push!(xp.args, :(m.vertices[I[$i]]))
+    end
+    :(Vec($xp))
+end
 
 
 
@@ -112,11 +124,11 @@ numcells(m::Mesh) = length(m.faces)
 
 
 """
-    cell(mesh,i)
+    cellpairs(mesh,i)
 
 Return the index tuple for cell `i` of `mesh`
 """
-cell(mesh,i) = mesh.faces[i]
+cells(mesh,i) = mesh.faces[i]
 
 
 
@@ -124,9 +136,9 @@ cell(mesh,i) = mesh.faces[i]
     cellvertices(mesh, i)
 
 Return an indexable collection containing the vertices of cell `i`.
-Shorthand for `vertices(mesh, cell(mesh, i))`.
+Shorthand for `vertices(mesh, cells(mesh, i))`.
 """
-cellvertices(mesh,i) = vertices(mesh, cell(mesh, i))
+cellvertices(mesh,i) = vertices(mesh, cells(mesh, i))
 
 
 
@@ -277,7 +289,10 @@ function vertextocellmap(mesh)
     numcells = length(cells)
     numneighbors = zeros(Int, numverts)
     for i = 1 : numcells
-        numneighbors[ cells[i] ] += 1
+        for m in cells[i]
+            numneighbors[m] += 1
+        end
+        #numneighbors[ cells[i] ] += 1
     end
 
     npos = -1
@@ -490,10 +505,10 @@ function connectivity(kcells, mcells, op = sign)
     for v in 1:numvertices(kcells)
         for i in vtok[v,:]
             i == npos && break
-            kcell = cell(kcells, i)
+            kcell = cells(kcells, i)
             for j in vtom[v,:]
                 j == npos && break
-                mcell = cell(mcells, j)
+                mcell = cells(mcells, j)
                 D[j,i] = op(relorientation(kcell, mcell))
             end
         end

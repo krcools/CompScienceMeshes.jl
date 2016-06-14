@@ -40,18 +40,20 @@ Store the k-cells of a mesh in an octree.
 function octree(mesh)
 
     nverts = dimension(mesh) + 1 # number of vertices per cell
-    kcells = mesh.faces
+    #kcells = mesh.faces
     ncells = numcells(mesh)
     #ncells = length(kcells)  # number of cells to store
 
     P = vertextype(mesh)
-    T = eltype(P)
+    T = coordtype(mesh)
+    #T = eltype(P)
     points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
     for i in 1 : ncells
-        kcell = kcells[i]
-        verts = mesh.vertices[kcell]
+        #kcell = kcells[i]
+        #verts = mesh.vertices[kcell]
+        verts = cellvertices(mesh,i)
 
         points[i] = sum(verts) / nverts
         for j in 1 : nverts
@@ -141,7 +143,8 @@ function overlap_predicate(γ::Mesh)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box.data
                 #p2 = patch(γ.vertices[γ.faces[i]], Val{1})
-                p2 = simplex(γ.vertices[γ.faces[i]], Val{1})
+                #p2 = simplex(γ.vertices[γ.faces[i]], Val{1})
+                p2 = simplex(cellvertices(γ,i))
                 overlap(p1,p2) && return true
             end
         end
@@ -162,8 +165,9 @@ function overlap_predicate(Ω::Mesh, Γ::Mesh)
 
     pred0 = overlap_predicate(Γ::Mesh)
     function pred1(s::Vec)
-        #return pred0(patch(vertices(Ω, s), Val{1}))
-        pred0(simplex(vertices(Ω, s), Val{1}))
+        v = vertices(Ω, s)
+        s = simplex(v)
+        pred0(s)
     end
 
     return pred1
