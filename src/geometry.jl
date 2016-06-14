@@ -3,8 +3,8 @@ import Base.next
 import Base.done
 
 export normal
-export cartesian, jacobian, unormal, meshpoint
-export utangent, cellenumeration
+export cartesian, jacobian, meshpoint
+export cellenumeration
 
 export numcells
 function numcells{M<:Mesh}(geo::Vector{M})

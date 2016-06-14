@@ -61,19 +61,27 @@ function euclidianbasis(T::DataType, dim)
   return [z; r]
 end
 
+include("combinatorics.jl")
+
+# simplices and related algorithms
+include("patches.jl")
+include("overlap.jl")
+include("intersect.jl")
+include("isinside.jl")
+include("meshpoints.jl")
+
+# mesh component
 include("mesh.jl")
 include("gmsh.jl")
 include("primitives.jl")
-include("simplex.jl")
-include("geometry.jl")
-include("patches.jl")
-include("overlap.jl")
 include("submesh.jl")
-include("meshpoints.jl")
 include("baryref.jl")
-include("intersect.jl")
-include("isinside.jl")
 include("weld.jl")
+
+# geometry API
+include("geometry.jl")
+
+
 
 include("utils.jl")
 

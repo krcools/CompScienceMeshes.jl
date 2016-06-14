@@ -12,20 +12,18 @@ c = point(1.0, 2.0)
 @test CompScienceMeshes.leftof(p, a,b) == true
 @test CompScienceMeshes.intersectlines(p,r, a,c) == [1.0, 1.5]
 
-α = sutherlandhodgman2d([p,q,r], [a,b,c])
+α = CompScienceMeshes.sutherlandhodgman2d([p,q,r], [a,b,c])
 @test length(α) == 4
 @test α[1] == [1.2, 1.6]
 @test α[2] == [1.0, 1.5]
 @test α[3] == [1.0, 1.0]
 @test α[4] == [1.5, 1.0]
 
-β = sutherlandhodgman([p,q,r], [a,b,c])
+β = CompScienceMeshes.sutherlandhodgman([p,q,r], [a,b,c])
 @test length(β) == length(α)
 for i in eachindex(β) @test β[i] == α[i] end
 
-#P = patch([p,q,r], Val{2})
 P = simplex(p, q, r)
-#Q = patch([a,b,c], Val{2})
 Q = simplex(a, b, c)
 R = intersection(P,Q)
 
@@ -41,8 +39,6 @@ a = point(1.0, 0.0, 0.0) + t
 b = point(2.0, 0.0, 0.0) + t
 c = point(1.0, 2.0, 0.0) + t
 
-#P = patch([p,q,r], Val{2})
-#Q = patch([a,b,c], Val{2})
 P = simplex(p,q,r)
 Q = simplex(a,b,c)
 S = intersection(P,Q)

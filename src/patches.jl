@@ -1,14 +1,11 @@
 
-import Base.getindex
+#import Base.getindex
 
-# Factory methods
 export simplex
+export dimension
+export vertices, tangents, volume
+export barytocart, carttobary, centroid
 
-# Interface for any Patch
-export barytocart, vertices, dimension, volume, carttobary
-
-# Interface for FlatPatch
-export tangents, dimension, centroid
 export FlatCellNM
 
 
@@ -38,12 +35,16 @@ Return an indexable iterable to the vertices defining simplex
 """
 vertices(p::FlatCellNM) = p.vertices
 
-"""
-    tangents(simplex)
 
-Return an indexable iterable to the tangent vectors to simplex
+
 """
-tangents(p::FlatCellNM) = p.tangents
+    tangents(simplex, i)
+
+Return the i-th tangent to simplex.
+"""
+tangents(p::FlatCellNM,i) = p.tangents[i]
+
+
 
 """
     normal(simplex)

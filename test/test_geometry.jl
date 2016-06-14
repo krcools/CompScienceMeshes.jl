@@ -22,10 +22,14 @@ internal_edges = count(x->x>0, vp[2,:])
 @test internal_edges == 8
 
 # test the relative orientation routine
-@test CompScienceMeshes.relorientation([1,2,3],[1,2,3,4]) == -4
-@test CompScienceMeshes.relorientation([2,3,4],[1,2,3,4]) == +1
-@test CompScienceMeshes.relorientation([1,3,2],[1,2,3,4]) == +4
-@test CompScienceMeshes.relorientation([2,4,3],[1,2,3,4]) == -1
+#@test CompScienceMeshes.relorientation([1,2,3],[1,2,3,4]) == -4
+@test CompScienceMeshes.relorientation(index(1,2,3),index(1,2,3,4)) == -4
+# @test CompScienceMeshes.relorientation([2,3,4],[1,2,3,4]) == +1
+# @test CompScienceMeshes.relorientation([1,3,2],[1,2,3,4]) == +4
+# @test CompScienceMeshes.relorientation([2,4,3],[1,2,3,4]) == -1
+@test CompScienceMeshes.relorientation(index(2,3,4),index(1,2,3,4)) == +1
+@test CompScienceMeshes.relorientation(index(1,3,2),index(1,2,3,4)) == +4
+@test CompScienceMeshes.relorientation(index(2,4,3),index(1,2,3,4)) == -1
 
 o, e1, e2, e3 = euclidianbasis(Float64, 3)
 cell = simplex(o, e1, e2)

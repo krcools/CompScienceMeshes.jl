@@ -77,20 +77,7 @@ function intersectlines(a,b,p,q)
     d2y = det(@fsa [p[2] id; q[2] id])
 
     den = det(@fsa [d1x d1y; d2x d2y])
-
     @assert !isinf(1/den)
-    #
-    # if isnan(d2)
-    #     @show p
-    #     @show q
-    # end
-    # @assert !isnan(d1)
-    # @assert !isnan(d2)
-    # @assert !isnan(d1x)
-    # @assert !isnan(d2x)
-    # @assert !isnan(d1y)
-    # @assert !isnan(d2y)
-    # @assert !isnan(den)
 
     P(
         det(@fsa [d1 d1x; d2 d2x]) / den,
@@ -116,7 +103,7 @@ function leftof(p,a,b)
 
 end
 
-export sutherlandhodgman2d
+#export sutherlandhodgman2d
 
 """
     sutherlandhodgman2d(subject,clipper)
@@ -166,7 +153,7 @@ function sutherlandhodgman2d(subject,clipper)
     return clipped
 end
 
-export sutherlandhodgman
+#export sutherlandhodgman
 
 """
     sutherlandhodgman(subject, clipper)
