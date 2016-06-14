@@ -127,37 +127,7 @@ simplex(vertices...) = simplex(Vec((vertices...)))
 end
 
 # This one is, as expected quote a bit slower...
-simplex(vertices::Array) = simplex(Vec(vertices))
-
-
-# function patch{P<:FixedArray,D}(verts::Vector{P}, ::Type{Val{D}})
-#   @assert length(verts) == D+1
-#   U = length(P)
-#   T = eltype(P)
-#   # TODO: to this in a generated function
-#   vertices = Vec{D+1,P}(verts)
-#   tangents = Vec{D,P}([verts[i]-verts[end] for i in 1:D])
-#   normals, volume = _normals(tangents, Val{U-D})
-#   FlatCellNM(vertices, tangents, normals, volume)
-# end
-#
-# function patch{T}(verts::Vector{Vec{3,T}}, ::Type{Val{2}})
-#   @assert length(verts) == 3
-#   PT = eltype(verts)
-#   vertices = Vec{3,PT}((verts[1], verts[2], verts[3]))
-#   tangents = Vec{2,PT}((verts[1]-verts[3], verts[2]-verts[3]))
-#   normals, volume = _normals(tangents, Val{1})
-#   FlatCellNM(vertices, tangents, normals, volume)
-# end
-
-# function patch{D1,U,T,D}(verts::Vec{D1,Vec{U,T}}, ::Type{Val{D}})
-#     a = Array(verts)
-#     patch(a, Val{2})
-# end
-
-# function patch{D1}(verts::Vec{D1})
-#     patch(Array(verts), Val{D1-1})
-# end
+#simplex(vertices::Array) = simplex(Vec(vertices))
 
 
 
@@ -225,13 +195,7 @@ function barytocart(mani::FlatCellNM, u)
     return r
 end
 
-function barytocart(mani::Array, u)
-  r = mani[:,end]
-  for i in 1 : size(mani,2)-1
-    r += (mani[:,i] - mani[:,end]) * u[i]
-  end
-  return r
-end
+
 
 function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 
