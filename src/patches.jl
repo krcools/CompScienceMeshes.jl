@@ -126,10 +126,6 @@ simplex(vertices...) = simplex(Vec((vertices...)))
     :(simplex(Vec{$D1,$P}($xp)))
 end
 
-# This one is, as expected quote a bit slower...
-#simplex(vertices::Array) = simplex(Vec(vertices))
-
-
 
 function _normals(tangents, ::Type{Val{1}})
     PT = eltype(tangents)
