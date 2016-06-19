@@ -5,7 +5,7 @@ export meshsegment, meshrectangle, meshcircle, meshsphere
 export dimension, universedimension, vertextype, celltype, coordtype
 export numvertices, vertices
 export numcells, cells, cellvertices
-export translate, translate!
+export translate, translate!, rotate!
 export boundary, skeleton
 export vertextocellmap, connectivity, cellpairs
 
@@ -159,6 +159,39 @@ Translates `mesh` over vector `v` inplace.
 function translate!(Γ::Mesh, v)
     for i in 1:length(Γ.vertices)
         Γ.vertices[i] += v
+    end
+    Γ
+end
+
+
+
+function rotate!(Γ::Mesh{3}, v)
+    α = norm(v)
+    u = v/α
+
+    cα = cos(α/2)
+    sα = sin(α/2)
+
+    p = point(cα, sα*u[1], sα*u[2], sα*u[3])
+    q = point(cα, -sα*u[1], -sα*u[2], -sα*u[3])
+
+    P = @fsa [
+        +p[1] -p[2] -p[3] -p[4];
+        +p[2] +p[1] -p[4] +p[3];
+        +p[3] +p[4] +p[1] -p[2];
+        +p[4] -p[3] +p[2] +p[1]]
+
+    Q = @fsa [
+        +q[1] -q[2] -q[3] -q[4];
+        +q[2] +q[1] +q[4] -q[3];
+        +q[3] -q[4] +q[1] +q[2];
+        +q[4] +q[3] -q[2] +q[1]]
+
+    for i in 1:numvertices(Γ)
+        r = vertices(Γ,i)
+        t = point(0, r[1], r[2], r[3])
+        s = P * Q * t
+        Γ.vertices[i] = point(s[2], s[3], s[4])
     end
     Γ
 end

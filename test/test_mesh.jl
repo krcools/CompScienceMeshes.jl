@@ -19,9 +19,7 @@ verts = skeleton(rectangle, 0)
 @test numcells(edges) == 5
 @test numcells(faces) == 2
 
-#Λ  = connectivity(rectangle, 0, verts, edges)
 Λ  = connectivity(verts, edges)
-#Σᵀ = connectivity(rectangle, 1, edges, faces)
 Σᵀ = connectivity(edges, faces)
 
 @test size(Λ)  == (5,4)
@@ -48,3 +46,12 @@ file = Pkg.dir("CompScienceMeshes","test","sphere.in")
 sphere = readmesh(file)
 @test numvertices(sphere) == 335
 @test numcells(sphere) == 666
+
+m = meshrectangle(1.0,1.0,1.0)
+rotate!(m, [1,0,0]*(π/2))
+
+tol = sqrt(eps())
+@test norm(vertices(m,1) - point(0.0,0.0,0.0)) < tol
+@test norm(vertices(m,2) - point(0.0,0.0,1.0)) < tol
+@test norm(vertices(m,3) - point(1.0,0.0,0.0)) < tol
+@test norm(vertices(m,4) - point(1.0,0.0,1.0)) < tol
