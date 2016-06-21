@@ -5,7 +5,7 @@ export meshsegment, meshrectangle, meshcircle, meshsphere
 export dimension, universedimension, vertextype, celltype, coordtype
 export numvertices, vertices
 export numcells, cells, cellvertices
-export translate, translate!, rotate!
+export translate, translate!, rotate, rotate!
 export boundary, skeleton
 export vertextocellmap, connectivity, cellpairs
 
@@ -194,6 +194,12 @@ function rotate!(Γ::Mesh{3}, v)
         Γ.vertices[i] = point(s[2], s[3], s[4])
     end
     Γ
+end
+
+function rotate(Γ::Mesh{3}, v)
+    R = deepcopy(Γ)
+    rotate!(R,v)
+    R
 end
 
 
