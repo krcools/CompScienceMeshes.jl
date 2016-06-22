@@ -9,6 +9,8 @@ export translate, translate!, rotate, rotate!
 export boundary, skeleton
 export vertextocellmap, connectivity, cellpairs
 
+export vertexarray, cellarray
+
 
 
 type Mesh{U,D1,T}
@@ -16,6 +18,11 @@ type Mesh{U,D1,T}
     faces::Vector{Vec{D1,Int}}
 end
 
+"Return VxU array containing vertex coordinates"
+vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]
+
+"Return CxD array containing the indices defining the mesh cells"
+cellarray(m::Mesh) = [ k[i] for k in m.faces, i in 1:dimension(m)+1 ]
 
 
 """
