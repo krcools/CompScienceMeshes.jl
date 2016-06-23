@@ -55,3 +55,20 @@ tol = sqrt(eps())
 @test norm(vertices(m,2) - point(0.0,0.0,1.0)) < tol
 @test norm(vertices(m,3) - point(1.0,0.0,0.0)) < tol
 @test norm(vertices(m,4) - point(1.0,0.0,1.0)) < tol
+
+## test fliporientation
+V = [
+    point(0,0,0),
+    point(1,0,0),
+    point(0,1,0),
+]
+
+F = [
+    index(1,2,3)
+]
+
+m = Mesh(V,F)
+n = fliporientation(m)
+
+@test cells(m,1) == index(1,2,3)
+@test cells(n,1) == index(2,1,3)

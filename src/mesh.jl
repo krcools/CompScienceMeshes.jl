@@ -5,7 +5,7 @@ export meshsegment, meshrectangle, meshcircle, meshsphere
 export dimension, universedimension, vertextype, celltype, coordtype
 export numvertices, vertices
 export numcells, cells, cellvertices
-export translate, translate!, rotate, rotate!
+export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
 export boundary, skeleton
 export vertextocellmap, connectivity, cellpairs
 
@@ -207,6 +207,39 @@ function rotate(Γ::Mesh{3}, v)
     R = deepcopy(Γ)
     rotate!(R,v)
     R
+end
+
+
+"""
+    fliporientation(mesh)
+
+Changes the mesh orientation inplace. If non-orientatble, undefined.
+"""
+function fliporientation!(m::Mesh)
+    for i in 1:numcells(m)
+        m.faces[i] = fliporientation(m.faces[i])
+    end
+    return m
+end
+
+
+"""
+    fliporientation(mesh)
+
+Returns a mesh of opposite orientation.
+"""
+function fliporientation(m::Mesh)
+    n = deepcopy(m)
+    fliporientation!(n)
+end
+
+@generated function fliporientation{N,T}(I::Vec{N,T})
+    @assert N >= 2
+    xp = :(Vec{N,T}(I[2],I[1]))
+    for i in 3:N
+        push!(xp.args, :(I[$i]))
+    end
+    return xp
 end
 
 

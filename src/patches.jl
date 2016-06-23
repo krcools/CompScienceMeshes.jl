@@ -74,7 +74,7 @@ dimension(p::FlatCellNM) = length(p.vertices) - 1
 
 Get the vertices at index I (scalar or array) defining the simplex
 """
-getindex(p::FlatCellNM, I) = p.vertices[I]
+getindex(p::FlatCellNM, I::Union{Number,Vec,Array}) = p.vertices[I]
 
 
 
