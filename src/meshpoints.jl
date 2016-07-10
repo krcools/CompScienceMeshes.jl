@@ -1,6 +1,6 @@
-export meshpoint
+export meshpoint, meshpointtype
 export meshpoints
-export paramtype, pointtype
+export paramtype
 export cartesian, parametric, barycentric
 export jacobian, tangents, utangents, normal
 
@@ -13,8 +13,8 @@ immutable MeshPointNM{U,D,C,N,T}
 end
 
 
-paramtype{U,D,C,N,T}(::MeshPointNM{U,D,C,N,T}) = Vec{D,T}
-pointtype{U,D,C,N,T}(::MeshPointNM{U,D,C,N,T}) = Vec{U,T}
+paramtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{D,T}
+pointtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{U,T}
 
 cartesian(mp::MeshPointNM) = mp.cart
 parametric(mp::MeshPointNM) = mp.bary
@@ -35,6 +35,9 @@ function meshpoint(p::FlatCellNM, bary)
   cart = barytocart(p, bary)
   MeshPointNM(p, P(bary), cart)
 end
+
+
+meshpointtype{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) =  MeshPointNM{U,D,C,N,T}
 
 
 function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})

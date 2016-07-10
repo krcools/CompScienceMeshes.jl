@@ -37,3 +37,18 @@ function patch(Γ, fcr)
     mat"colorbar"
     mat"view(3)"
 end
+
+function quiver(Γ, fcr)
+
+  D = length(eltype(fcr))
+  Q = Float64[real(f[i]) for f in fcr, i in 1:D]
+  V = vertexarray(Γ)
+  F = cellarray(Γ)
+
+  @mput V F Q
+  mat"""
+  M = Mesh(V,F);
+  [G, N] = faceNormals(M);
+  quiver3x(G,Q,3);
+  """
+end

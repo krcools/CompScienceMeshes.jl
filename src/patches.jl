@@ -2,7 +2,7 @@
 #import Base.getindex
 
 export simplex
-export dimension
+export dimension, universedimension, vertextype
 export vertices, tangents, volume
 export barytocart, carttobary, centroid
 
@@ -21,12 +21,16 @@ immutable FlatCellNM{U,D,C,N,T}
     volume::T
 end
 
+
+
+
 """
     coordtype(simplex)
 
 Return coordinate type used by simplex.
 """
-coordtype(p::FlatCellNM) = eltype(eltype(p.vertices))
+coordtype{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = T
+coordtype(p::FlatCellNM) = coordtype(typeof(p))
 
 """
     vertices(simplex)
@@ -61,12 +65,25 @@ Return the volume of the simplex.
 """
 volume(p::FlatCellNM) = p.volume
 
+
 """
     dimension(simplex)
 
 Return the manifold dimension of the simplex.
 """
-dimension(p::FlatCellNM) = length(p.vertices) - 1
+#dimension(p::FlatCellNM) = length(p.vertices) - 1
+dimension{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = D
+dimension(p::FlatCellNM) = dimension(typeof(p))
+
+
+"""
+  universedimension(p)
+
+Return the dimension of the universe in which `p` is embedded.
+"""
+universedimension{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = U
+universedimension(p::FlatCellNM) = universedimension(typeof(p))
+
 
 """
     getindex(simplex, I)
