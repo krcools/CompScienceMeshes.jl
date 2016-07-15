@@ -203,7 +203,10 @@ Returns the point in the simplex with barycentric coordinates uv
 function barytocart(mani::FlatCellNM, u)
     r = last(mani.vertices)
     for i in 1 : dimension(mani)
-        r += mani.tangents[i] * u[i]
+        ti = mani.tangents[i]
+        ui = u[i]
+        #r += mani.tangents[i] * u[i]
+        r += ti * ui
     end
     return r
 end
