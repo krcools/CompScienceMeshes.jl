@@ -37,7 +37,8 @@ function meshpoint(p::FlatCellNM, bary)
 end
 
 
-meshpointtype{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) =  MeshPointNM{U,D,C,N,T}
+meshpointtype{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) =  MeshPointNM{U,D,C,N,T}
+meshpointtype{U,D,C,N,T}(::FlatCellNM{U,D,C,N,T}) =  meshpointtype(FlatCellNM{U,D,C,N,T})
 
 
 function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})
