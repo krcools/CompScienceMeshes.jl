@@ -1,6 +1,11 @@
 using PlotlyJS
 using Colors
 
+const cm = mapslices(
+    r->RGB(r[1],r[2],r[3]),
+    readcsv(Pkg.dir("CompScienceMeshes","examples","cm.csv")),
+    [2])
+
 function patch(Γ, fcr)
 
     v = vertexarray(Γ)
@@ -12,7 +17,7 @@ function patch(Γ, fcr)
     a = Float64[sqrt(real(dot(f,f))) for f in fcr]
     m, M = extrema(a)
 
-    cm = colormap("RdBu")
+    #cm = colormap("RdBu")
     n = floor(Integer, (a-m)/(M-m)*(length(cm)-1))+1
     fc = [cm[i] for i in n]
 
