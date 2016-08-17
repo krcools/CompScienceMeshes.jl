@@ -30,7 +30,4 @@ function patch(Γ, fcr)
         k=k,
         facecolor=fc,
     )
-    plot(
-        [s],
-    )
 end
