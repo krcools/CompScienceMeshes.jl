@@ -29,7 +29,7 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     #example
       # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,5))
       # new points_index(1,2,3,4,5,6,7,8), new_faces((1,5),(5,2),(2,6),(6,3),(3,7),(7,4),(4,8),(8,1))
-      #                  a,b      For       E=1 ->   (a,c),(c,b) and so on
+      #                  a,b      For       E=1 ->   (a,c),(c,b) and so on ..
     edges = zeros(CellType, ne)
 
     for E in 1:NE
