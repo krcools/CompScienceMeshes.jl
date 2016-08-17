@@ -1,45 +1,45 @@
 export barycentric_refinement
 
 function barycentric_refinement{U}(mesh::Mesh{U,2})
-
+    # We will use the following types to create the longer array of vertices and faces after the refienment
     PointType = vertextype(mesh) #eltype(mesh.vertices)
     CellType = celltype(mesh) #eltype(mesh.faces)
-
-    Verts = skeleton(mesh, 0)
+    # Get the points and the faces (segments) we will use in the refinement process
+    Verts = skeleton(mesh, 0)  # we didn't use this though
     Edges = skeleton(mesh, 1)
-
+    # Note thier number and use it to find the new number of points and segments(faces) after refienmnts
     NV, NE = numcells(Verts), numcells(Edges)
 
     nv = NV + NE
     ne = 2NE
-
+    # define the new vertices array that will hold the old points(coarse) and the new points(finer mesh) of vertices
     verts = zeros(PointType, nv)
+    # Now we assign the coarse mesh vetrices (old points) in the upper half excatly as the original coarse mesh
     for i in 1:NV
         verts[i] = mesh.vertices[i]
     end
-
+    # for the second half we store the refienment points and we calculate them using the old points
+    # We insert a point between every pair of points in the original coarse mesh by (point1+ point2)\2
     for i in 1:NE
         #v = mesh.vertices[mesh.faces[i]]
         v = cellvertices(mesh,i)
         verts[NV+i] = (v[1] + v[2]) / 2
     end
-
-    # build the edge to vertex lookup table
-    D = connectivity(mesh, 0, Verts, Edges)
-    D = transpose(D)
-
+    # Now we create the faces using the new points as well
+    #example
+      # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,5))
+      # new points_index(1,2,3,4,5,6,7,8), new_faces((1,5),(5,2),(2,6),(6,3),(3,7),(7,4),(4,8),(8,1))
+      #                  a,b      For       E=1 ->   (a,c),(c,b) and so on ..
     edges = zeros(CellType, ne)
-    rows, vals = rowvals(D), nonzeros(D)
+
     for E in 1:NE
         c = NV + E
         a = Edges.faces[E][1]
         b = Edges.faces[E][2]
-        #edges[2(E-1) + 1] = Vec(a,c)
-        edges[2(E-1) + 1] = index(a,c)
-        #edges[2(E-1) + 2] = Vec(c,b)
-        edges[2(E-1) + 2] = index(c,b)
+        edges[2(E-1) + 1] = Vec(a,c)
+        edges[2(E-1) + 2] = Vec(c,b)
     end
-
+    # return the new mesh after refienments
     return Mesh(verts, edges)
 end
 
