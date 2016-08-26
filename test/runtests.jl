@@ -16,5 +16,6 @@ include("test_intersect.jl")
 include("test_sh_intersection.jl")
 include("test_isinside.jl")
 include("test_weld.jl")
+include("test_baryref.jl")
 
 end
