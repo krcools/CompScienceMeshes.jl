@@ -77,6 +77,14 @@ dimension(p::FlatCellNM) = dimension(typeof(p))
 
 
 """
+    length(simplex)
+
+Returns the number of vertices (equals dimension + 1)
+"""
+Base.length(p::FlatCellNM) = dimension(typeof(p))+1
+
+
+"""
   universedimension(p)
 
 Return the dimension of the universe in which `p` is embedded.
