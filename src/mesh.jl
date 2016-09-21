@@ -1,5 +1,7 @@
 export Mesh
 
+using Combinatorics
+
 export mesh, readmesh, writemesh
 export meshsegment, meshrectangle, meshcircle, meshsphere
 export dimension, universedimension, vertextype, celltype, coordtype
