@@ -50,6 +50,14 @@ function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
     return Mesh(vertices, faces)
 end
 
+
+"""
+    meshrectangle(width, height, delta, udim)
+
+Create a mesh for a rectangle of width (along the x-axis) `widht` and height (along
+    the y-axis) `height`. The target edge size is `delta` and the dimension of the
+    embedding universe is `udim` (>= 2).
+"""
 function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
 
   PT = Vec{udim,T}
