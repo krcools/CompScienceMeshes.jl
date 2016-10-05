@@ -1,45 +1,45 @@
 export getcommonedge
 
 
-const levicivita_lut = cat(3,
-    [0 0  0;  0 0 1; 0 -1 0],
-    [0 0 -1;  0 0 0; 1  0 0],
-    [0 1  0; -1 0 0; 0  0 0])
-
-
-
-# Levi-Civita symbol of a permutation.
-# The parity is computed by using the fact that a permutation is odd if and
-# only if the number of even-length cycles is odd.
-# Returns 1 is the permutarion is even, -1 if it is odd and 0 otherwise.
-function levicivita(p)
-    n = length(p)
-
-    if n == 3
-        @inbounds valid = (0 < p[1] <= 3) * (0 < p[2] <= 3) * (0 < p[3] <= 3)
-        return valid ? levicivita_lut[p[1], p[2], p[3]] : 0
-    end
-
-    todo = trues(n)
-    first = 1
-    cycles = flips = 0
-
-    while cycles + flips < n
-        first = findnext(todo, first)
-        (todo[first] $= true) && return 0
-        j = p[first]
-        (0 < j <= n) || return 0
-        cycles += 1
-        while j ≠ first
-            (todo[j] $= true) && return 0
-            j = p[j]
-            (0 < j <= n) || return 0
-            flips += 1
-        end
-    end
-
-    return iseven(flips) ? 1 : -1
-end
+# const levicivita_lut = cat(3,
+#     [0 0  0;  0 0 1; 0 -1 0],
+#     [0 0 -1;  0 0 0; 1  0 0],
+#     [0 1  0; -1 0 0; 0  0 0])
+#
+#
+#
+# # Levi-Civita symbol of a permutation.
+# # The parity is computed by using the fact that a permutation is odd if and
+# # only if the number of even-length cycles is odd.
+# # Returns 1 is the permutarion is even, -1 if it is odd and 0 otherwise.
+# function levicivita(p)
+#     n = length(p)
+#
+#     if n == 3
+#         @inbounds valid = (0 < p[1] <= 3) * (0 < p[2] <= 3) * (0 < p[3] <= 3)
+#         return valid ? levicivita_lut[p[1], p[2], p[3]] : 0
+#     end
+#
+#     todo = trues(n)
+#     first = 1
+#     cycles = flips = 0
+#
+#     while cycles + flips < n
+#         first = findnext(todo, first)
+#         (todo[first] $= true) && return 0
+#         j = p[first]
+#         (0 < j <= n) || return 0
+#         cycles += 1
+#         while j ≠ first
+#             (todo[j] $= true) && return 0
+#             j = p[j]
+#             (0 < j <= n) || return 0
+#             flips += 1
+#         end
+#     end
+#
+#     return iseven(flips) ? 1 : -1
+# end
 
 
 
