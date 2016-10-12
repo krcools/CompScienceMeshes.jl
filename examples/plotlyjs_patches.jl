@@ -30,5 +30,6 @@ function patch(Γ, fcr)
         facecolor=fc,
     )
 
-    PlotlyJS.plot([s])
+    #PlotlyJS.plot([s])
+    s
 end
