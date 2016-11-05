@@ -73,6 +73,7 @@ include("meshpoints.jl")
 # mesh component
 include("mesh.jl")
 include("gmsh.jl")
+include("gid.jl")
 include("primitives.jl")
 include("submesh.jl")
 include("baryref.jl")
