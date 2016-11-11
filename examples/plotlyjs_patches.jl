@@ -17,7 +17,8 @@ function patch(Γ, fcr=nothing)
     if fcr == nothing
         a = [barytocart(simplex(cellvertices(Γ,i)),[1,1]/3)[3] for i in 1:numcells(Γ)]
     else
-        a = Float64[sqrt(real(dot(f,f))) for f in fcr]
+        #a = Float64[sqrt(real(dot(f,f))) for f in fcr]
+        a = fcr
     end
 
     m, M = extrema(a)

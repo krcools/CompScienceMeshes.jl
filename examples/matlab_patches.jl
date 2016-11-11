@@ -20,7 +20,7 @@ function patch(Γ)
 end
 
 function patch(Γ, fcr)
-    C = Float64[sqrt(real(dot(f,f))) for f in fcr]
+    C = fcr #Float64[sqrt(real(dot(f,f))) for f in fcr]
     # V = Float64[v[j] for v in Γ.vertices, j in 1:3]
     # F = Int[f[j] for f in Γ.faces, j in 1:3]
     V = vertexarray(Γ)
@@ -30,7 +30,7 @@ function patch(Γ, fcr)
     @matlab begin
         M = Mesh(V,F)
         hold("on")
-        patch(M, C)
+        patch(M, C, "LineStyle", "none")
     end
 
     mat"axis equal"
