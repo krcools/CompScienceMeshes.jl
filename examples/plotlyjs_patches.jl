@@ -22,7 +22,11 @@ function patch(Γ, fcr=nothing)
     end
 
     m, M = extrema(a)
-    n = floor(Integer, (a-m)/(M-m)*(length(cm)-1))+1
+    if isapprox(m, M)
+        n = ones(Integer, a)
+    else
+        n = floor(Integer, (a-m)/(M-m)*(length(cm)-1))+1
+    end
     fc = [cm[i] for i in n]
 
     s = PlotlyJS.mesh3d(;
