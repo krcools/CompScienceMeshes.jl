@@ -27,10 +27,12 @@ function patch(Γ, fcr)
     F = cellarray(Γ)
 
     @mput V F C
+    @show C
     @matlab begin
-        M = Mesh(V,F)
+        #M = Mesh(V,F)
         hold("on")
-        patch(M, C, "LineStyle", "none")
+        #patch(M, C, "LineStyle", "none")
+        patch("Vertices", V, "Faces", F, "FaceVertexCData", C, "FaceColor", "flat")
     end
 
     mat"axis equal"

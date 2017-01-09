@@ -1,3 +1,9 @@
+function read_gmsh_mesh(fn::AbstractString)
+    open(fn, "r") do io
+        read_gmsh_mesh(io)
+    end
+end
+
 function read_gmsh_mesh(io)
 
     thisLine = io |> readline |> strip

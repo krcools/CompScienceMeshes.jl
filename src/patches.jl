@@ -222,12 +222,19 @@ function barytocart(mani::FlatCellNM, u)
 end
 
 
+"""
+    carttobary(simplex, point) -> barycoords
 
+Compute the barycentric coordinates on 'simplex' of 'point'.
+"""
 function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 
     G = [dot(p.tangents[i], p.tangents[j]) for i in 1:D, j in 1:D]
+    #w = [dot(p.tangents[i], cart - p.vertices[end]) for i in 1:D]
 
-    w = [dot(p.tangents[i], cart - p.vertices[end]) for i in 1:D]
+    o = p.vertices[end]
+    w = [sum(t[j]*(cart[j]-o[j]) for j in 1:length(cart)) for t in p.tangents]
+
     u = G \ w
 
     return Vec(u)

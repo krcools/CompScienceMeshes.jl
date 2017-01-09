@@ -173,6 +173,56 @@ function translate!(Γ::Mesh, v)
 end
 
 
+"""
+    flip(cell)
+
+Change the orientation of a cell by interchanging the first to indices.
+"""
+@generated function flip(cell)
+    # generate `T(cell[2],cell[1],cell[3],...)`, with `T = typeof(cell)`
+    N = length(cell)
+    xp = :($cell(cell[2], cell[1]))
+    for i in 3:N
+        push!(xp.args, :(cell[$i]))
+    end
+    xp
+end
+
+"""
+    flipmesh!(mesh)
+
+Change the orientation of a mesh
+"""
+function flipmesh!(mesh)
+    mesh.faces .= flip.(mesh.faces)
+    mesh
+end
+
+
+flipmesh(mesh) = flipmesh!(deepcopy(mesh))
+
+
+export mirrormesh, mirrormesh!
+
+"""
+    mirror(vertex, normal, anchor)
+
+Mirror vertex across a plane defined by its normal and a containing point.
+"""
+function mirror(vertex, normal, anchor)
+    h = dot(vertex - anchor, normal)
+    vertex - 2*h * normal
+end
+
+function mirrormesh!(mesh, normal, anchor)
+    #mesh.vertices .= mirror.(mesh.vertices, normal, anchor)
+    for i in eachindex(mesh.vertices)
+        mesh.vertices[i] = mirror(mesh.vertices[i], normal, anchor)
+    end
+    mesh
+end
+
+mirrormesh(mesh, args...) = mirrormesh!(deepcopy(mesh), args...)
 
 function rotate!(Γ::Mesh{3}, v)
     α = norm(v)

@@ -16,10 +16,13 @@ end
 paramtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{D,T}
 pointtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{U,T}
 
+Base.length(m::MeshPointNM) = length(m.cart)
 Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
 
 cartesian(mp::MeshPointNM) = mp.cart
 parametric(mp::MeshPointNM) = mp.bary
+
+"Return the barycentric coordinates of `mp`"
 barycentric(mp::MeshPointNM) = Vec(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
 
 jacobian(mp::MeshPointNM) = volume(mp.patch) * factorial(dimension(mp.patch))
