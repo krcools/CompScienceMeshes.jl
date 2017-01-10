@@ -15,6 +15,13 @@ function overlap{U,D,C,N,T}(p1::FlatCellNM{U,D,C,N,T}, p2::FlatCellNM{U,D,C,N,T}
 
 end
 
+
+function overlap{T,U,C}(p::FlatCellNM{U,0,C,1,T}, q::FlatCellNM{U,0,C,1,T})
+
+    tol = sqrt(eps(T))
+    return norm(p[1]-q[1]) < tol
+end
+
 """
 Compute whether two segments in 3D space overlap
 """
