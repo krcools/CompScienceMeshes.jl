@@ -63,3 +63,24 @@ for i in 1:numcells(m)
     c = (p.vertices[1] + p.vertices[2]) / 2
     @test dot(c, p.normals[1]) > 0
 end
+
+
+## test cellpairs on non-oriented meshes
+using CompScienceMeshes
+using Base.Test
+
+p1 = point(1,0,0)
+p2 = point(0,1,0)
+p3 = point(-1,0,0)
+p4 = point(0,-1,0)
+
+i1 = index(1,2,3)
+i2 = index(1,4,2)
+
+m = Mesh([p1,p2,p3,p4], [i1,i2])
+e = skeleton(m,1)
+
+@test numcells(m) == 2
+@test numcells(e) == 5
+
+cps = cellpairs(m,e)

@@ -139,9 +139,6 @@ Return the index tuple for cell `i` of `mesh`
 """
 cells(mesh,i) = mesh.faces[i]
 
-export cell
-cell = cells
-
 
 
 """
