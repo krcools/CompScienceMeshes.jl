@@ -8,9 +8,10 @@ function patch(Γ)
 
     @mput V F
     @matlab begin
-        M = Mesh(V,F)
+        #M = Mesh(V,F)
         hold("on")
-        patch(M)
+        #patch(M)
+        patch("Vertices", V, "Faces", F, "FaceColor", "red")
     end
 
     mat"axis equal"
@@ -27,7 +28,6 @@ function patch(Γ, fcr)
     F = cellarray(Γ)
 
     @mput V F C
-    @show C
     @matlab begin
         #M = Mesh(V,F)
         hold("on")
@@ -40,17 +40,17 @@ function patch(Γ, fcr)
     mat"view(3)"
 end
 
-function quiver(Γ, fcr)
-
-  D = length(eltype(fcr))
-  Q = Float64[real(f[i]) for f in fcr, i in 1:D]
-  V = vertexarray(Γ)
-  F = cellarray(Γ)
-
-  @mput V F Q
-  mat"""
-  M = Mesh(V,F);
-  [G, N] = faceNormals(M);
-  quiver3x(G,Q,3);
-  """
-end
+# function quiver(Γ, fcr)
+#
+#   D = length(eltype(fcr))
+#   Q = Float64[real(f[i]) for f in fcr, i in 1:D]
+#   V = vertexarray(Γ)
+#   F = cellarray(Γ)
+#
+#   @mput V F Q
+#   mat"""
+#   M = Mesh(V,F);
+#   [G, N] = faceNormals(M);
+#   quiver3x(G,Q,3);
+#   """
+# end

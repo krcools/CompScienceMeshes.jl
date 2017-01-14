@@ -156,7 +156,7 @@ cellvertices(mesh,i) = vertices(mesh, cells(mesh, i))
 
 Creates a new mesh by translating `mesh` over vector `v`
 """
-translate(Γ::Mesh, v) = Mesh(Γ.vertices+v, Γ.faces)
+translate(Γ::Mesh, v) = Mesh([w + v for w in Γ.vertices], deepcopy(Γ.faces))
 
 
 

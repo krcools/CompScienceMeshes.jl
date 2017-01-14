@@ -40,8 +40,13 @@ function weld(Γ₁, Γ₂)
                     idmap[j] = i
                     num_equal_vertices += 1
                     found = true
+                    # we implicitly assume that the first copy of a point
+                    # appearing in the vertex buffer is the one actually
+                    # referred to in the index buffer. DANGEROUS!
+                    break
                 end
             end
+            found && break
         end
         if !found
             idmap[j] -= num_equal_vertices
