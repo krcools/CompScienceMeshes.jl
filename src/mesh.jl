@@ -14,7 +14,6 @@ export vertextocellmap, connectivity, cellpairs
 export vertexarray, cellarray
 
 
-
 type Mesh{U,D1,T}
     vertices::Vector{Vec{U,T}}
     faces::Vector{Vec{D1,Int}}
@@ -294,7 +293,12 @@ end
     return xp
 end
 
+"""
+    -mesh -> flipped_mesh
 
+Create a mesh with opposite orientation.
+"""
+Base.:-(m::Mesh) = fliporientation(m)
 
 """
     readmesh(filename)

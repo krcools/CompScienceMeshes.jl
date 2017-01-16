@@ -20,10 +20,8 @@ function patch(Γ)
 
 end
 
-function patch(Γ, fcr)
-    C = fcr #Float64[sqrt(real(dot(f,f))) for f in fcr]
-    # V = Float64[v[j] for v in Γ.vertices, j in 1:3]
-    # F = Int[f[j] for f in Γ.faces, j in 1:3]
+function patch(Γ, C)
+
     V = vertexarray(Γ)
     F = cellarray(Γ)
 
@@ -38,6 +36,28 @@ function patch(Γ, fcr)
     mat"axis equal"
     mat"colorbar"
     mat"view(3)"
+end
+
+function jmatlab_quiver(m)
+    els = [simplex(cellvertices(m,i)) for i in 1:numcells(m)]
+    C = zeros(numcells(m),3)
+    N = zeros(numcells(m),3)
+    for i in 1:size(C,1)
+        s = simplex(cellvertices(m,i))
+        p = meshpoint(s, [1,1]/3)
+        n = normal(p)
+        c = cartesian(p)
+        C[i,:] = [c[1],c[2],c[3]]
+        N[i,:] = [n[1],n[2],n[3]]
+    end
+    @mput C N
+    @matlab quiver3(C(:,1),C(:,2),C(:,3), N(:,1),N(:,2),N(:,3))
+end
+
+function jmatlab_plot(x,y)
+    @mput x
+    @mput y
+    @matlab plot(x,y)
 end
 
 # function quiver(Γ, fcr)
