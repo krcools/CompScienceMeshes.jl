@@ -18,5 +18,6 @@ include("test_isinside.jl")
 include("test_weld.jl")
 include("test_baryref.jl")
 include("test_jctweld.jl")
+include("test_isinclosure.jl")
 
 end

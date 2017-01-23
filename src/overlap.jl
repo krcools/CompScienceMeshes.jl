@@ -15,7 +15,9 @@ function overlap{U,D,C,N,T}(p1::FlatCellNM{U,D,C,N,T}, p2::FlatCellNM{U,D,C,N,T}
 
 end
 
-
+###
+# Version for points: overlap in this case is taken to mean that points approx conincide
+###
 function overlap{T,U,C}(p::FlatCellNM{U,0,C,1,T}, q::FlatCellNM{U,0,C,1,T})
 
     tol = sqrt(eps(T))

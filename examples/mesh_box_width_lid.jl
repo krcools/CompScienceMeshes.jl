@@ -21,3 +21,11 @@ function mesh_box_width_lid(size, h1, h2)
 
     return m_open, m_top
 end
+
+
+"""
+    meshcube(size, h) -> mesh
+
+Mesh a conforming cube.
+"""
+meshcube(size, h) =  weld(mesh_box_width_lid(size,h,h)...)

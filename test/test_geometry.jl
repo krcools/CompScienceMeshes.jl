@@ -22,11 +22,7 @@ internal_edges = count(x->x>0, vp[2,:])
 @test internal_edges == 8
 
 # test the relative orientation routine
-#@test CompScienceMeshes.relorientation([1,2,3],[1,2,3,4]) == -4
 @test CompScienceMeshes.relorientation(index(1,2,3),index(1,2,3,4)) == -4
-# @test CompScienceMeshes.relorientation([2,3,4],[1,2,3,4]) == +1
-# @test CompScienceMeshes.relorientation([1,3,2],[1,2,3,4]) == +4
-# @test CompScienceMeshes.relorientation([2,4,3],[1,2,3,4]) == -1
 @test CompScienceMeshes.relorientation(index(2,3,4),index(1,2,3,4)) == +1
 @test CompScienceMeshes.relorientation(index(1,3,2),index(1,2,3,4)) == +4
 @test CompScienceMeshes.relorientation(index(2,4,3),index(1,2,3,4)) == -1
@@ -59,7 +55,6 @@ r = cartesian(mp)
 m = meshcircle(1.0, 2π/51)
 for i in 1:numcells(m)
     p = simplex(cellvertices(m,i))
-    #p = simplex(m.vertices[m.faces[i]], Val{1})
     c = (p.vertices[1] + p.vertices[2]) / 2
     @test dot(c, p.normals[1]) > 0
 end
