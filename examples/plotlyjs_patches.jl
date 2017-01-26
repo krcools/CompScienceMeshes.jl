@@ -6,7 +6,7 @@ const cm = mapslices(
     readcsv(Pkg.dir("CompScienceMeshes","examples","cm.csv")),
     [2])
 
-function patch(Γ, fcr)
+function patch(Γ, fcr=nothing)
 
     v = vertexarray(Γ)
     c = cellarray(Γ)
@@ -14,10 +14,19 @@ function patch(Γ, fcr)
     x = v[:,1]; y = v[:,2]; z = v[:,3]
     i = c[:,1]-1; j = c[:,2]-1; k = c[:,3]-1
 
-    a = Float64[sqrt(real(dot(f,f))) for f in fcr]
-    m, M = extrema(a)
+    if fcr == nothing
+        a = [barytocart(simplex(cellvertices(Γ,i)),[1,1]/3)[3] for i in 1:numcells(Γ)]
+    else
+        #a = Float64[sqrt(real(dot(f,f))) for f in fcr]
+        a = fcr
+    end
 
-    n = floor(Integer, (a-m)/(M-m)*(length(cm)-1))+1
+    m, M = extrema(a)
+    if isapprox(m, M)
+        n = ones(Integer, a)
+    else
+        n = floor(Integer, (a-m)/(M-m)*(length(cm)-1))+1
+    end
     fc = [cm[i] for i in n]
 
     s = PlotlyJS.mesh3d(;
@@ -28,6 +37,7 @@ function patch(Γ, fcr)
         j=j,
         k=k,
         facecolor=fc,
+        colorbar=PlotlyJS.attr(title="z"),
     )
 
     #PlotlyJS.plot([s])

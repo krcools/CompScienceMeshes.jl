@@ -1,4 +1,5 @@
 export barycentric_refinement
+export bisecting_refinement
 
 function barycentric_refinement{U}(mesh::Mesh{U,2})
 
@@ -51,7 +52,7 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
         edges[2(E-1) + 1] = Vec(a,c)
         edges[2(E-1) + 2] = Vec(c,b)
     end
-    
+
     # return the new mesh after refienments
     return Mesh(verts, edges)
 end
@@ -108,6 +109,73 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
             fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
             fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
         end
+    end
+
+    Mesh(verts, fcs)
+end
+
+
+"""
+    bisecting_refinement(mesh) -> refinement
+
+Construct a refinement of `mesh` by inserting a new vertex on every existing edge.
+Every face is subdived in four small faces.
+"""
+function bisecting_refinement{U}(mesh::Mesh{U,3})
+
+    D1 = 3
+
+    edges = skeleton(mesh,1)
+    faces = skeleton(mesh,2)
+
+    NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
+
+    nv = NV + NE
+    verts = Array{vertextype(mesh)}(nv)
+
+    # copy over the existing vertices
+    for V in 1 : numvertices(mesh)
+        verts[V] = mesh.vertices[V]
+    end
+
+    # add a vertex in each edge centroid
+    for E in 1 : numcells(edges)
+        #v = edges.vertices[edges.faces[E]]
+        v = cellvertices(edges, E)
+        verts[NV+E] = (v[1] + v[2]) / 2
+    end
+
+    # Build a matrix that given a coarse face gives
+    # access to the coarse edges making up its boundary
+    D = transpose(connectivity(edges, faces, identity))
+    rows, vals = rowvals(D), nonzeros(D)
+
+    # add four faces in each coarse face
+    nf = 4NF
+    fcs = zeros(celltype(mesh), nf)
+
+    for F in 1 : numcells(faces)
+
+        # retrieve the indices of the fine vertices in the centroids
+        # of the edges in the boundary of coarse face F
+        es = zeros(Int,3)
+        for i in nzrange(D, F)
+            E = rows[i]
+            j = abs(vals[i]) # local index of edge E in face F
+            @assert 1 <= j <= 3
+            e = NV + E
+            es[j] = e
+        end
+
+        # build the four triangles
+        r1 = mesh.faces[F][1]
+        r2 = mesh.faces[F][2]
+        r3 = mesh.faces[F][3]
+
+        fcs[4(F-1)+1] = index(r1,es[3],es[2])
+        fcs[4(F-1)+2] = index(r2,es[1],es[3])
+        fcs[4(F-1)+3] = index(r3,es[2],es[1])
+        fcs[4(F-1)+4] = index(es[1],es[2],es[3])
     end
 
     Mesh(verts, fcs)

@@ -35,6 +35,12 @@ and with coordinate type `type`
 end
 
 export index
+"""
+    index(i1, i2, ...) -> cell
+
+Create a mesh cell by supplying the indices of the defining vertices in the
+vertex buffer of the mesh.
+"""
 index(is...) = Vec{length(is),Int}(is...)
 
 
@@ -73,6 +79,7 @@ include("meshpoints.jl")
 # mesh component
 include("mesh.jl")
 include("gmsh.jl")
+include("gid.jl")
 include("primitives.jl")
 include("submesh.jl")
 include("baryref.jl")

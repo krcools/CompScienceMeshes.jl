@@ -1,5 +1,5 @@
 export submesh, octree, boundingbox, interior
-export overlap_predicate, interior_predicate
+export overlap_predicate, interior_predicate, isinclosure_predicate
 
 using CollisionDetection
 
@@ -95,37 +95,14 @@ function boundingbox(V)
 end
 
 
+boundingbox{N,T<:Number}(p::Vec{N,T}) = p, zero(eltype(p))
 
-# function overlap_predicate(bigmesh::Mesh, smallmesh::Mesh)
-#
-#     if numcells(smallmesh) == 0
-#         return simplex -> false
-#     end
-#
-#     # build an octree with the k-cells of smallmesh
-#     tree = octree(smallmesh)
-#
-#     function pred(simplex)
-#
-#         # create a patch object
-#         p1 = patch(vertices(bigmesh, simplex), Val{1})
-#
-#         # find all simplices of the small mesh that potentially
-#         # collide with this patch
-#         c1, s1 = boundingbox(p1)
-#         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
-#             for i in box.data
-#                 p2 = patch(smallmesh.vertices[smallmesh.faces[i]], Val{1})
-#                 overlap(p1,p2) && return true
-#             end
-#         end
-#
-#         return false
-#     end
-#
-#     return pred
-# end
 
+"""
+    overlap_predicate(γ::Mesh) -> (patch -> Bool)
+
+Create a predicate that for a given patch determinees if it overlaps with the provided target mesh `γ`.
+"""
 function overlap_predicate(γ::Mesh)
 
     if numcells(γ) == 0
@@ -142,8 +119,6 @@ function overlap_predicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box.data
-                #p2 = patch(γ.vertices[γ.faces[i]], Val{1})
-                #p2 = simplex(γ.vertices[γ.faces[i]], Val{1})
                 p2 = simplex(cellvertices(γ,i))
                 overlap(p1,p2) && return true
             end
@@ -155,11 +130,44 @@ function overlap_predicate(γ::Mesh)
     return pred
 end
 
+
+function isinclosure_predicate(γ::Mesh)
+
+    if numcells(γ) == 0
+        return simplex -> false
+    end
+
+    # build an octree with the k-cells of smallmesh
+    tree = octree(γ)
+
+    function pred(p1)
+
+        # find all simplices of the small mesh that potentially
+        # collide with this patch
+        c1, s1 = boundingbox(p1)
+        for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
+            for i in box.data
+                p2 = simplex(cellvertices(γ,i))
+                isinclosure(p2, p1) && return true
+            end
+        end
+
+        return false
+    end
+
+    return pred
+end
+
+
 """
 overlap_predicate(bigmesh, smallmesh)
 
 Create a predicate that tests wheter a k-cell of bigmesh is
-included in smallmesh.
+included in smallmesh. The two meshes are assumed to be of
+equal dimension. The returned predicates expect a tuple of
+indices pointing to the vertex buffer of the larger mesh. The
+smaller mesh and larger mesh do not need to share vertex buffers;
+all computations are done 'geometrically' (as opposed to combinatorically).
 """
 function overlap_predicate(Ω::Mesh, Γ::Mesh)
 
@@ -175,7 +183,7 @@ end
 
 """
 Creates a predicate that can be used to check wheter an edge is interior to
-a surface (true) or on its boundary (false).
+a surface (true) or on its boundary (false). This predicate is based on combinatorics. In particular it expects as argument a tuple of indices pointing into the vertex buffer of `mesh`.
 """
 function interior_predicate(mesh::Mesh)
 
@@ -206,4 +214,9 @@ function interior(mesh::Mesh)
     submesh(pred, edges)
 end
 
+"""
+    submesh(selection, mesh)
+
+Create a submesh from `mesh` comprising those elements that overlap with elements from `selection`. It is assumed that `selection` and `mesh` have the same dimension.
+"""
 submesh(sm::Mesh, bm::Mesh) = submesh(overlap_predicate(bm, sm), bm)
