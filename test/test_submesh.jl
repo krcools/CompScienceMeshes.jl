@@ -4,7 +4,8 @@ using CompScienceMeshes
 
 T = Float64
 #P = MUT.defaultpointtype(T,3)
-P = Pt{3,T}
+#P = Pt{3,T}
+P = CompScienceMeshes.defaultpointtype(T,3)
 
 width, height = 1.0, 1.0
 mesh = meshrectangle(width, height, 0.5)

@@ -1,6 +1,10 @@
-export barycentric_refinement
-export bisecting_refinement
 
+
+"""
+    barycentric refinement(mesh) -> refined_mesh
+
+Create the mesh obtained by inserting an extra vertex in the barycenters of all cells and recusively creating fine cells by connecting the barycenter of a k-cell to the already constructed refined (k-1)-cells on its boundary.
+"""
 function barycentric_refinement{U}(mesh::Mesh{U,2})
 
     # We will use the following types to create the longer array of vertices and
@@ -33,7 +37,6 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     # the old points. We insert a point between every pair of points in the original
     # coarse mesh by (point1+ point2)\2
     for i in 1:NE
-        #v = mesh.vertices[mesh.faces[i]]
         v = cellvertices(mesh,i)
         verts[NV+i] = (v[1] + v[2]) / 2
     end
@@ -86,7 +89,6 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
         verts[NV+NE+F] = (v[1] + v[2] + v[3]) / 3
     end
 
-    #D = transpose(connectivity(mesh, 1, edges, faces, op=identity))
     D = transpose(connectivity(edges, faces, identity))
     rows, vals = rowvals(D), nonzeros(D)
 
@@ -104,8 +106,6 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
             a = mesh.faces[F][mod1(j+1,3)]
             b = mesh.faces[F][mod1(j+2,3)]
 
-            # fcs[6(F-1)+2(j-1)+1] = Vec(a,e,c)
-            # fcs[6(F-1)+2(j-1)+2] = Vec(b,c,e)
             fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
             fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
         end

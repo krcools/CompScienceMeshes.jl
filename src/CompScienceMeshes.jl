@@ -1,12 +1,37 @@
 module CompScienceMeshes
 
 using FixedSizeArrays
-
 import Base.getindex
 
-#include("fsa_extensions.jl")
+export getcommonedge
 
-export euclidianbasis, defaultpointtype, Pt, point
+export mesh, readmesh, writemesh
+export dimension, universedimension, vertextype, celltype, coordtype
+export meshsegment, meshrectangle, meshcircle, meshsphere
+export numvertices, vertices
+export numcells, cells, cellvertices
+export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
+export boundary, skeleton, vertextocellmap, connectivity, cellpairs
+export barycentric_refinement
+export bisecting_refinement
+
+export simplex
+export dimension, universedimension, vertextype, pointtype
+export vertices, tangents, volume
+export barytocart, carttobary, centroid
+export euclidianbasis, defaultpointtype, point
+export cartesian, jacobian, meshpoint
+export intersection
+export isinside
+export isinclosure
+export overlap
+
+export meshpoint, meshpointtype
+export meshpoints
+export paramtype
+export cartesian, parametric, barycentric
+export jacobian, tangents, utangents, normal
+
 
 
 typealias Pt{N,T} FixedSizeArrays.Vec{N,T}

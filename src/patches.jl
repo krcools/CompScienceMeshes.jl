@@ -1,10 +1,6 @@
 
 #import Base.getindex
 
-export simplex
-export dimension, universedimension, vertextype, pointtype
-export vertices, tangents, volume
-export barytocart, carttobary, centroid
 
 export FlatCellNM
 

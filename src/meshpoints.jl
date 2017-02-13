@@ -1,10 +1,5 @@
-export meshpoint, meshpointtype
-export meshpoints
-export paramtype
-export cartesian, parametric, barycentric
-export jacobian, tangents, utangents, normal
 
-export MeshPointNM
+#export MeshPointNM
 
 immutable MeshPointNM{U,D,C,N,T}
     patch::FlatCellNM{U,D,C,N,T}
