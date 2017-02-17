@@ -7,7 +7,7 @@ export getcommonedge
 
 export mesh, readmesh, writemesh
 export dimension, universedimension, vertextype, celltype, coordtype
-export meshsegment, meshrectangle, meshcircle, meshsphere
+export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveguidepost
 export numvertices, vertices
 export numcells, cells, cellvertices
 export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
