@@ -1,51 +1,3 @@
-export getcommonedge
-
-
-# const levicivita_lut = cat(3,
-#     [0 0  0;  0 0 1; 0 -1 0],
-#     [0 0 -1;  0 0 0; 1  0 0],
-#     [0 1  0; -1 0 0; 0  0 0])
-#
-#
-#
-# # Levi-Civita symbol of a permutation.
-# # The parity is computed by using the fact that a permutation is odd if and
-# # only if the number of even-length cycles is odd.
-# # Returns 1 is the permutarion is even, -1 if it is odd and 0 otherwise.
-# function levicivita(p)
-#     n = length(p)
-#
-#     if n == 3
-#         @inbounds valid = (0 < p[1] <= 3) * (0 < p[2] <= 3) * (0 < p[3] <= 3)
-#         return valid ? levicivita_lut[p[1], p[2], p[3]] : 0
-#     end
-#
-#     todo = trues(n)
-#     first = 1
-#     cycles = flips = 0
-#
-#     while cycles + flips < n
-#         first = findnext(todo, first)
-#         (todo[first] $= true) && return 0
-#         j = p[first]
-#         (0 < j <= n) || return 0
-#         cycles += 1
-#         while j ≠ first
-#             (todo[j] $= true) && return 0
-#             j = p[j]
-#             (0 < j <= n) || return 0
-#             flips += 1
-#         end
-#     end
-#
-#     return iseven(flips) ? 1 : -1
-# end
-
-
-
-import Base.indexin
-@inline indexin(V::FixedArray, A::AbstractArray) = [ findfirst(A,v) for v in V ]
-
 
 
 # given a simplex and a face returns:
@@ -55,9 +7,6 @@ import Base.indexin
 function relorientation(face, simplex)
 
     v = setdiff(simplex, face)
-    # if length(v) != 1
-    #     return 0
-    # end
     length(v) == 1 || return 0
 
     # find the position of the missing vertex
@@ -75,9 +24,8 @@ function relorientation(face, simplex)
     end
 
     # get the permutation that maps face to face2
-    #p = findfirst(face2,face)
-    #p = findfirst(face2, face)
-    p = indexin(face, face2)
+    #p = indexin(face, face2)
+    p = [ findfirst(face2,v) for v in face ]
 
     return s * levicivita(p) * i
 end

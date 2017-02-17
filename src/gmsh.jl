@@ -1,9 +1,15 @@
+"""
+    read_gmsh_mesh(filename) -> mesh::Mesh
+"""
 function read_gmsh_mesh(fn::AbstractString)
     open(fn, "r") do io
         read_gmsh_mesh(io)
     end
 end
 
+"""
+    read_gmsh_mesh(iostream) -> mesh::Mesh
+"""
 function read_gmsh_mesh(io)
 
     thisLine = io |> readline |> strip
@@ -15,7 +21,6 @@ function read_gmsh_mesh(io)
     s = split(thisLine)
     NV = parse(Int, s[1])
 
-    #v = readdlm(io, Float64; dims=(NV,4))
     P = Vec{3,Float64}
     v = Vector{P}(NV)
     for i in 1:NV

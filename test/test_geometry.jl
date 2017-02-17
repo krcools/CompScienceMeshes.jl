@@ -1,5 +1,4 @@
 using Base.Test
-
 using CompScienceMeshes
 
 
@@ -38,8 +37,9 @@ r = cartesian(mp)
 @test norm(r - Vec(third, third, zero(T))) < tol
 
 # repeat the test but now on a random cell
-P = Pt{3,T}
-randpoint() = P(2rand(T,3)-1)
+#P = Pt{3,T}
+#randpoint() = P(2rand(T,3)-1)
+randpoint() = point(2*rand(T)-1, 2*rand(T)-1, 2*rand(T)-1)
 v1 = randpoint()
 v2 = randpoint()
 v3 = randpoint()

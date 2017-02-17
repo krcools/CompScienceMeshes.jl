@@ -1,9 +1,9 @@
-export intersection
-
 """
-    function intersect{U,C,T}(p1::FlatCellNM{U,1,C,2,T}, p2::FlatCellNM{U,1,C,2,T})
+    intersect(chartA, chartB) -> [chart1, chart2, ...]
 
-Compute the intersection of two overlapping segments.
+Compute the intersection of two charts of equal dimension.
+
+Compute an array of charts such that the disjoint union of those charts produces the intersection of the two charts provided as inputs. In particular the sum of integrals over the returned charts will equal the integral over the intersection of the two given charts.
 """
 function intersection{U,C,T}(p1::FlatCellNM{U,1,C,2,T}, p2::FlatCellNM{U,1,C,2,T})
 
@@ -30,12 +30,9 @@ function clipconvex!(W, v, m)
 end
 
 """
-  function intersection{U,C}(p1::FlatCellNM{U,2,C,3}, p2::FlatCellNM{U,2,C,3})
+    intersection(triangleA, triangle B)
 
-Returns the intersection of triangles p1 and p2. ATTENTION: The implementation
-as is assumes that either p1 is a subset of p2 or the other way around. This
-case is sufficient to compute matrices for integral operators on combinations
-of RT and BC spaces defined subordinate to the same mesh.
+ATTENTION: currently the implementation for triangles assumes that one of the triangles is contained in the other.
 """
 function intersection{U,C}(p1::FlatCellNM{U,2,C,3}, p2::FlatCellNM{U,2,C,3})
   pq = sutherlandhodgman(p1.vertices, p2.vertices)

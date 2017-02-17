@@ -1,11 +1,16 @@
+"""
+    load_gid_mesh(filename) -> mesh
+"""
 function load_gid_mesh(fn::AbstractString)
     open(fn, "r") do io
         load_gid_mesh(io)
     end
 end
 
+"""
+    load_gid_mesh(stream) ->mesh
+"""
 function load_gid_mesh(file)
-    #file = open(fileName, "r");
 
     lineCount = countlines(file);
     seekstart(file);
@@ -34,8 +39,6 @@ function load_gid_mesh(file)
             triangleCount += 1;
             triangles[triangleCount] = FixedSizeArrays.Vec{3,Int}(map(parse, line[2:4]));
     end
-
-    #close(file);
 
     return Mesh{3,3, Float64}(vertices[1:vertexCount], triangles[1:triangleCount])
 end
