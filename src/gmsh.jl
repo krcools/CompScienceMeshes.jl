@@ -9,6 +9,11 @@ end
 
 """
     read_gmsh_mesh(iostream) -> mesh::Mesh
+
+Reads the mesh nodes and elements stored in the input .msh file (`io`, output by GMSH)
+    into arrays of node vectors and vertex vectors respectively.
+
+Returns an object `mesh` of type `Mesh`, comprising both vector arrays.
 """
 function read_gmsh_mesh(io)
 
