@@ -34,7 +34,7 @@ function weld(Γ₁, Γ₂)
         found = false
         pred(c,s) = fitsinbox(Array(v), 0.0, c, s)
         for box in boxes(tree, pred)
-            for i in box.data
+            for i in box
                 u = Γ₁.vertices[i]
                 if norm(u-v) < tol
                     idmap[j] = i

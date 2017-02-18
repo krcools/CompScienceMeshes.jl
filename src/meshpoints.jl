@@ -20,6 +20,11 @@ parametric(mp::MeshPointNM) = mp.bary
 "Return the barycentric coordinates of `mp`"
 barycentric(mp::MeshPointNM) = Vec(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
 
+"""
+A number defines a neighborhood in euclidian space
+"""
+jacobian(x::Number) = one(x)
+
 jacobian(mp::MeshPointNM) = volume(mp.patch) * factorial(dimension(mp.patch))
 tangents(mp::MeshPointNM, i) = mp.patch.tangents[i]
 function utangents(mp::MeshPointNM, i)

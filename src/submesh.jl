@@ -118,7 +118,7 @@ function overlap_predicate(γ::Mesh)
         # collide with this patch
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
-            for i in box.data
+            for i in box
                 p2 = simplex(cellvertices(γ,i))
                 overlap(p1,p2) && return true
             end
@@ -146,7 +146,7 @@ function isinclosure_predicate(γ::Mesh)
         # collide with this patch
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
-            for i in box.data
+            for i in box
                 p2 = simplex(cellvertices(γ,i))
                 isinclosure(p2, p1) && return true
             end

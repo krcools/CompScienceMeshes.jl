@@ -65,6 +65,12 @@ volume(p::FlatCellNM) = p.volume
 
 
 """
+A tuple of points, aka an interval behaves trivially like a chart
+"""
+volume{T}(x::Tuple{T,T}) = norm(x[2]-x[1])
+
+
+"""
     dimension(simplex)
 
 Return the manifold dimension of the simplex.
