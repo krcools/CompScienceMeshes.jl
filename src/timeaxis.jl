@@ -6,6 +6,9 @@ type SegmentedAxis{T}
     numsteps::Int
 end
 
+numcells(ax::SegmentedAxis) = ax.numsteps
+cellvertices(ax::SegmentedAxis, i) = Vec(point((i-1)*ax.timestep), point(i*ax.timestep))
+
 Base.size(a::SegmentedAxis) = (a.numsteps,)
 Base.linearindexing(a::SegmentedAxis) = Base.LinearFast()
 Base.getindex(a::SegmentedAxis, i) = ((i-1)*a.timestep, i*a.timestep)
