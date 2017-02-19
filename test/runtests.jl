@@ -20,4 +20,6 @@ include("test_baryref.jl")
 include("test_jctweld.jl")
 include("test_isinclosure.jl")
 
+include("test_trgauss.jl")
+
 end

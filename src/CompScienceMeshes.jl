@@ -32,7 +32,12 @@ export paramtype
 export cartesian, parametric, barycentric
 export jacobian, tangents, utangents, normal
 
+export quadpoints
+export trgauss, sqgauss, legendre
 
+# TODO: remove this and use default mesh interface
+export SegmentedAxis
+export minmaxdist, rings, ring
 
 typealias Pt{N,T} FixedSizeArrays.Vec{N,T}
 
@@ -94,15 +99,23 @@ end
 
 include("combinatorics.jl")
 
+# quadrature rules for segements, triangles, and squares
+include("quadrature/SegmentGauss.jl")
+include("quadrature/TriangleGauss.jl")
+include("quadrature/SquareGauss.jl")
+
 # simplices and related algorithms
 include("patches.jl")
 include("overlap.jl")
 include("intersect.jl")
 include("isinside.jl")
 include("meshpoints.jl")
+include("quadpoints.jl")
 
 # mesh component
 include("mesh.jl")
+include("timeaxis.jl")
+
 include("gmsh.jl")
 include("gid.jl")
 include("primitives.jl")
