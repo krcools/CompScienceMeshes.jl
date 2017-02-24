@@ -51,22 +51,22 @@ function intersectlines(a,b,p,q)
 
     P = typeof(a)
 
-    d1 = det(@fsa [a[1] a[2]; b[1] b[2]])
-    d2 = det(@fsa [p[1] p[2]; q[1] q[2]])
+    d1 = det(@SMatrix [a[1] a[2]; b[1] b[2]])
+    d2 = det(@SMatrix [p[1] p[2]; q[1] q[2]])
 
     id = one(eltype(a))
-    d1x = det(@fsa [a[1] id; b[1] id])
-    d1y = det(@fsa [a[2] id; b[2] id])
+    d1x = det(@SMatrix [a[1] id; b[1] id])
+    d1y = det(@SMatrix [a[2] id; b[2] id])
 
-    d2x = det(@fsa [p[1] id; q[1] id])
-    d2y = det(@fsa [p[2] id; q[2] id])
+    d2x = det(@SMatrix [p[1] id; q[1] id])
+    d2y = det(@SMatrix [p[2] id; q[2] id])
 
-    den = det(@fsa [d1x d1y; d2x d2y])
+    den = det(@SMatrix [d1x d1y; d2x d2y])
     @assert !isinf(1/den)
 
     P(
-        det(@fsa [d1 d1x; d2 d2x]) / den,
-        det(@fsa [d1 d1y; d2 d2y]) / den,
+        det(@SMatrix [d1 d1x; d2 d2x]) / den,
+        det(@SMatrix [d1 d1y; d2 d2y]) / den,
     )
 
 end
@@ -82,8 +82,8 @@ assuming that the boundary is oriented counter-clockwise.
 function leftof(p,a,b)
 
     tol = sqrt(eps(eltype(a)))
-    ap = @fsa [ p[1]-a[1], p[2]-a[2] ]
-    ab = @fsa [ b[1]-a[1], b[2]-a[2] ]
+    ap = @SVector [ p[1]-a[1], p[2]-a[2] ]
+    ab = @SVector [ b[1]-a[1], b[2]-a[2] ]
     ap[1]*ab[2] - ap[2]*ab[1] <= tol ? true : false
 
 end

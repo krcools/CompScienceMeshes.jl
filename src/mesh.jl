@@ -6,8 +6,8 @@ export vertexarray, cellarray
 
 
 type Mesh{U,D1,T}
-    vertices::Vector{Vec{U,T}}
-    faces::Vector{Vec{D1,Int}}
+    vertices::Vector{SVector{U,T}}
+    faces::Vector{SVector{D1,Int}}
 end
 
 "Return VxU array containing vertex coordinates"
@@ -23,7 +23,7 @@ cellarray(m::Mesh) = [ k[i] for k in m.faces, i in 1:dimension(m)+1 ]
 Returns an empty mesh with `coordtype` equal to `type`, of dimension `mdim`
 and embedded in a universe of dimension `udim`
 """
-mesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], Vec{mdim+1,Int}[])
+mesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], SVector{mdim+1,Int}[])
 
 
 
@@ -93,13 +93,13 @@ memory allocation. The returned vector in that case will also
 be statically typed and of the same size as `I`.
 """
 vertices(m::Mesh, i::Number) = m.vertices[i]
-@generated function vertices(m::Mesh, I::Vec)
+@generated function vertices(m::Mesh, I::SVector)
     N = length(I)
     xp = :(())
     for i in 1:N
         push!(xp.args, :(m.vertices[I[$i]]))
     end
-    :(Vec($xp))
+    :(SVector($xp))
 end
 
 
@@ -224,13 +224,13 @@ function rotate!(Γ::Mesh{3}, v)
     p = point(cα, sα*u[1], sα*u[2], sα*u[3])
     q = point(cα, -sα*u[1], -sα*u[2], -sα*u[3])
 
-    P = @fsa [
+    P = @SMatrix [
         +p[1] -p[2] -p[3] -p[4];
         +p[2] +p[1] -p[4] +p[3];
         +p[3] +p[4] +p[1] -p[2];
         +p[4] -p[3] +p[2] +p[1]]
 
-    Q = @fsa [
+    Q = @SMatrix [
         +q[1] -q[2] -q[3] -q[4];
         +q[2] +q[1] +q[4] -q[3];
         +q[3] -q[4] +q[1] +q[2];
@@ -275,9 +275,9 @@ function fliporientation(m::Mesh)
     fliporientation!(n)
 end
 
-@generated function fliporientation{N,T}(I::Vec{N,T})
+@generated function fliporientation{N,T}(I::SVector{N,T})
     @assert N >= 2
-    xp = :(Vec{N,T}(I[2],I[1]))
+    xp = :(SVector{N,T}(I[2],I[1]))
     for i in 3:N
         push!(xp.args, :(I[$i]))
     end
@@ -325,19 +325,20 @@ function readmesh(filename)
 
         # TODO: remove explicit reference to 3D
         T = Float64
-        P = Vec{3,T}
+        P = SVector{3,T}
+        I = SVector{3,Int}
         vertices = zeros(P, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
-            vertices[i] = Point(float(split(l)))
+            vertices[i] = P(float(split(l)))
         end
 
         # TODO: remove explicit reference to dimension
-        C = Vec{3,Int}
+        C = SVector{3,Int}
         faces = zeros(C, num_faces)
         for i in 1 : num_faces
             l = readline(f)
-            faces[i] = Vec([parse(Int,s) for s in split(l)])
+            faces[i] = I([parse(Int,s) for s in split(l)])
         end
 
         Mesh(vertices, faces)
@@ -462,7 +463,7 @@ function skeleton(mesh, dim::Integer)
     end
 
     nc = numcells(mesh)
-    C = Vec{dim+1,Int}
+    C = SVector{dim+1,Int}
     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
     n = 1
@@ -493,7 +494,7 @@ function skeleton(pred, mesh, dim)
     @assert 0 <= dim <= meshdim
 
     nc = numcells(mesh)
-    C = Vec{dim+1,Int}
+    C = SVector{dim+1,Int}
     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
     n = 1
@@ -501,7 +502,7 @@ function skeleton(pred, mesh, dim)
 
         cell = mesh.faces[c]
         for simplex in combinations(cell,dim+1)
-            if pred(Vec{dim+1,Int}(simplex))
+            if pred(SVector{dim+1,Int}(simplex))
                 simplices[n] = sort(simplex)
                 n += 1
             end

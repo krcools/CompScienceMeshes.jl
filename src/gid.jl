@@ -18,26 +18,26 @@ function load_gid_mesh(file)
     readline(file); # Coordinates
 
     # Read the vertices
-    vertices = Vector{FixedSizeArrays.Vec{3,Float64}}(lineCount);
+    vertices = Vector{Pt{3,Float64}}(lineCount)
     vertexCount = 0;
     while !eof(file)
             line = split(readline(file));
             size(line, 1) == 4 || break; # End Coordinates
             vertexCount += 1;
-            vertices[vertexCount] = FixedSizeArrays.Vec{3,Float64}(map(parse, line[2:4]));
+            vertices[vertexCount] = Pt{3,Float64}(map(parse, line[2:4]));
     end
 
     readline(file); # "\n"
     readline(file); # Elements
 
     # Read the triangles
-    triangles = Vector{FixedSizeArrays.Vec{3,Int}}(lineCount-vertexCount);
+    triangles = Vector{Pt{3,Int}}(lineCount-vertexCount);
     triangleCount = 0;
     while !eof(file)
             line = split(readline(file));
             size(line, 1) == 4 || break; # End Elements
             triangleCount += 1;
-            triangles[triangleCount] = FixedSizeArrays.Vec{3,Int}(map(parse, line[2:4]));
+            triangles[triangleCount] = Pt{3,Int}(map(parse, line[2:4]));
     end
 
     return Mesh{3,3, Float64}(vertices[1:vertexCount], triangles[1:triangleCount])

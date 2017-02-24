@@ -34,7 +34,7 @@ A  = volume(cell)
 
 mp = meshpoint(cell,[third, third]);
 r = cartesian(mp)
-@test norm(r - Vec(third, third, zero(T))) < tol
+@test norm(r - point(third, third, zero(T))) < tol
 
 # repeat the test but now on a random cell
 #P = Pt{3,T}

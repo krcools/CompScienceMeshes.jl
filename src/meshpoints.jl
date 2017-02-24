@@ -3,13 +3,13 @@
 
 immutable MeshPointNM{U,D,C,N,T}
     patch::FlatCellNM{U,D,C,N,T}
-    bary::Vec{D,T}
-    cart::Vec{U,T}
+    bary::SVector{D,T}
+    cart::SVector{U,T}
 end
 
 
-paramtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{D,T}
-pointtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = Vec{U,T}
+paramtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = SVector{D,T}
+pointtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = SVector{U,T}
 
 Base.length(m::MeshPointNM) = length(m.cart)
 Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
@@ -18,7 +18,7 @@ cartesian(mp::MeshPointNM) = mp.cart
 parametric(mp::MeshPointNM) = mp.bary
 
 "Return the barycentric coordinates of `mp`"
-barycentric(mp::MeshPointNM) = Vec(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
+barycentric(mp::MeshPointNM) = SVector(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
 
 """
 A number defines a neighborhood in euclidian space
@@ -36,7 +36,7 @@ normal(mp::MeshPointNM) = mp.patch.normals[1]
 function meshpoint(p::FlatCellNM, bary)
   D = dimension(p)
   T = coordtype(p)
-  P = Vec{D,T}
+  P = SVector{D,T}
   cart = barytocart(p, bary)
   MeshPointNM(p, P(bary), cart)
 end

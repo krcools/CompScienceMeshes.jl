@@ -1,6 +1,6 @@
 module CompScienceMeshes
 
-using FixedSizeArrays
+using StaticArrays
 import Base.getindex
 
 export getcommonedge
@@ -39,7 +39,7 @@ export trgauss, sqgauss, legendre
 export SegmentedAxis
 export minmaxdist, rings, ring
 
-typealias Pt{N,T} FixedSizeArrays.Vec{N,T}
+typealias Pt{N,T} StaticArrays.SVector{N,T}
 
 """
     point(xs...)
@@ -57,7 +57,7 @@ and with coordinate type `type`
 """
 @generated function point(T::Type,xs...)
     D = length(xs)
-    xp = :(Vec{$D,T}())
+    xp = :(SVector{$D,T}())
     for d in 1:D
         push!(xp.args, :(xs[$d]))
     end
@@ -71,15 +71,15 @@ export index
 Create a mesh cell by supplying the indices of the defining vertices in the
 vertex buffer of the mesh.
 """
-index(is...) = Vec{length(is),Int}(is...)
+index(is...) = SVector{length(is),Int}(is...)
 
 
-"""
-  defaultpointtype(T, dim) = Vec{T,dim}
-
-Returns the default point type used by package `CompScienceMeshes`
-"""
-defaultpointtype(T, dim) = Vec{dim,T}
+# """
+#   defaultpointtype(T, dim) = SVector{T,dim}
+#
+# Returns the default point type used by package `CompScienceMeshes`
+# """
+# defaultpointtype(T, dim) = SVector{dim,T}
 
 
 
@@ -90,11 +90,11 @@ Returns an arrays of length (dim+1) containing the origin and the dim
 Euclidian unit vectors with coordinate type `type`.
 """
 function euclidianbasis(T::DataType, dim)
-  P = Vec{dim,T}
+  P = SVector{dim,T}
   id = eye(dim)
   r = P[ P(id[:,i]...) for i in 1:dim ]
   z = P(zeros(T,dim)...)
-  return [z; r]
+  return unshift!(r, z)
 end
 
 include("combinatorics.jl")

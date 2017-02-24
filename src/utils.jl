@@ -2,7 +2,7 @@ import Base.isless
 
 #export sortneighbors
 
-function isless{N,T}(p::Vec{N,T}, q::Vec{N,T})
+function isless{N,T}(p::SVector{N,T}, q::SVector{N,T})
     for i = 1 : N
         if isless(p[i], q[i])
             return true

@@ -26,7 +26,7 @@ function read_gmsh_mesh(io)
     s = split(thisLine)
     NV = parse(Int, s[1])
 
-    P = Vec{3,Float64}
+    P = SVector{3,Float64}
     v = Vector{P}(NV)
     for i in 1:NV
         thisLine = io |> readline |>  strip
@@ -43,12 +43,12 @@ function read_gmsh_mesh(io)
     NF = parse(Int, s[1])
 
     thisLine = io |> readline |> strip
-    f = Vector{Vec{3,Int}}(NF); i = 0
+    f = Vector{SVector{3,Int}}(NF); i = 0
     while thisLine != "\$EndElements"
         d = readdlm(IOBuffer(thisLine), Int)
         thisLine = io |> readline |> strip
         d[2] == 2 || continue
-        f[i +=1] = Vec(d[end-2], d[end-1], d[end-0])
+        f[i +=1] = SVector(d[end-2], d[end-1], d[end-0])
     end
     resize!(f,i)
 

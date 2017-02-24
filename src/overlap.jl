@@ -1,4 +1,4 @@
-import FixedSizeArrays.cross
+import Base.cross
 cross{T}(a::Pt{2,T}, b::Pt{2,T}) = a[1]*b[2] - a[2]*b[1]
 
 """

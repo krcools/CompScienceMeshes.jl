@@ -1,11 +1,11 @@
 using Base.Test
-#using FixedSizeArrays
+
 using CompScienceMeshes
+using StaticArrays
 
 T = Float64
-#P = MUT.defaultpointtype(T,3)
-#P = Pt{3,T}
-P = CompScienceMeshes.defaultpointtype(T,3)
+#P = CompScienceMeshes.defaultpointtype(T,3)
+P = SVector{3,T}
 
 width, height = 1.0, 1.0
 mesh = meshrectangle(width, height, 0.5)

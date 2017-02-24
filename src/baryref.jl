@@ -52,8 +52,8 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
         c = NV + E
         a = Edges.faces[E][1]
         b = Edges.faces[E][2]
-        edges[2(E-1) + 1] = Vec(a,c)
-        edges[2(E-1) + 2] = Vec(c,b)
+        edges[2(E-1) + 1] = SVector(a,c)
+        edges[2(E-1) + 2] = SVector(c,b)
     end
 
     # return the new mesh after refienments

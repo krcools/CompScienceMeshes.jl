@@ -95,7 +95,7 @@ function boundingbox(V)
 end
 
 
-boundingbox{N,T<:Number}(p::Vec{N,T}) = p, zero(eltype(p))
+boundingbox{N,T<:Number}(p::SVector{N,T}) = p, zero(eltype(p))
 
 
 """
@@ -172,7 +172,7 @@ all computations are done 'geometrically' (as opposed to combinatorically).
 function overlap_predicate(Ω::Mesh, Γ::Mesh)
 
     pred0 = overlap_predicate(Γ::Mesh)
-    function pred1(s::Vec)
+    function pred1(s::SVector)
         v = vertices(Ω, s)
         s = simplex(v)
         pred0(s)
@@ -191,7 +191,7 @@ function interior_predicate(mesh::Mesh)
 
     vtoc, vton = vertextocellmap(mesh)
 
-    function pred(simplex::Vec{2,Int})
+    function pred(simplex::SVector{2,Int})
         v = simplex[1]
         n = vton[v]
         a = vtoc[v,1:n]

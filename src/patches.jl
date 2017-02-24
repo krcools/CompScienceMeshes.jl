@@ -11,9 +11,9 @@ export FlatCellNM
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
 immutable FlatCellNM{U,D,C,N,T}
-    vertices::Vec{N,Vec{U,T}}
-    tangents::Vec{D,Vec{U,T}}
-    normals::Vec{C,Vec{U,T}}
+    vertices::SVector{N,SVector{U,T}}
+    tangents::SVector{D,SVector{U,T}}
+    normals::SVector{C,SVector{U,T}}
     volume::T
 end
 
@@ -103,7 +103,7 @@ universedimension(p::FlatCellNM) = universedimension(typeof(p))
 
 Get the vertices at index I (scalar or array) defining the simplex
 """
-getindex(p::FlatCellNM, I::Union{Number,Vec,Array}) = p.vertices[I]
+getindex(p::FlatCellNM, I::Union{Number,SVector,Array}) = p.vertices[I]
 
 
 
@@ -123,7 +123,7 @@ third form as it will not incur notable performance hits.
 Note that D is the dimension of the simplex, i.e. the number
 of vertices supplied minus one.
 """
-@generated function simplex{D1,P}(vertices::Vec{D1,P})
+@generated function simplex{D1,P}(vertices::SVector{D1,P})
     U = length(P)
     D = D1 - 1
     C = U-D
@@ -132,18 +132,18 @@ of vertices supplied minus one.
     for i in 1:D
         push!(xp1.args, :(vertices[$i]-vertices[end]))
     end
-    xp2 = :(Vec{$D,P}($xp1))
+    xp2 = :(SVector{$D,P}($xp1))
     quote
         tangents = $xp2
         normals, volume = _normals(tangents, Val{$C})
         FlatCellNM(vertices, tangents, normals, volume)
     end
-    # tangents = Vec{D1-1,P}((v[1]-v[end], v[2]-v[end], ...))
+    # tangents = SVector{D1-1,P}((v[1]-v[end], v[2]-v[end], ...))
     # normals, volume = _normals(tangents, Val{length(P)-D1+1})
     # FlatCellNM(vertices, tangents, normals, volume)
 end
 
-simplex(vertices...) = simplex(Vec((vertices...)))
+simplex(vertices...) = simplex(SVector((vertices...)))
 
 @generated function simplex{D}(vertices, ::Type{Val{D}})
     P = eltype(vertices)
@@ -152,7 +152,7 @@ simplex(vertices...) = simplex(Vec((vertices...)))
     for i in 1:D1
         push!(xp.args, :(vertices[$i]))
     end
-    :(simplex(Vec{$D1,$P}($xp)))
+    :(simplex(SVector{$D1,$P}($xp)))
 end
 
 
@@ -178,7 +178,7 @@ function _normals(tangents, ::Type{Val{1}})
     end
 
     n *= (-1)^D / norm(n)
-    normals = Vec{1,PT}([PT(n)])
+    normals = SVector{1,PT}([PT(n)])
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
     volume = sqrt(abs(det(metric))) /  D
@@ -200,7 +200,7 @@ function _normals{C}(tangents, ::Type{Val{C}})
     volume = sqrt(abs(det(metric))) / D
 
     # Fix this. This function needs to become gneerated
-    normals = Vec{C,PT}([zero(PT) for i in 1:C])
+    normals = SVector{C,PT}([zero(PT) for i in 1:C])
 
     return normals, volume
 end
@@ -239,5 +239,5 @@ function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 
     u = G \ w
 
-    return Vec(u)
+    return SVector{D}(u)
 end

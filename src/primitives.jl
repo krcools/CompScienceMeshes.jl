@@ -1,7 +1,7 @@
 function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
-  PT = Vec{udim, T}
-  CT = Vec{2,Int}
+  PT = SVector{udim, T}
+  CT = SVector{2,Int}
 
   num_segments = ceil(Int, L/delta)
   actual_delta = L/num_segments
@@ -16,7 +16,7 @@ function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
   faces = Array(CT, num_segments)
   for i in 1 : length(faces)
-    faces[i] = Vec(i, i+1)
+    faces[i] = SVector(i, i+1)
   end
 
   Mesh(vertices, faces)
@@ -24,8 +24,8 @@ end
 
 function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
 
-  PT = Vec{udim,T}
-  CT = Vec{2,Int}
+  PT = SVector{udim,T}
+  CT = SVector{2,Int}
 
     circumf = 2 * pi *radius
     num_segments = ceil(Int, circumf / delta)
@@ -43,9 +43,9 @@ function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
 
     faces = Array(CT, num_segments)
     for i in 1 : length(faces)-1
-        faces[i] = Vec{2,Int}(i, i+1)
+        faces[i] = SVector{2,Int}(i, i+1)
     end
-    faces[end] = Vec{2,Int}(num_segments, 1)
+    faces[end] = SVector{2,Int}(num_segments, 1)
 
     return Mesh(vertices, faces)
 end
@@ -62,13 +62,10 @@ The target edge size is `delta` and the dimension of the
 """
 function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
 
-  PT = Vec{udim,T}
-  CT = Vec{3,Int}
+  PT = SVector{udim,T}
+  CT = SVector{3,Int}
 
     @assert 2 <= udim
-
-    #UDim = 3
-    #MDim = 2
 
     nx = round(Int, ceil(width/delta));  nx = max(nx,1); dx = width/nx
     ny = round(Int, ceil(height/delta)); ny = max(ny,1); dy = height/ny
