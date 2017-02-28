@@ -74,14 +74,6 @@ vertex buffer of the mesh.
 index(is...) = SVector{length(is),Int}(is...)
 
 
-# """
-#   defaultpointtype(T, dim) = SVector{T,dim}
-#
-# Returns the default point type used by package `CompScienceMeshes`
-# """
-# defaultpointtype(T, dim) = SVector{dim,T}
-
-
 
 """
   euclidian_basis(type, dim)
