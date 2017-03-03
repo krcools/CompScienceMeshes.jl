@@ -2,7 +2,7 @@ using CompScienceMeshes
 using Base.Test
 
 m = meshrectangle(1.0,1.0,1.0,3)
-p = simplex(cellvertices(m,1))
+p = chart(m, cells(m,i))
 
 # bouding box of an array of points
 c, s = boundingbox(p.vertices)

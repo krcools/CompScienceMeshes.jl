@@ -5,21 +5,25 @@ import Base.getindex
 
 export getcommonedge
 
+# defaults
+export index, euclidianbasis, defaultpointtype, point
+
 export mesh, readmesh, writemesh
-export dimension, universedimension, vertextype, celltype, coordtype
-export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveguidepost
+export dimension, universedimension, vertextype, coordtype
 export numvertices, vertices
-export numcells, cells, cellvertices
+export numcells, cells #, cellvertices
 export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
 export boundary, skeleton, vertextocellmap, connectivity, cellpairs
-export barycentric_refinement
-export bisecting_refinement
+export barycentric_refinement, bisecting_refinement
+export chart
+
+# primitives
+export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveguidepost
 
 export simplex
 export dimension, universedimension, vertextype, pointtype
 export vertices, tangents, volume
 export barytocart, carttobary, centroid
-export euclidianbasis, defaultpointtype, point
 export cartesian, jacobian, meshpoint
 export intersection
 export isinside
@@ -41,54 +45,7 @@ export minmaxdist, rings, ring
 
 typealias Pt{N,T} StaticArrays.SVector{N,T}
 
-"""
-    point(xs...)
-
-Create point object of `CompScienceMeshes` default point class
-and with coordinate type `Float64`
-"""
-point(xs...) = point(Float64, xs...)
-
-"""
-    point(type, xs...)
-
-Create point object of `CompScienceMeshes` default point class
-and with coordinate type `type`
-"""
-@generated function point(T::Type,xs...)
-    D = length(xs)
-    xp = :(SVector{$D,T}())
-    for d in 1:D
-        push!(xp.args, :(xs[$d]))
-    end
-    return xp
-end
-
-export index
-"""
-    index(i1, i2, ...) -> cell
-
-Create a mesh cell by supplying the indices of the defining vertices in the
-vertex buffer of the mesh.
-"""
-index(is...) = SVector{length(is),Int}(is...)
-
-
-
-"""
-  euclidian_basis(type, dim)
-
-Returns an arrays of length (dim+1) containing the origin and the dim
-Euclidian unit vectors with coordinate type `type`.
-"""
-function euclidianbasis(T::DataType, dim)
-  P = SVector{dim,T}
-  id = eye(dim)
-  r = P[ P(id[:,i]...) for i in 1:dim ]
-  z = P(zeros(T,dim)...)
-  return unshift!(r, z)
-end
-
+include("defaults.jl")
 include("combinatorics.jl")
 
 # quadrature rules for segements, triangles, and squares

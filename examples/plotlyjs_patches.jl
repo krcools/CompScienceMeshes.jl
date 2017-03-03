@@ -15,9 +15,8 @@ function patch(Γ, fcr=nothing)
     i = c[:,1]-1; j = c[:,2]-1; k = c[:,3]-1
 
     if fcr == nothing
-        a = [barytocart(simplex(cellvertices(Γ,i)),[1,1]/3)[3] for i in 1:numcells(Γ)]
+        a = [barytocart(chart(Γ,cells(Γ,i)),[1,1]/3)[3] for i in 1:numcells(Γ)]
     else
-        #a = Float64[sqrt(real(dot(f,f))) for f in fcr]
         a = fcr
     end
 

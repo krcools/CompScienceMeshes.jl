@@ -692,3 +692,11 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
     facepairs
 end
+
+
+"""
+    chart(mesh, cell) -> cell_chart
+
+Return a chart describing the supplied cell of `mesh`.
+"""
+chart(mesh::Mesh, cell) = simplex(vertices(mesh,cell))

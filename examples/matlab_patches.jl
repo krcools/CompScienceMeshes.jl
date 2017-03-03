@@ -39,11 +39,11 @@ function patch(Γ, C)
 end
 
 function jmatlab_quiver(m)
-    els = [simplex(cellvertices(m,i)) for i in 1:numcells(m)]
+    els = [chart(m, cells(m,i)) for i in 1:numcells(m)]
     C = zeros(numcells(m),3)
     N = zeros(numcells(m),3)
     for i in 1:size(C,1)
-        s = simplex(cellvertices(m,i))
+        s = els[i]
         p = meshpoint(s, [1,1]/3)
         n = normal(p)
         c = cartesian(p)

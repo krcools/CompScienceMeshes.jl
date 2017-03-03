@@ -1,7 +1,3 @@
-
-#import Base.getindex
-
-
 export FlatCellNM
 
 

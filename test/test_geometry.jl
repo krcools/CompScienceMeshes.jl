@@ -37,8 +37,6 @@ r = cartesian(mp)
 @test norm(r - point(third, third, zero(T))) < tol
 
 # repeat the test but now on a random cell
-#P = Pt{3,T}
-#randpoint() = P(2rand(T,3)-1)
 randpoint() = point(2*rand(T)-1, 2*rand(T)-1, 2*rand(T)-1)
 v1 = randpoint()
 v2 = randpoint()
@@ -54,7 +52,7 @@ r = cartesian(mp)
 # test that the normal is directed outwards
 m = meshcircle(1.0, 2π/51)
 for i in 1:numcells(m)
-    p = simplex(cellvertices(m,i))
+    p = chart(m, cells(m,i))
     c = (p.vertices[1] + p.vertices[2]) / 2
     @test dot(c, p.normals[1]) > 0
 end
