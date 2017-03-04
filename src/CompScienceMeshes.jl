@@ -11,7 +11,7 @@ export index, euclidianbasis, defaultpointtype, point
 export mesh, readmesh, writemesh
 export dimension, universedimension, vertextype, coordtype
 export numvertices, vertices
-export numcells, cells #, cellvertices
+export numcells, cells, cellvertices
 export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
 export boundary, skeleton, vertextocellmap, connectivity, cellpairs
 export barycentric_refinement, bisecting_refinement
