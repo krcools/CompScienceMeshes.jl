@@ -33,7 +33,7 @@ function utangents(mp::MeshPointNM, i)
 end
 normal(mp::MeshPointNM) = mp.patch.normals[1]
 
-function meshpoint(p::FlatCellNM, bary)
+function neighborhood(p::FlatCellNM, bary)
   D = dimension(p)
   T = coordtype(p)
   P = SVector{D,T}
@@ -50,7 +50,7 @@ function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})
     numpoints = size(uv, 2)
     mps = Array(MeshPointNM{U,D,C,N,T}, numpoints)
     for i in 1:numpoints
-        mps[i] = meshpoint(p, uv[:,i])
+        mps[i] = neighborhood(p, uv[:,i])
     end
     return mps
 end

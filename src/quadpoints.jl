@@ -8,12 +8,12 @@ quadpoints(chart, rule) = quadpoints(chart, rule, Val{dimension(chart)})
 
 function quadpoints(chart, rule, dim::Type{Val{1}})
     u, w = legendre(rule, 0.0, 1.0)
-    [meshpoint(chart, u[:,i]) for i in eachindex(w)], w
+    [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
 end
 
 function quadpoints(chart, rule, dim::Type{Val{2}})
     u, w = trgauss(rule)
-    [meshpoint(chart, u[:,i]) for i in eachindex(w)], w
+    [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
 end
 
 

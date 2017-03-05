@@ -44,7 +44,7 @@ function jmatlab_quiver(m)
     N = zeros(numcells(m),3)
     for i in 1:size(C,1)
         s = els[i]
-        p = meshpoint(s, [1,1]/3)
+        p = neighborhood(s, [1,1]/3)
         n = normal(p)
         c = cartesian(p)
         C[i,:] = [c[1],c[2],c[3]]

@@ -24,13 +24,13 @@ export simplex
 export dimension, universedimension, vertextype, pointtype
 export vertices, tangents, volume
 export barytocart, carttobary, centroid
-export cartesian, jacobian, meshpoint
+export cartesian, jacobian, neighborhood
 export intersection
 export isinside
 export isinclosure
 export overlap
 
-export meshpoint, meshpointtype
+export neighborhood, meshpointtype
 export meshpoints
 export paramtype
 export cartesian, parametric, barycentric

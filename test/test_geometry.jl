@@ -32,7 +32,7 @@ cell = simplex(o, e1, e2)
 A  = volume(cell)
 @test abs(A - 0.5) < tol
 
-mp = meshpoint(cell,[third, third]);
+mp = neighborhood(cell,[third, third]);
 r = cartesian(mp)
 @test norm(r - point(third, third, zero(T))) < tol
 
@@ -43,7 +43,7 @@ v2 = randpoint()
 v3 = randpoint()
 cell = simplex(v1, v2, v3)
 
-mp = meshpoint(cell,[third, third]);
+mp = neighborhood(cell,[third, third]);
 r = cartesian(mp)
 
 @test norm(third*(v1 + v2 + v3) - r) < tol
