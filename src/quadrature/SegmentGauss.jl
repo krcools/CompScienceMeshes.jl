@@ -8,5 +8,5 @@ function legendre{T<:AbstractFloat}(n::Integer, a::T, b::T)
   w = xw[2]
   s = (b-a) * (x+1) / 2 + a
   v = (b-a) / 2 * w
-  return s', v
+  return Array(s'), v
 end
