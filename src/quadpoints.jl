@@ -40,7 +40,8 @@ function quadpoints(f, charts, rules)
             p, w = quadpoints(charts[j], rules[i])
             qd[i,j] = Vector{WPV}(length(w))
             for k in eachindex(w)
-                qd[i,j][k] = WeightPointValue(w[k],p[k],f(p[k]))
+                wk = w[k] * jacobian(p[k])
+                qd[i,j][k] = WeightPointValue(wk,p[k],f(p[k]))
             end
         end
     end
