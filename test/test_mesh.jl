@@ -42,7 +42,7 @@ vtof, num_vtof = vertextocellmap(faces)
 @test size(num_vtoe) == (4,)
 @test size(num_vtof) == (4,)
 
-file = Pkg.dir("CompScienceMeshes","test","sphere.in")
+file = joinpath(dirname(@__FILE__), "sphere.in")
 sphere = readmesh(file)
 @test numvertices(sphere) == 335
 @test numcells(sphere) == 666

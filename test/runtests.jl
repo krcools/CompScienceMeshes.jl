@@ -8,6 +8,7 @@ using Base.Test
 @test CompScienceMeshes.point(Int,1,2,3) == SVector{3,Int}(1,2,3)
 
 include("test_mesh.jl")
+include("test_flipped.jl")
 include("test_geometry.jl")
 include("test_patches.jl")
 include("test_submesh.jl")

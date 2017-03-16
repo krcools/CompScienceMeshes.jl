@@ -2,4 +2,4 @@ julia 0.5
 CollisionDetection
 Combinatorics
 FastGaussQuadrature
-FixedSizeArrays
+StaticArrays

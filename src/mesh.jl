@@ -323,22 +323,33 @@ function readmesh(filename)
         num_vertices = parse(Int, sl[1])
         num_faces    = parse(Int, sl[2])
 
-        # TODO: remove explicit reference to 3D
+        # Determine the universe dimension
+        p = position(f)
+        l = readline(f)
+        udim = length(split(l))
+        seek(f,p)
+
         T = Float64
-        P = SVector{3,T}
-        I = SVector{3,Int}
+        P = SVector{udim,T}
         vertices = zeros(P, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
             vertices[i] = P(float(split(l)))
         end
 
+        # determin the mesh dimension (plus 1)
+        p = position(f)
+        l = readline(f)
+        dim1 = length(split(l))
+        seek(f,p)
+
         # TODO: remove explicit reference to dimension
-        C = SVector{3,Int}
+        #I = SVector{3,Int}
+        C = SVector{dim1,Int}
         faces = zeros(C, num_faces)
         for i in 1 : num_faces
             l = readline(f)
-            faces[i] = I([parse(Int,s) for s in split(l)])
+            faces[i] = C([parse(Int,s) for s in split(l)])
         end
 
         Mesh(vertices, faces)

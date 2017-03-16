@@ -243,3 +243,17 @@ function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 
     return SVector{D}(u)
 end
+
+
+# N: number of defining points
+# D: dimension of the simplex
+# T: type of the coordinates
+immutable ReferenceSimplex{N,D,T}
+    simplex::FlatCellNM{D,D,0,N,T}
+end
+
+function ReferenceSimplex(N,T)
+end
+
+barytocart(ch::ReferenceSimplex, u) = barytocart(ch.simplex, u)
+carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
