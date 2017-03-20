@@ -4,16 +4,36 @@ immutable WeightPointValue{W,P,V}
   value::V
 end
 
-quadpoints(chart, rule) = quadpoints(chart, rule, Val{dimension(chart)})
+# quadpoints(chart, rule) = quadpoints(chart, rule, Val{dimension(chart)})
+#
+# function quadpoints(chart, rule, dim::Type{Val{1}})
+#     u, w = legendre(rule, 0.0, 1.0)
+#     [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
+# end
+#
+# function quadpoints(chart, rule, dim::Type{Val{2}})
+#     u, w = trgauss(rule)
+#     [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
+# end
 
-function quadpoints(chart, rule, dim::Type{Val{1}})
+
+function quadpoints(chart::ReferenceSimplex{1}, rule)
+    error("legendre rules requested")
     u, w = legendre(rule, 0.0, 1.0)
     [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
 end
 
-function quadpoints(chart, rule, dim::Type{Val{2}})
+function quadpoints(chart::ReferenceSimplex{2}, rule)
     u, w = trgauss(rule)
     [neighborhood(chart, u[:,i]) for i in eachindex(w)], w
+end
+
+
+function quadpoints(chart, rule)
+    P, V = quadpoints(domain(chart), rule)
+    Q = [neighborhood(chart,p) for p in P]
+    W = [jacobian(q)*v for (q,v) in zip(Q,V)]
+    return Q, W
 end
 
 

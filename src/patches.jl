@@ -245,15 +245,41 @@ function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
 end
 
 
-# N: number of defining points
-# D: dimension of the simplex
-# T: type of the coordinates
-immutable ReferenceSimplex{N,D,T}
+"""
+    ReferenceSimplex{Dimension, CoordType, NumVertices}
+
+This domain is defined to bootstrap the quadrature generation strategy. The generic definition
+of numquads on a chart pulls back to the domain. For a limit set of reference domains, explicit
+quadrature rules are defined. The weights and points are then pushed forward to the configuaration
+space element over which integration is desired.
+
+For more details see the implementation in quadpoints.jl
+"""
+immutable ReferenceSimplex{D,T,N}
+    # N: number of defining points
+    # D: dimension of the simplex
+    # T: type of the coordinates
     simplex::FlatCellNM{D,D,0,N,T}
 end
 
-function ReferenceSimplex(N,T)
+function (::Type{ReferenceSimplex{D,T,N}}){D,T,N}()
+    P = SVector{D,T}[]
+    for i in 1:D
+        a = zeros(T,D)
+        a[i] = 1
+        p = SVector{D,T}(a)
+        push!(P,p)
+    end
+
+    o = zero(SVector{D,T})
+    push!(P,o)
+
+    ReferenceSimplex(simplex(P...))
 end
+
 
 barytocart(ch::ReferenceSimplex, u) = barytocart(ch.simplex, u)
 carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
+
+domain{U,D,C,T,N}(ch::FlatCellNM{U,D,C,N,T}) = ReferenceSimplex{D,T,N}()
+neighborhood(ch::ReferenceSimplex, u) = u

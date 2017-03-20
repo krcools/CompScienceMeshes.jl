@@ -20,6 +20,7 @@ export chart
 # primitives
 export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveguidepost
 
+export domain
 export simplex
 export dimension, universedimension, vertextype, pointtype
 export vertices, tangents, volume
