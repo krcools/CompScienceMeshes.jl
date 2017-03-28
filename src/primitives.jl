@@ -14,7 +14,7 @@ function meshsegment{T<:Real}(L::T, delta::T, udim=2)
     vertices[i] = PT(a)
   end
 
-  faces = Array(CT, num_segments)
+  faces = Array{CT}(num_segments)
   for i in 1 : length(faces)
     faces[i] = SVector(i, i+1)
   end
@@ -33,7 +33,7 @@ function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
     dalpha = delta / radius
     alpha = collect(0 : num_segments-1) * dalpha
 
-    vertices = Array(PT, num_segments)
+    vertices = Array{PT}(num_segments)
     for i in 1 : num_segments
         a = zeros(T, udim)
         a[1] = radius * cos(alpha[i])
@@ -41,7 +41,7 @@ function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
         vertices[i] = PT(a)
     end
 
-    faces = Array(CT, num_segments)
+    faces = Array{CT}(num_segments)
     for i in 1 : length(faces)-1
         faces[i] = SVector{2,Int}(i, i+1)
     end

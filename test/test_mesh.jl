@@ -25,7 +25,7 @@ verts = skeleton(rectangle, 0)
 @test size(Λ)  == (5,4)
 @test size(Σᵀ) == (2,5)
 
-@test_approx_eq(norm(Σᵀ*Λ, Inf), 0)
+@test norm(Σᵀ*Λ, Inf) ≈ 0
 
 bnd = boundary(rectangle)
 

@@ -1,6 +1,7 @@
 export Mesh
 
 using Combinatorics
+using Compat.Iterators
 
 export vertexarray, cellarray
 
@@ -399,7 +400,7 @@ function boundary(mesh)
     conn = connectivity(edges, faces)
 
     # find the edges that only have one edjacent face
-    i = find(x -> x < 2, sum(abs(conn), 1))
+    i = find(x -> x < 2, sum(abs.(conn), 1))
 
     # create a mesh out of these
     bnd = Mesh(mesh.vertices, edges.faces[i])

@@ -31,9 +31,9 @@ qp = intersection(q,p)
 # is subject to numerical rounding errors. For efficiency reasons
 # this something that needs fixing. It should not affect the computation
 # of the interaction elements, however.
-@test_approx_eq(sum([volume(r) for r in qq]), volume(q))
-@test_approx_eq(sum([volume(r) for r in pq]), volume(q))
-@test_approx_eq(sum([volume(r) for r in qp]), volume(q))
+@test sum([volume(r) for r in qq]) ≈ volume(q)
+@test sum([volume(r) for r in pq]) ≈ volume(q)
+@test sum([volume(r) for r in qp]) ≈ volume(q)
 
 # This case caused NaNs in the RWG BC Gram matrix. Turned out to be caused
 # by computing the intersection between two parallel lines. This needs a

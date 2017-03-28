@@ -48,8 +48,8 @@ S = intersection(P,Q)
 for i in 1:2
     for j in 1:3
         for k in 1:2
-            @test_approx_eq(S[i].vertices[j][k], R[i].vertices[j][k]+t[k])
+            @test S[i].vertices[j][k] ≈ R[i].vertices[j][k]+t[k]
         end
-        @test_approx_eq(S[i].vertices[j][3], t[3])
+        @test S[i].vertices[j][3] ≈ t[3]
     end
 end
