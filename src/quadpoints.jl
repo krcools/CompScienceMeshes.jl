@@ -34,8 +34,8 @@ a certain quadrature rule over `chart`.
 """
 function quadpoints(f, charts, rules)
 
-    P = pointtype(eltype(charts))
     p, w = quadpoints(charts[1], rules[1])
+    P = eltype(p)
     W = eltype(w)
     V = typeof(f(p[1]))
 
@@ -47,7 +47,6 @@ function quadpoints(f, charts, rules)
             p, w = quadpoints(charts[j], rules[i])
             qd[i,j] = Vector{WPV}(length(w))
             for k in eachindex(w)
-                #wk = w[k] * jacobian(p[k])
                 qd[i,j][k] = WeightPointValue(w[k],p[k],f(p[k]))
             end
         end

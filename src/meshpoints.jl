@@ -1,15 +1,9 @@
-
-#export MeshPointNM
-
 immutable MeshPointNM{U,D,C,N,T}
     patch::FlatCellNM{U,D,C,N,T}
     bary::SVector{D,T}
     cart::SVector{U,T}
 end
 
-
-paramtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = SVector{D,T}
-pointtype{U,D,C,N,T}(::Type{MeshPointNM{U,D,C,N,T}}) = SVector{U,T}
 
 Base.length(m::MeshPointNM) = length(m.cart)
 Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
@@ -39,18 +33,4 @@ function neighborhood(p::FlatCellNM, bary)
   P = SVector{D,T}
   cart = barytocart(p, bary)
   MeshPointNM(p, P(bary), cart)
-end
-
-
-meshpointtype{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) =  MeshPointNM{U,D,C,N,T}
-meshpointtype{U,D,C,N,T}(::FlatCellNM{U,D,C,N,T}) =  meshpointtype(FlatCellNM{U,D,C,N,T})
-
-
-function meshpoints{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, uv::Array{T,2})
-    numpoints = size(uv, 2)
-    mps = Array(MeshPointNM{U,D,C,N,T}, numpoints)
-    for i in 1:numpoints
-        mps[i] = neighborhood(p, uv[:,i])
-    end
-    return mps
 end

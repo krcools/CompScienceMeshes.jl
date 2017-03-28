@@ -160,28 +160,6 @@ end
 
 
 """
-overlap_predicate(bigmesh, smallmesh)
-
-Create a predicate that tests wheter a k-cell of bigmesh is
-included in smallmesh. The two meshes are assumed to be of
-equal dimension. The returned predicates expect a tuple of
-indices pointing to the vertex buffer of the larger mesh. The
-smaller mesh and larger mesh do not need to share vertex buffers;
-all computations are done 'geometrically' (as opposed to combinatorically).
-"""
-function overlap_predicate(Ω::Mesh, Γ::Mesh)
-
-    pred0 = overlap_predicate(Γ::Mesh)
-    function pred1(s::SVector)
-        v = vertices(Ω, s)
-        s = simplex(v)
-        pred0(s)
-    end
-
-    return pred1
-end
-
-"""
 Creates a predicate that can be used to check wheter an edge is interior to
 a surface (true) or on its boundary (false). This predicate is based on combinatorics. In particular it expects as argument a tuple of indices pointing into the vertex buffer of `mesh`.
 """
@@ -219,4 +197,9 @@ end
 
 Create a submesh from `mesh` comprising those elements that overlap with elements from `selection`. It is assumed that `selection` and `mesh` have the same dimension.
 """
-submesh(sm::Mesh, bm::Mesh) = submesh(overlap_predicate(bm, sm), bm)
+function submesh(sm::Mesh, bm::Mesh)
+    overlaps = overlap_predicate(sm)
+    in_smallmesh = c -> overlaps(simplex(vertices(bm,c)))
+    submesh(in_smallmesh, bm)
+    #submesh(overlap_predicate(bm, sm), bm)
+end

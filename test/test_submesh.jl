@@ -4,7 +4,6 @@ using CompScienceMeshes
 using StaticArrays
 
 T = Float64
-#P = CompScienceMeshes.defaultpointtype(T,3)
 P = SVector{3,T}
 
 width, height = 1.0, 1.0
@@ -37,7 +36,8 @@ pred2 = interior_predicate(mesh)
 γ2 = submesh(pred2, edges)
 @test numcells(γ2) == 8
 
-pred3 = overlap_predicate(mesh, line)
+overlaps = overlap_predicate(line)
+pred3 = x -> overlaps(simplex(vertices(mesh, x)))
 pred4 = x -> pred2(x) || pred3(x)
 γ3 = submesh(pred4, edges)
 @test numcells(γ3) == 10

@@ -6,7 +6,7 @@ import Base.getindex
 export getcommonedge
 
 # defaults
-export index, euclidianbasis, defaultpointtype, point
+export index, euclidianbasis, point
 
 export mesh, readmesh, writemesh
 export dimension, universedimension, vertextype, coordtype
@@ -22,7 +22,7 @@ export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveg
 
 export domain
 export simplex
-export dimension, universedimension, vertextype, pointtype
+export dimension, universedimension, vertextype
 export vertices, tangents, volume
 export barytocart, carttobary, centroid
 export cartesian, jacobian, neighborhood
@@ -31,7 +31,7 @@ export isinside
 export isinclosure
 export overlap
 
-export neighborhood, meshpointtype
+export neighborhood
 export meshpoints
 export paramtype
 export cartesian, parametric, barycentric

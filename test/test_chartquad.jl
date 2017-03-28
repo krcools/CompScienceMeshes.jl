@@ -17,4 +17,4 @@ p, w = CompScienceMeshes.quadpoints(ch, 7);
 t1 = sum(w)
 t2 = 0.5*norm(cross(p1-p3, p2-p3))
 
-@test 2 * (t1-t2) / (t1+t2) + 1  ≈ 1 
+@test 2 * (t1-t2) / (t1+t2) + 1  ≈ 1
