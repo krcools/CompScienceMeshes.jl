@@ -3,8 +3,6 @@ module CompScienceMeshes
 using StaticArrays
 import Base.getindex
 
-export getcommonedge
-
 # defaults
 export index, euclidianbasis, point
 
@@ -47,7 +45,7 @@ export minmaxdist, rings, ring
 typealias Pt{N,T} StaticArrays.SVector{N,T}
 
 include("defaults.jl")
-include("combinatorics.jl")
+include("utils.jl")
 
 # quadrature rules for segements, triangles, and squares
 include("quadrature/SegmentGauss.jl")
@@ -76,9 +74,5 @@ include("weld.jl")
 
 # geometry API
 include("geometry.jl")
-
-
-
-include("utils.jl")
 
 end # module
