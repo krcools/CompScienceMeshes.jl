@@ -12,6 +12,8 @@ include("test_mesh.jl")
 include("test_flipped.jl")
 include("test_weld.jl")
 include("test_baryref.jl")
+include("test_gid_reader.jl")
+include("test_gmsh_reader.jl")
 
 include("test_geometry.jl")
 
@@ -26,5 +28,6 @@ include("test_isinclosure.jl")
 
 include("test_trgauss.jl")
 include("test_chartquad.jl")
+include("test_nbd.jl")
 
 end
