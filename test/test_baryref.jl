@@ -27,3 +27,11 @@ f1 = skeleton(f,1)
 
 m0 = skeleton(m,0)
 @test numvertices(f) == numcells(m0) + numcells(m1) + numcells(m)
+
+## test bisecting referinment of surfacic meshes
+b = bisecting_refinement(m)
+@test numcells(b) == 4*numcells(m)
+
+b1 = skeleton(b,1)
+@test numcells(b1) == 2*numcells(m1) + 3*numcells(m)
+@test numvertices(b) == numcells(m0) + numcells(m1)
