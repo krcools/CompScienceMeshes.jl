@@ -18,3 +18,17 @@ t1 = sum(w)
 t2 = 0.5*norm(cross(p1-p3, p2-p3))
 
 @test 2 * (t1-t2) / (t1+t2) + 1  ≈ 1
+
+p1 = point(1.0, 0.0, 0.0)
+p2 = point(2.0, 0.0, 0.0)
+seg = simplex(p1,p2)
+
+wpvs = quadpoints(x->x[1]^2, [seg], (20,))
+r = 0.0
+for wpv in wpvs[1,1]
+    w = wpv.weight
+    v = wpv.value
+    r += w * v
+end
+
+@test r ≈ 1/3*(2^3-1^3)

@@ -14,3 +14,24 @@ segments2=cellarray(Γ2)  ## get the faces
 @test points[num_points]==points2[num_points]# test if the last point in the original has the same index in the refined one
 @test segments[1,1] ==segments2[1,1]        # test if the face are starting with the same point in test
 @test segments[1,2] ==segments2[2,2]        # test if the original second point in the first cell got separated by a single point
+
+# test barycentric refinement of surface mesh
+m = meshrectangle(1.0, 1.0, 0.25, 3)
+f = barycentric_refinement(m)
+
+@test numcells(f) == 6*numcells(m)
+
+m1 = skeleton(m,1)
+f1 = skeleton(f,1)
+@test numcells(f1) == 2*numcells(m1) + 6*numcells(m)
+
+m0 = skeleton(m,0)
+@test numvertices(f) == numcells(m0) + numcells(m1) + numcells(m)
+
+## test bisecting referinment of surfacic meshes
+b = bisecting_refinement(m)
+@test numcells(b) == 4*numcells(m)
+
+b1 = skeleton(b,1)
+@test numcells(b1) == 2*numcells(m1) + 3*numcells(m)
+@test numvertices(b) == numcells(m0) + numcells(m1)

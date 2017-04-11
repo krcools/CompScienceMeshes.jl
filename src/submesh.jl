@@ -40,22 +40,23 @@ Store the k-cells of a mesh in an octree.
 function octree(mesh)
 
     nverts = dimension(mesh) + 1 # number of vertices per cell
-    #kcells = mesh.faces
     ncells = numcells(mesh)
-    #ncells = length(kcells)  # number of cells to store
 
     P = vertextype(mesh)
     T = coordtype(mesh)
-    #T = eltype(P)
+
     points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
     for i in 1 : ncells
-        #kcell = kcells[i]
-        #verts = mesh.vertices[kcell]
         verts = cellvertices(mesh,i)
 
-        points[i] = sum(verts) / nverts
+        bary = verts[1]
+        for j in 2:length(verts)
+            bary += verts[j]
+        end
+
+        points[i] = bary / nverts
         for j in 1 : nverts
             radii[i] = max(radii[i], norm(verts[j]-points[i]))
         end
