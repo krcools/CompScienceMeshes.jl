@@ -142,10 +142,10 @@ Ruled Surface(8) = {10};
 
 end
 
-Γ = meshwaveguidepost(22,22,50,3.81,1.8)
-RT = raviartthomas(Γ)
-
-include(Pkg.dir("CompScienceMeshes","examples","plotlyjs_patches.jl"))
-A = rand(numcells(Γ))
-p = patch(Γ, A)
-PlotlyJS.plot([p])
+# Γ = meshwaveguidepost(22,22,50,3.81,0.8)
+# RT = raviartthomas(Γ)
+#
+# include(Pkg.dir("CompScienceMeshes","examples","plotlyjs_patches.jl"))
+# A = rand(numcells(Γ))
+# p = patch(Γ, A)
+# PlotlyJS.plot([p])
