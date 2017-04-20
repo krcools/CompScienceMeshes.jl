@@ -37,7 +37,8 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     # the old points. We insert a point between every pair of points in the original
     # coarse mesh by (point1+ point2)\2
     for i in 1:NE
-        v = cellvertices(mesh,i)
+        #v = cellvertices(mesh,i)
+        v = vertices(mesh, mesh.faces[i])
         verts[NV+i] = (v[1] + v[2]) / 2
     end
 
@@ -78,14 +79,16 @@ function barycentric_refinement{U}(mesh::Mesh{U,3})
     # add a vertex in each edge centroid
     for E in 1 : numcells(edges)
         #v = edges.vertices[edges.faces[E]]
-        v = cellvertices(edges, E)
+        #v = cellvertices(edges, E)
+        v = vertices(edges, edges.faces[E])
         verts[NV+E] = (v[1] + v[2]) / 2
     end
 
     # add a vertex in each face centroid
     for F in 1 : numcells(faces)
         #v = faces.vertices[faces.faces[F]]
-        v = cellvertices(faces, F)
+        #v = cellvertices(faces, F)
+        v = vertices(faces, faces.faces[F])
         verts[NV+NE+F] = (v[1] + v[2] + v[3]) / 3
     end
 
@@ -141,7 +144,8 @@ function bisecting_refinement{U}(mesh::Mesh{U,3})
     # add a vertex in each edge centroid
     for E in 1 : numcells(edges)
         #v = edges.vertices[edges.faces[E]]
-        v = cellvertices(edges, E)
+        #v = cellvertices(edges, E)
+        v = vertices(edges, edges.faces[E])
         verts[NV+E] = (v[1] + v[2]) / 2
     end
 

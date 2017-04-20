@@ -18,6 +18,10 @@ f = CompScienceMeshes.FlippedMesh(m)
 g = -f
 @test g === m
 
-cells(f,1)
-@test cells(f,1) == index(2,1,3)
-@test cells(f,2) == index(3,1,4)
+T = [index(2,1,3), index(3,1,4)]
+for (i,c) in enumerate(cells(f))
+    @test c == T[i]
+end
+
+# @test f.faces[1] == index(2,1,3)
+# @test f.faces[2] == index(3,1,4)

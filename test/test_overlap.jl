@@ -42,7 +42,7 @@ l1 = meshsegment(1.0,1/2)
 vt = skeleton(l1,0)
 bd = boundary(l1)
 
-overlaps = overlap_predicate(bd)
+overlaps = overlap_gpredicate(bd)
 pred1 = c -> overlaps(simplex(vertices(vt,c)))
 @test pred1(SVector(1))
 @test !pred1(SVector(2))

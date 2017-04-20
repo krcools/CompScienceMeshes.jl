@@ -123,13 +123,20 @@ numcells(m::Mesh) = length(m.faces)
 
 
 
-"""
-    cells(mesh,i)
+# """
+#     cells(mesh,i)
+#
+# Return the index tuple for cell `i` of `mesh`
+# """
+# cells(mesh,i) = mesh.faces[i]
 
-Return the index tuple for cell `i` of `mesh`
-"""
-cells(mesh,i) = mesh.faces[i]
 
+"""
+    cells(mesh)
+
+Return an iterable collection containing the cells making up the mesh.
+"""
+cells(mesh) = mesh.faces
 
 
 """
@@ -545,7 +552,7 @@ positive or negative depending on the relative orientation of face `k` in cell
 For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
 the graph version of the exterior derivative.
 """
-function connectivity(kcells, mcells, op = sign)
+function connectivity(kcells::Mesh, mcells::Mesh, op = sign)
 
     vtok, _ = vertextocellmap(kcells)
     vtom, _ = vertextocellmap(mcells)
@@ -557,21 +564,21 @@ function connectivity(kcells, mcells, op = sign)
 
     D = spzeros(Int, dimm, dimk)
 
-    #for v in 1 : numvertices(mesh)
     for v in 1:numvertices(kcells)
         for i in vtok[v,:]
             i == npos && break
-            kcell = cells(kcells, i)
+            #kcell = cells(kcells, i)
+            kcell = kcells.faces[i]
             for j in vtom[v,:]
                 j == npos && break
-                mcell = cells(mcells, j)
+                #mcell = cells(mcells, j)
+                mcell = mcells.faces[j]
                 D[j,i] = op(relorientation(kcell, mcell))
             end
         end
     end
 
     return D
-
 end
 
 

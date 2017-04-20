@@ -4,30 +4,35 @@ using StaticArrays
 import Base.getindex
 
 # defaults
-export index, euclidianbasis, point
+export index
+export euclidianbasis, point
 
 export mesh, readmesh, writemesh
 export dimension, universedimension, vertextype, coordtype
 export numvertices, vertices
-export numcells, cells, cellvertices
-export translate, translate!, rotate, rotate!, fliporientation!, fliporientation
+export numcells, cells
+export translate, translate!, rotate, rotate!
+export fliporientation!, fliporientation
 export boundary, skeleton, vertextocellmap, connectivity, cellpairs
 export barycentric_refinement, bisecting_refinement
 export chart
 
 # primitives
-export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid, meshwaveguidepost
+export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
+#export meshwaveguidepost  # Deprecate
 
 export domain
 export simplex
-export dimension, universedimension, vertextype
+export dimension, universedimension
+export vertextype
 export vertices, tangents, volume
 export barytocart, carttobary, centroid
 export cartesian, jacobian, neighborhood
 export intersection
-export isinside
-export isinclosure
-export overlap
+export isinside, isinclosure, overlap
+
+export submesh, octree, boundingbox
+export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
 export neighborhood
 export meshpoints

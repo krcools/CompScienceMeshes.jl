@@ -70,5 +70,5 @@ F = [
 m = Mesh(V,F)
 n = fliporientation(m)
 
-@test cells(m,1) == index(1,2,3)
-@test cells(n,1) == index(2,1,3)
+@test m.faces[1] == index(1,2,3)
+@test n.faces[1] == index(2,1,3)
