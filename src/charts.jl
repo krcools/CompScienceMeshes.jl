@@ -104,9 +104,6 @@ of vertices supplied minus one.
         normals, volume = _normals(tangents, Val{$C})
         FlatCellNM(vertices, tangents, normals, volume)
     end
-    # tangents = SVector{D1-1,P}((v[1]-v[end], v[2]-v[end], ...))
-    # normals, volume = _normals(tangents, Val{length(P)-D1+1})
-    # FlatCellNM(vertices, tangents, normals, volume)
 end
 
 simplex(vertices...) = simplex(SVector((vertices...)))

@@ -10,7 +10,6 @@ the simplex is to be added to the submesh under construction.
 """
 function submesh(pred, mesh::Mesh)
 
-    #kcells = deepcopy(cells(mesh, k))
     kcells = similar(mesh.faces)
 
     j = 1
@@ -45,21 +44,10 @@ function octree(mesh)
     points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
-    #for i in 1 : ncells
     for (i,cl) in enumerate(cells(mesh))
-
-        #verts = cellvertices(mesh,i)
-        verts = vertices(mesh, cl)
-
-        bary = verts[1]
-        for j in 2:length(verts)
-            bary += verts[j]
-        end
-
-        points[i] = bary / nverts
-        for j in 1 : nverts
-            radii[i] = max(radii[i], norm(verts[j]-points[i]))
-        end
+        ch = chart(mesh, cl)
+        points[i] = cartesian(center(ch))
+        radii[i] = maximum(norm(v-points[i]) for v in ch.vertices)
     end
 
     return Octree(points, radii)
@@ -120,8 +108,7 @@ function overlap_gpredicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
-                #p2 = simplex(cellvertices(γ,i))
-                p2 = simplex(vertices(γ, γ.faces[i]))
+                p2 = chart(γ, γ.faces[i])
                 overlap(p1,p2) && return true
             end
         end

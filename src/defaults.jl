@@ -34,7 +34,7 @@ index(is...) = SVector{length(is),Int}(is...)
 
 Returns the origin and default unit vectors for Euclidian space of dimension dim
 """
-function euclidianbasis(T::DataType, dim)
+function euclidianbasis(dim, T=Float64::Type)
   P = SVector{dim,T}
   id = eye(dim)
   r = P[ P(id[:,i]...) for i in 1:dim ]

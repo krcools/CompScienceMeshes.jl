@@ -26,7 +26,7 @@ internal_edges = count(x->x>0, vp[2,:])
 @test CompScienceMeshes.relorientation(index(1,3,2),index(1,2,3,4)) == +4
 @test CompScienceMeshes.relorientation(index(2,4,3),index(1,2,3,4)) == -1
 
-o, e1, e2, e3 = euclidianbasis(Float64, 3)
+o, e1, e2, e3 = euclidianbasis(3)
 cell = simplex(o, e1, e2)
 
 A  = volume(cell)

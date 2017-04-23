@@ -7,7 +7,7 @@ type SegmentedAxis{T}
 end
 
 numcells(ax::SegmentedAxis) = ax.numsteps
-cellvertices(ax::SegmentedAxis, i) = SVector(point((i-1)*ax.timestep), point(i*ax.timestep))
+#cellvertices(ax::SegmentedAxis, i) = SVector(point((i-1)*ax.timestep), point(i*ax.timestep))
 
 #Base.size(a::SegmentedAxis) = (a.numsteps,)
 #Base.linearindexing(a::SegmentedAxis) = Base.LinearFast()

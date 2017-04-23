@@ -123,14 +123,6 @@ numcells(m::Mesh) = length(m.faces)
 
 
 
-# """
-#     cells(mesh,i)
-#
-# Return the index tuple for cell `i` of `mesh`
-# """
-# cells(mesh,i) = mesh.faces[i]
-
-
 """
     cells(mesh)
 
@@ -139,13 +131,13 @@ Return an iterable collection containing the cells making up the mesh.
 cells(mesh) = mesh.faces
 
 
-"""
-    cellvertices(mesh, i)
-
-Return an indexable collection containing the vertices of cell `i`.
-Shorthand for `vertices(mesh, cells(mesh, i))`.
-"""
-cellvertices(mesh,i) = vertices(mesh, cells(mesh, i))
+# """
+#     cellvertices(mesh, i)
+#
+# Return an indexable collection containing the vertices of cell `i`.
+# Shorthand for `vertices(mesh, cells(mesh, i))`.
+# """
+# cellvertices(mesh,i) = vertices(mesh, cells(mesh, i))
 
 
 

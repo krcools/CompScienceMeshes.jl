@@ -23,10 +23,6 @@ c = neighborhood(tet, point(1,1,1)/4)
 @test tangents(c,2) ≈ point(0,1,0)
 @test tangents(c,3) ≈ point(0,0,1)
 
-@test utangents(c,1) ≈ point(1,0,0)
-@test utangents(c,2) ≈ point(0,1,0)
-@test utangents(c,3) ≈ point(0,0,1)
-
 tri = simplex(p1,p2,p4)
 c_tri = neighborhood(tri, point(1,1)/3)
 
