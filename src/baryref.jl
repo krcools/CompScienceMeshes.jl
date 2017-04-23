@@ -3,7 +3,9 @@
 """
     barycentric refinement(mesh) -> refined_mesh
 
-Create the mesh obtained by inserting an extra vertex in the barycenters of all cells and recusively creating fine cells by connecting the barycenter of a k-cell to the already constructed refined (k-1)-cells on its boundary.
+Create the mesh obtained by inserting an extra vertex in the barycenters of all cells and
+recusively creating fine cells by connecting the barycenter of a k-cell to the already
+constructed refined (k-1)-cells on its boundary.
 """
 function barycentric_refinement{U}(mesh::Mesh{U,2})
 
@@ -108,6 +110,8 @@ end
 
 Construct a refinement of `mesh` by inserting a new vertex on every existing edge.
 Every face is subdived in four small faces.
+
+Only defined for 2D meshes.
 """
 function bisecting_refinement{U}(mesh::Mesh{U,3})
 

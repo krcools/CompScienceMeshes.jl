@@ -59,9 +59,9 @@ end
 """
 Returns the boundingbox of a patch in terms of its center and halfsize.
 
-    function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) -> center, halfsize
+    function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T}) -> center, halfsize
 """
-function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T})
+function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T})
 
     ll = minimum(p.vertices)
     ur = maximum(p.vertices)

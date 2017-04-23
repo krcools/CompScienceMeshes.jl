@@ -4,7 +4,7 @@ cross{T}(a::Pt{2,T}, b::Pt{2,T}) = a[1]*b[2] - a[2]*b[1]
 """
 Compute whether two flat patches of the same dimension overlap or not
 """
-function overlap{U,D,C,N,T}(p1::FlatCellNM{U,D,C,N,T}, p2::FlatCellNM{U,D,C,N,T})
+function overlap{U,D,C,N,T}(p1::Simplex{U,D,C,N,T}, p2::Simplex{U,D,C,N,T})
 
     # Are the patches in the same D-plane?
     throw(ErrorException("Not implemented yet!"))
@@ -14,7 +14,7 @@ end
 ###
 # Version for points: overlap in this case is taken to mean that points approx conincide
 ###
-function overlap{T,U,C}(p::FlatCellNM{U,0,C,1,T}, q::FlatCellNM{U,0,C,1,T})
+function overlap{T,U,C}(p::Simplex{U,0,C,1,T}, q::Simplex{U,0,C,1,T})
 
     tol = sqrt(eps(T))
     return norm(p[1]-q[1]) < tol
@@ -23,7 +23,7 @@ end
 """
 Compute whether two segments in 3D space overlap
 """
-function overlap{T,U,C}(p::FlatCellNM{U,1,C,2,T}, q::FlatCellNM{U,1,C,2,T})
+function overlap{T,U,C}(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T})
 
     const tol = sqrt(eps(T))
 
@@ -54,7 +54,7 @@ end
 """
 Compute whether two triangles in 3D space overlap
 """
-function overlap{T}(p::FlatCellNM{3,2,1,3,T}, q::FlatCellNM{3,2,1,3,T})
+function overlap{T}(p::Simplex{3,2,1,3,T}, q::Simplex{3,2,1,3,T})
 
   const tol = sqrt(eps(T))
 

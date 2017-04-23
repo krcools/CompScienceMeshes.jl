@@ -1,4 +1,4 @@
-export FlatCellNM
+#export Simplex
 
 
 # U: the dimension of the universe
@@ -6,7 +6,7 @@ export FlatCellNM
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-immutable FlatCellNM{U,D,C,N,T}
+immutable Simplex{U,D,C,N,T}
     vertices::SVector{N,SVector{U,T}}
     tangents::SVector{D,SVector{U,T}}
     normals::SVector{C,SVector{U,T}}
@@ -19,8 +19,8 @@ end
 
 Return coordinate type used by simplex.
 """
-coordtype{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = T
-coordtype(p::FlatCellNM) = coordtype(typeof(p))
+coordtype{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = T
+coordtype(p::Simplex) = coordtype(typeof(p))
 
 
 """
@@ -28,7 +28,7 @@ coordtype(p::FlatCellNM) = coordtype(typeof(p))
 
 Return the volume of the simplex.
 """
-volume(p::FlatCellNM) = p.volume
+volume(p::Simplex) = p.volume
 
 
 """
@@ -42,8 +42,8 @@ volume{T}(x::Tuple{T,T}) = norm(x[2]-x[1])
 
 Return the manifold dimension of the simplex.
 """
-dimension{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = D
-dimension(p::FlatCellNM) = dimension(typeof(p))
+dimension{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = D
+dimension(p::Simplex) = dimension(typeof(p))
 
 
 """
@@ -51,7 +51,7 @@ dimension(p::FlatCellNM) = dimension(typeof(p))
 
 Returns the number of vertices (equals dimension + 1)
 """
-Base.length(p::FlatCellNM) = dimension(typeof(p))+1
+Base.length(p::Simplex) = dimension(typeof(p))+1
 
 
 """
@@ -59,8 +59,8 @@ Base.length(p::FlatCellNM) = dimension(typeof(p))+1
 
 Return the dimension of the universe in which `p` is embedded.
 """
-universedimension{U,D,C,N,T}(::Type{FlatCellNM{U,D,C,N,T}}) = U
-universedimension(p::FlatCellNM) = universedimension(typeof(p))
+universedimension{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = U
+universedimension(p::Simplex) = universedimension(typeof(p))
 
 
 """
@@ -69,7 +69,7 @@ universedimension(p::FlatCellNM) = universedimension(typeof(p))
 
 Get the vertices at index I (scalar or array) defining the simplex
 """
-getindex(p::FlatCellNM, I::Union{Number,SVector,Array}) = p.vertices[I]
+getindex(p::Simplex, I::Union{Number,SVector,Array}) = p.vertices[I]
 
 
 
@@ -102,7 +102,7 @@ of vertices supplied minus one.
     quote
         tangents = $xp2
         normals, volume = _normals(tangents, Val{$C})
-        FlatCellNM(vertices, tangents, normals, volume)
+        Simplex(vertices, tangents, normals, volume)
     end
 end
 
@@ -175,7 +175,7 @@ end
 
 Returns the point in the simplex with barycentric coordinates uv
 """
-function barytocart(mani::FlatCellNM, u)
+function barytocart(mani::Simplex, u)
     r = last(mani.vertices)
     for i in 1 : dimension(mani)
         ti = mani.tangents[i]
@@ -192,7 +192,7 @@ end
 
 Compute the barycentric coordinates on 'simplex' of 'point'.
 """
-function carttobary{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}, cart)
+function carttobary{U,D,C,N,T}(p::Simplex{U,D,C,N,T}, cart)
 
     G = [dot(p.tangents[i], p.tangents[j]) for i in 1:D, j in 1:D]
     #w = [dot(p.tangents[i], cart - p.vertices[end]) for i in 1:D]
@@ -220,7 +220,7 @@ immutable ReferenceSimplex{D,T,N}
     # N: number of defining points
     # D: dimension of the simplex
     # T: type of the coordinates
-    simplex::FlatCellNM{D,D,0,N,T}
+    simplex::Simplex{D,D,0,N,T}
 end
 
 function (::Type{ReferenceSimplex{D,T,N}}){D,T,N}()
@@ -242,5 +242,5 @@ end
 barytocart(ch::ReferenceSimplex, u) = barytocart(ch.simplex, u)
 carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
 
-domain{U,D,C,T,N}(ch::FlatCellNM{U,D,C,N,T}) = ReferenceSimplex{D,T,N}()
+domain{U,D,C,T,N}(ch::Simplex{U,D,C,N,T}) = ReferenceSimplex{D,T,N}()
 neighborhood(ch::ReferenceSimplex, u) = u

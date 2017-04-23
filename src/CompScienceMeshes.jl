@@ -22,6 +22,7 @@ export connectivity, cellpairs # marked for deprecation
 # mesh transforms
 export translate, translate!, rotate, rotate!
 export fliporientation!, fliporientation
+export weld
 
 # mesh refinement
 export barycentric_refinement, bisecting_refinement
@@ -81,8 +82,10 @@ include("mesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
 
-include("gmsh.jl")
-include("gid.jl")
+include("fileio/readmesh.jl")
+include("fileio/gmsh.jl")
+include("fileio/gid.jl")
+
 include("primitives.jl")
 include("submesh.jl")
 include("baryref.jl")

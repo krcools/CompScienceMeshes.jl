@@ -1,5 +1,3 @@
-export weld
-
 using CollisionDetection
 
 
