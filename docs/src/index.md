@@ -26,10 +26,10 @@ This package introduces a minimalistic mesh interface and a standard implementat
 ### Functions to query a mesh for its characteristics
 
 ```@docs
-dimension
-universedimension
+dimension(m::Mesh)
+universedimension(m::Mesh)
 vertextype
-coordtype
+coordtype(m::Mesh)
 numvertices
 numcells
 ```
@@ -45,7 +45,5 @@ cells
 
 ```@docs
 skeleton
-vertextocellmap
 connectivity
-cellpairs
 ```

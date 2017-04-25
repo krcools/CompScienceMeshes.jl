@@ -43,7 +43,8 @@ export simplex, center, vertices
 export barycentric, barytocart, carttobary
 
 # submesh selection and cell retrieval
-export submesh, octree, boundingbox
+export submesh
+export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
 export neighborhood

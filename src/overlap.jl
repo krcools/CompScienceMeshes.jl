@@ -31,7 +31,8 @@ function overlap{T,U,C}(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T})
     o = q.vertices[2]
     u = p.vertices[1] - o
     t = q.tangents[1]
-    e = u - dot(u,t) / dot(t,t) * t
+    t2 = dot(t,t)
+    e = u - dot(u,t) / t2 * t
 
     # if vertex 1 of p is not in the line defined by q, they do not overlap
     norm(e) > tol && return false
@@ -46,7 +47,7 @@ function overlap{T,U,C}(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T})
     a1 < b1 ? (x1 = a1; y1 = b1) : (x1 = b1; y1 = a1)
 
     y1 <= zero(T) && return false # p to the left of q
-    one(T) <= x1 && return false # q to the left of p
+    t2 <= x1 && return false      # q to the left of p
 
     return true
 end
