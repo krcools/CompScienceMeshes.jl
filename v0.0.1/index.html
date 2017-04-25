@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="./img/favicon.ico">
+        <title>CompScienceMeshes.jl</title>
+        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="./css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="./css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/highlight.css">
+        <link href="./assets/Documenter.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+	
+	<script src="./js/jquery-1.10.2.min.js"></script>
+        <script src="./js/bootstrap-3.0.3.min.js"></script>
+        <script src="./js/highlight.pack.js"></script> 
+    </head>
+
+    <body class="homepage">
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href=".">CompScienceMeshes.jl</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href=".">Home</a>
+                    </li>
+                    <li >
+                        <a href="example/">Example</a>
+                    </li>
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                    <li class="disabled">
+                        <a rel="next" >
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="example/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/krcools/CompScienceMeshes.jl">
+                                <i class="fa fa-github"></i>GitHub
+                        </a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#compsciencemeshesjl">CompScienceMeshes.jl</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#mesh-interface">Mesh Interface</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<p><a id='CompScienceMeshes.jl-1'></a></p>
+<h1 id="compsciencemeshesjl">CompScienceMeshes.jl</h1>
+<p>Meshes, charts, and differential geometry for finite and boundary element solvers.</p>
+<p><a id='Installation-1'></a></p>
+<h2 id="installation">Installation</h2>
+<p>In addition to the dependencies declared in REQUIRE, this package relies for some of its functionality on <code>gmsh</code>. Make sure <code>gmsh</code> is installed and on the system path if you require this functionality.</p>
+<p><a id='Introduction-1'></a></p>
+<h2 id="introduction">Introduction</h2>
+<p>This package provides the geometric framework to facilitated the construction of finite element spaces and the assembly of matrices stemming from the discretisation of local (differential) and global (integral) operators on those finite element spaces.</p>
+<p>The package roughly contains three components:</p>
+<ul>
+<li>Meshes: allowing for the (almost) linear construction of connectivity matrices. A default implementation is provided but the algorithms should be easily extendable to user defined mesh structures. It is very common, for example, that mesh data structures contain problem specific information (local elasticity, permittivity, boundary conditions). User can use those enriched structures if they extend a limited number of functions.</li>
+<li>Charts: a concept designed after the differential geometric concept of a chart on a manifold. It allows for the construction of points in Euclidian space from a set of parameters and the other way around.</li>
+<li>Neighborhoods: a concept designed after the derivative of a chart as a map from the parametrising vector space to the tangent space of a point of the manifold. It allows querying for tangents, normal, and the Jacobian determinant for use in integration routines.</li>
+</ul>
+<p><a id='Mesh-Interface-1'></a></p>
+<h2 id="mesh-interface">Mesh Interface</h2>
+<p>This package introduces a minimalistic mesh interface and a standard implementation <code>CompScienceMeshes.Mesh</code>. The interface is defined by the semantics of the following functions:</p>
+<p><a id='Functions-to-query-a-mesh-for-its-characteristics-1'></a></p>
+<h3 id="functions-to-query-a-mesh-for-its-characteristics">Functions to query a mesh for its characteristics</h3>
+<p><a id='CompScienceMeshes.dimension-Tuple{CompScienceMeshes.Mesh}' href='#CompScienceMeshes.dimension-Tuple{CompScienceMeshes.Mesh}'>#</a>
+<strong><code>CompScienceMeshes.dimension</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>dim = dimension(mesh)
+</code></pre>
+
+<p>Returns the dimension of the mesh. Note that this is the dimension of the cells, not of the surrounding space.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L55-L60' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.universedimension-Tuple{CompScienceMeshes.Mesh}' href='#CompScienceMeshes.universedimension-Tuple{CompScienceMeshes.Mesh}'>#</a>
+<strong><code>CompScienceMeshes.universedimension</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>universedimension(mesh)
+</code></pre>
+
+<p>Returns the dimension of the surrounding space. Equals the number of coordinates required to describe a vertex.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L65-L70' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.vertextype' href='#CompScienceMeshes.vertextype'>#</a>
+<strong><code>CompScienceMeshes.vertextype</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>vt = vertextype(mesh)
+</code></pre>
+
+<p>Returns type of the vertices used to define the cells of the mesh.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L28-L32' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.coordtype-Tuple{CompScienceMeshes.Mesh}' href='#CompScienceMeshes.coordtype-Tuple{CompScienceMeshes.Mesh}'>#</a>
+<strong><code>CompScienceMeshes.coordtype</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>coordtype(mesh)
+</code></pre>
+
+<p>Returns <code>eltype(vertextype(mesh))</code></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L46-L50' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.numvertices' href='#CompScienceMeshes.numvertices'>#</a>
+<strong><code>CompScienceMeshes.numvertices</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>numvertices(mesh)
+</code></pre>
+
+<p>Returns the number of vertices in the mesh.</p>
+<p><em>Note</em>: this is the number of vertices in the vertex buffer and might include floatin vertices or vertices not appearing in any cell. In other words the following is not necessarily true:</p>
+<pre><code class="julia">    numvertices(mesh) == numcells(skeleton(mesh,0))
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L103-L114' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.numcells' href='#CompScienceMeshes.numcells'>#</a>
+<strong><code>CompScienceMeshes.numcells</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>numcells(mesh)
+</code></pre>
+
+<p>Returns the number of cells in the mesh.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L119-L123' class='documenter-source'>source</a><br></p>
+<p><a id='Functions-to-iterate-over-the-mesh'-cells-and-the-underlying-point-set-1'></a></p>
+<h3 id="functions-to-iterate-over-the-mesh-cells-and-the-underlying-point-set">Functions to iterate over the mesh' cells and the underlying point set</h3>
+<p><a id='CompScienceMeshes.vertices' href='#CompScienceMeshes.vertices'>#</a>
+<strong><code>CompScienceMeshes.vertices</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>vertices(mesh)
+</code></pre>
+
+<p>Returns an indexable iterable to the vertices of the mesh</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L75-L79' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.cells' href='#CompScienceMeshes.cells'>#</a>
+<strong><code>CompScienceMeshes.cells</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>cells(mesh)
+</code></pre>
+
+<p>Return an iterable collection containing the cells making up the mesh.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L128-L132' class='documenter-source'>source</a><br></p>
+<p><a id='Functions-to-retrieve-adjacency-information-about-the-mesh-1'></a></p>
+<h3 id="functions-to-retrieve-adjacency-information-about-the-mesh">Functions to retrieve adjacency information about the mesh</h3>
+<p><a id='CompScienceMeshes.skeleton' href='#CompScienceMeshes.skeleton'>#</a>
+<strong><code>CompScienceMeshes.skeleton</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>skeleton(mesh, dim)
+</code></pre>
+
+<p>Returns a mesh comprising the <code>dim</code>-dimensional sub cells of <code>mesh</code>. For example to retrieve the edges of a given surface <code>mesh</code>,</p>
+<pre><code class="julia">edges = skelton(mesh, 1)
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L371-L380' class='documenter-source'>source</a><br></p>
+<pre><code>skeleton(pred, mesh, dim)
+</code></pre>
+
+<p>Like <code>skeleton(mesh, dim)</code>, but only cells for which <code>pred(cell)</code> returns true are withheld.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L410-L415' class='documenter-source'>source</a><br></p>
+<p><a id='CompScienceMeshes.connectivity' href='#CompScienceMeshes.connectivity'>#</a>
+<strong><code>CompScienceMeshes.connectivity</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>connectivity(faces, cells, op=sign)
+</code></pre>
+
+<p>Create a sparse matrix <code>D</code> of size <code>numcells(cells)</code> by <code>numcells(faces)</code> that contiains the connectivity info of the mesh. In particular <code>D[m,k]</code> is <code>op(r)</code> where <code>r</code> is the local index of face <code>k</code> in cell <code>m</code>. The sign of <code>r</code> is positive or negative depending on the relative orientation of face <code>k</code> in cell <code>m</code>.</p>
+<p>For <code>op=sign</code>, the matrix returned is the classic connectivity matrix, i.e. the graph version of the exterior derivative.</p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L449-L460' class='documenter-source'>source</a><br></p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>var base_url = '.';</script>
+        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
+        <script src="./js/base.js"></script>
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="./assets/mathjaxhelper.js"></script><div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-04-25 15:49:07
+-->
