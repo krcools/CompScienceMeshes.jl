@@ -27,32 +27,36 @@ export weld
 # mesh refinement
 export barycentric_refinement, bisecting_refinement
 
-# link to the chart concept
-export chart
-
-
-export domain # marked for deprecation
-export dimension, universedimension
-export tangents, volume
-export cartesian, jacobian, neighborhood
-export intersection
-export isinside, isinclosure, overlap
-
-# specific to simplicial charts
-export simplex, center, vertices
-export barycentric, barytocart, carttobary
-
 # submesh selection and cell retrieval
 export submesh
 export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
+# link to the chart concept
+export chart
+
+export domain # marked for deprecation
+export dimension, universedimension
+export volume
 export neighborhood
-export paramtype
+export quadpoints
+
+export isinside, isinclosure, overlap
+
+# specific to simplicial charts
+export simplex, center, vertices
+export barytocart, carttobary
+
+export intersection
+
+# the neighborhood concept
+export barycentric
+
+#export paramtype
 export cartesian, parametric
 export jacobian, tangents, normal
 
-export quadpoints
+
 export trgauss, sqgauss, legendre
 
 # marked for deprecation

@@ -43,6 +43,12 @@ volume{T}(x::Tuple{T,T}) = norm(x[2]-x[1])
 Return the manifold dimension of the simplex.
 """
 dimension{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = D
+
+"""
+    dimension(simplex)
+
+Return the manifold dimension of the simplex.
+"""
 dimension(p::Simplex) = dimension(typeof(p))
 
 
