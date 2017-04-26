@@ -50,6 +50,12 @@
                         <a href=".">Home</a>
                     </li>
                     <li >
+                        <a href="charts/">Charts</a>
+                    </li>
+                    <li >
+                        <a href="neighborhood/">Neighborhoods</a>
+                    </li>
+                    <li >
                         <a href="example/">Example</a>
                     </li>
                 </ul>
@@ -66,7 +72,7 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="example/">
+                        <a rel="prev" href="charts/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -117,28 +123,28 @@
 </code></pre>
 
 <p>Returns the dimension of the mesh. Note that this is the dimension of the cells, not of the surrounding space.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L55-L60' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L55-L60' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.universedimension-Tuple{CompScienceMeshes.Mesh}' href='#CompScienceMeshes.universedimension-Tuple{CompScienceMeshes.Mesh}'>#</a>
 <strong><code>CompScienceMeshes.universedimension</code></strong> &mdash; <em>Method</em>.</p>
 <pre><code>universedimension(mesh)
 </code></pre>
 
 <p>Returns the dimension of the surrounding space. Equals the number of coordinates required to describe a vertex.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L65-L70' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L65-L70' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.vertextype' href='#CompScienceMeshes.vertextype'>#</a>
 <strong><code>CompScienceMeshes.vertextype</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>vt = vertextype(mesh)
 </code></pre>
 
 <p>Returns type of the vertices used to define the cells of the mesh.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L28-L32' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L28-L32' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.coordtype-Tuple{CompScienceMeshes.Mesh}' href='#CompScienceMeshes.coordtype-Tuple{CompScienceMeshes.Mesh}'>#</a>
 <strong><code>CompScienceMeshes.coordtype</code></strong> &mdash; <em>Method</em>.</p>
 <pre><code>coordtype(mesh)
 </code></pre>
 
 <p>Returns <code>eltype(vertextype(mesh))</code></p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L46-L50' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L46-L50' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.numvertices' href='#CompScienceMeshes.numvertices'>#</a>
 <strong><code>CompScienceMeshes.numvertices</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>numvertices(mesh)
@@ -149,14 +155,14 @@
 <pre><code class="julia">    numvertices(mesh) == numcells(skeleton(mesh,0))
 </code></pre>
 
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L103-L114' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L103-L114' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.numcells' href='#CompScienceMeshes.numcells'>#</a>
 <strong><code>CompScienceMeshes.numcells</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>numcells(mesh)
 </code></pre>
 
 <p>Returns the number of cells in the mesh.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L119-L123' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L119-L123' class='documenter-source'>source</a><br></p>
 <p><a id='Functions-to-iterate-over-the-mesh'-cells-and-the-underlying-point-set-1'></a></p>
 <h3 id="functions-to-iterate-over-the-mesh-cells-and-the-underlying-point-set">Functions to iterate over the mesh' cells and the underlying point set</h3>
 <p><a id='CompScienceMeshes.vertices' href='#CompScienceMeshes.vertices'>#</a>
@@ -165,14 +171,14 @@
 </code></pre>
 
 <p>Returns an indexable iterable to the vertices of the mesh</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L75-L79' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L75-L79' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.cells' href='#CompScienceMeshes.cells'>#</a>
 <strong><code>CompScienceMeshes.cells</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>cells(mesh)
 </code></pre>
 
 <p>Return an iterable collection containing the cells making up the mesh.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L128-L132' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L128-L132' class='documenter-source'>source</a><br></p>
 <p><a id='Functions-to-retrieve-adjacency-information-about-the-mesh-1'></a></p>
 <h3 id="functions-to-retrieve-adjacency-information-about-the-mesh">Functions to retrieve adjacency information about the mesh</h3>
 <p><a id='CompScienceMeshes.skeleton' href='#CompScienceMeshes.skeleton'>#</a>
@@ -184,12 +190,12 @@
 <pre><code class="julia">edges = skelton(mesh, 1)
 </code></pre>
 
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L371-L380' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L371-L380' class='documenter-source'>source</a><br></p>
 <pre><code>skeleton(pred, mesh, dim)
 </code></pre>
 
 <p>Like <code>skeleton(mesh, dim)</code>, but only cells for which <code>pred(cell)</code> returns true are withheld.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L410-L415' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L410-L415' class='documenter-source'>source</a><br></p>
 <p><a id='CompScienceMeshes.connectivity' href='#CompScienceMeshes.connectivity'>#</a>
 <strong><code>CompScienceMeshes.connectivity</code></strong> &mdash; <em>Function</em>.</p>
 <pre><code>connectivity(faces, cells, op=sign)
@@ -197,7 +203,7 @@
 
 <p>Create a sparse matrix <code>D</code> of size <code>numcells(cells)</code> by <code>numcells(faces)</code> that contiains the connectivity info of the mesh. In particular <code>D[m,k]</code> is <code>op(r)</code> where <code>r</code> is the local index of face <code>k</code> in cell <code>m</code>. The sign of <code>r</code> is positive or negative depending on the relative orientation of face <code>k</code> in cell <code>m</code>.</p>
 <p>For <code>op=sign</code>, the matrix returned is the classic connectivity matrix, i.e. the graph version of the exterior derivative.</p>
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/2020627711d7feee03e0c61aa4b1d0efb047dc41/src/mesh.jl#L449-L460' class='documenter-source'>source</a><br></p></div>
+<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/5762c3423f65b2ed0d3d729846cc96829d8d8380/src/mesh.jl#L449-L460' class='documenter-source'>source</a><br></p></div>
         </div>
 
         <footer class="col-md-12">
@@ -238,5 +244,5 @@
 
 <!--
 MkDocs version : 0.16.3
-Build Date UTC : 2017-04-25 15:49:07
+Build Date UTC : 2017-04-26 15:56:21
 -->
