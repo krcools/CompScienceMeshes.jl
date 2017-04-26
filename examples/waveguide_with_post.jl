@@ -1,4 +1,4 @@
-using BoundaryElements
+using BEAST
 using CompScienceMeshes
 using LinearForms
 
@@ -134,9 +134,9 @@ Ruled Surface(8) = {10};
     fdo = open(fno,"r")
     # include(Pkg.dir("CompScienceMeshes","src","gmsh.jl"))
     m = CompScienceMeshes.read_gmsh_mesh(fdo)
-    # close(fdo)
-    # rm(fno)
-    # rm(fn)
+    close(fdo)
+    rm(fno)
+    rm(fn)
 
     return m
 
