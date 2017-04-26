@@ -236,9 +236,9 @@ Volume(1)={1};
     run(`gmsh $fn -2 -format msh -o $fno`)
     fdo = open(fno,"r")
     m = read_gmsh_mesh(fdo)
-    # close(fdo)
-    # rm(fno)
-    # rm(fn)
+    close(fdo)
+    rm(fno)
+    rm(fn)
 
     return m
 
