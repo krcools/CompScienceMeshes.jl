@@ -32,11 +32,11 @@ edges = skeleton(mesh, 1)
     index(3,6),
     index(6,9)]
 
-pred2 = interior_predicate(mesh)
+pred2 = interior_tpredicate(mesh)
 γ2 = submesh(pred2, edges)
 @test numcells(γ2) == 8
 
-overlaps = overlap_predicate(line)
+overlaps = overlap_gpredicate(line)
 pred3 = x -> overlaps(simplex(vertices(mesh, x)))
 pred4 = x -> pred2(x) || pred3(x)
 γ3 = submesh(pred4, edges)

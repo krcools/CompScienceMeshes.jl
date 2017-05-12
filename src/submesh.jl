@@ -1,6 +1,3 @@
-export submesh, octree, boundingbox, interior
-export overlap_predicate, interior_predicate, isinclosure_predicate
-
 using CollisionDetection
 
 """
@@ -13,7 +10,6 @@ the simplex is to be added to the submesh under construction.
 """
 function submesh(pred, mesh::Mesh)
 
-    #kcells = deepcopy(cells(mesh, k))
     kcells = similar(mesh.faces)
 
     j = 1
@@ -48,18 +44,10 @@ function octree(mesh)
     points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
-    for i in 1 : ncells
-        verts = cellvertices(mesh,i)
-
-        bary = verts[1]
-        for j in 2:length(verts)
-            bary += verts[j]
-        end
-
-        points[i] = bary / nverts
-        for j in 1 : nverts
-            radii[i] = max(radii[i], norm(verts[j]-points[i]))
-        end
+    for (i,cl) in enumerate(cells(mesh))
+        ch = chart(mesh, cl)
+        points[i] = cartesian(center(ch))
+        radii[i] = maximum(norm(v-points[i]) for v in ch.vertices)
     end
 
     return Octree(points, radii)
@@ -71,9 +59,9 @@ end
 """
 Returns the boundingbox of a patch in terms of its center and halfsize.
 
-    function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T}) -> center, halfsize
+    function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T}) -> center, halfsize
 """
-function boundingbox{U,D,C,N,T}(p::FlatCellNM{U,D,C,N,T})
+function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T})
 
     ll = minimum(p.vertices)
     ur = maximum(p.vertices)
@@ -100,11 +88,11 @@ boundingbox{N,T<:Number}(p::SVector{N,T}) = p, zero(eltype(p))
 
 
 """
-    overlap_predicate(γ::Mesh) -> (patch -> Bool)
+    overlap_gpredicate(γ::Mesh) -> (patch -> Bool)
 
 Create a predicate that for a given patch determinees if it overlaps with the provided target mesh `γ`.
 """
-function overlap_predicate(γ::Mesh)
+function overlap_gpredicate(γ::Mesh)
 
     if numcells(γ) == 0
         return simplex -> false
@@ -120,7 +108,7 @@ function overlap_predicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
-                p2 = simplex(cellvertices(γ,i))
+                p2 = chart(γ, γ.faces[i])
                 overlap(p1,p2) && return true
             end
         end
@@ -132,7 +120,11 @@ function overlap_predicate(γ::Mesh)
 end
 
 
-function isinclosure_predicate(γ::Mesh)
+"""
+Geometric predicate for determining in log(N) complexity if a the image of a chart is in
+the closure of mesh `γ`.
+"""
+function inclosure_gpredicate(γ::Mesh)
 
     if numcells(γ) == 0
         return simplex -> false
@@ -148,7 +140,7 @@ function isinclosure_predicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
-                p2 = simplex(cellvertices(γ,i))
+                p2 = simplex(vertices(γ, γ.faces[i]))
                 isinclosure(p2, p1) && return true
             end
         end
@@ -164,7 +156,7 @@ end
 Creates a predicate that can be used to check wheter an edge is interior to
 a surface (true) or on its boundary (false). This predicate is based on combinatorics. In particular it expects as argument a tuple of indices pointing into the vertex buffer of `mesh`.
 """
-function interior_predicate(mesh::Mesh)
+function interior_tpredicate(mesh::Mesh)
 
     @assert dimension(mesh) == 2
 
@@ -186,12 +178,7 @@ function interior_predicate(mesh::Mesh)
     return pred
 end
 
-function interior(mesh::Mesh)
-    D = dimension(mesh)
-    edges = skeleton(mesh, D-1)
-    pred = interior_predicate(mesh)
-    submesh(pred, edges)
-end
+
 
 """
     submesh(selection, mesh)
@@ -199,8 +186,7 @@ end
 Create a submesh from `mesh` comprising those elements that overlap with elements from `selection`. It is assumed that `selection` and `mesh` have the same dimension.
 """
 function submesh(sm::Mesh, bm::Mesh)
-    overlaps = overlap_predicate(sm)
+    overlaps = overlap_gpredicate(sm)
     in_smallmesh = c -> overlaps(simplex(vertices(bm,c)))
     submesh(in_smallmesh, bm)
-    #submesh(overlap_predicate(bm, sm), bm)
 end

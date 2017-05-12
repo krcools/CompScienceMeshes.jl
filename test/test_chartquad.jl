@@ -12,9 +12,10 @@ dom = domain(ch)
 q, u = quadpoints(dom, 7)
 @which neighborhood(ch, q[1])
 
-p, w = CompScienceMeshes.quadpoints(ch, 7);
+pw = CompScienceMeshes.quadpoints(ch, 7);
 
-t1 = sum(w)
+#t1 = sum(w)
+t1 = sum(q[2] for q in pw)
 t2 = 0.5*norm(cross(p1-p3, p2-p3))
 
 @test 2 * (t1-t2) / (t1+t2) + 1  ≈ 1

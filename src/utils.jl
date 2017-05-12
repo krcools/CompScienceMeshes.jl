@@ -1,5 +1,3 @@
-import Base.isless
-
 function relorientation(face, simplex)
 
     v = setdiff(simplex, face)
@@ -24,13 +22,4 @@ function relorientation(face, simplex)
     p = [ findfirst(face2,v) for v in face ]
 
     return s * levicivita(p) * i
-end
-
-function isless{N,T}(p::SVector{N,T}, q::SVector{N,T})
-    for i = 1 : N
-        if isless(p[i], q[i])
-            return true
-        end
-    end
-    return false
 end

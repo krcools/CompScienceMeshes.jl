@@ -42,8 +42,17 @@ l1 = meshsegment(1.0,1/2)
 vt = skeleton(l1,0)
 bd = boundary(l1)
 
-overlaps = overlap_predicate(bd)
+overlaps = overlap_gpredicate(bd)
 pred1 = c -> overlaps(simplex(vertices(vt,c)))
 @test pred1(SVector(1))
 @test !pred1(SVector(2))
 @test pred1(SVector(3))
+
+
+# test a case where the segments are:
+#   not of unit length
+#   colinear and opposite
+#   meet in a common point
+ch1 = simplex(point(1/3,0,0), point(1/3,1/3,0))
+ch2 = simplex(point(1/3,1/3,0), point(1/3,2/3,0))
+@test !overlap(ch1, ch2)

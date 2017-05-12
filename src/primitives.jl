@@ -1,3 +1,5 @@
+using CompScienceMeshes
+
 function meshsegment{T<:Real}(L::T, delta::T, udim=2)
 
   PT = SVector{udim, T}
@@ -239,6 +241,9 @@ Volume(1)={1};
     # close(fdo)
     # rm(fno)
     # rm(fn)
+    close(fdo)
+    rm(fno)
+    rm(fn)
 
     return m
 
