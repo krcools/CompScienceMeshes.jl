@@ -68,6 +68,7 @@ include("flipped.jl")
 include("timeaxis.jl")
 
 include("gmsh.jl")
+include("TRI_mesh.jl")
 include("gid.jl")
 include("primitives.jl")
 include("../examples/waveguide_with_post.jl")
