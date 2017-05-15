@@ -89,9 +89,7 @@ include("mesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
 
-include("gmsh.jl")
 include("TRI_mesh.jl")
-include("gid.jl")
 include("fileio/readmesh.jl")
 include("fileio/gmsh.jl")
 include("fileio/gid.jl")
@@ -100,10 +98,6 @@ include("../examples/waveguide_with_post.jl")
 include("submesh.jl")
 include("baryref.jl")
 include("weld.jl")
-
-# geometry API
-include("geometry.jl")
-
 
 
 include("utils.jl")
