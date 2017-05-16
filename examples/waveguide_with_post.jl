@@ -1,8 +1,23 @@
 using CompScienceMeshes
 
-function meshwaveguidepost(width, height, length, post_radius, delta)
+export meshwaveguidepost
 
-s = """
+"""
+    meshwaveguidepost(width, height, length, post_radius, delta)
+
+Creates a mesh for a waveguide of width (along the x-axis) `width`, height (along
+    the y-axis) `height` and length (along the z-axis) `length` by parsing a .geo script
+    incorporating these parameters into the GMSH mesher.
+
+A cylindrical post of radius `post_radius` is positioned vertically (i.e.
+    parallel to y-axis) midway along the waveguide.
+
+The target edge size is `delta`.
+"""
+
+function meshwaveguidepost(width, height, length, post_radius, delta)
+    s =
+"""
 
 lc = $delta;
 
@@ -115,6 +130,7 @@ Ruled Surface(8) = {10};
     fno = tempname()
     run(`gmsh $fn -2 -format msh -o $fno`)
     fdo = open(fno,"r")
+    # include(Pkg.dir("CompScienceMeshes","src","gmsh.jl"))
     m = CompScienceMeshes.read_gmsh_mesh(fdo)
     close(fdo)
     rm(fno)
@@ -124,12 +140,10 @@ Ruled Surface(8) = {10};
 
 end
 
-width = 1.0
-height = 1.0
-depth = 6.0
-post_radius = 0.2
-delta = 0.2
-m = meshwaveguidepost(width, height, depth, post_radius, delta)
-
-@show numcells(m)
-@show numvertices(m)
+# Γ = meshwaveguidepost(22,22,50,3.81,0.8)
+# RT = raviartthomas(Γ)
+#
+# include(Pkg.dir("CompScienceMeshes","examples","plotlyjs_patches.jl"))
+# A = rand(numcells(Γ))
+# p = patch(Γ, A)
+# PlotlyJS.plot([p])
