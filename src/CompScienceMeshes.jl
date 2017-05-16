@@ -89,7 +89,7 @@ include("mesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
 
-include("TRI_mesh.jl")
+include("fileio/TRI_mesh.jl")
 include("fileio/readmesh.jl")
 include("fileio/gmsh.jl")
 include("fileio/gid.jl")
