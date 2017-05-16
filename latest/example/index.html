@@ -112,32 +112,32 @@ all_faces = submesh(c-&gt;!pred(chart(rect,c)), rect)
 <pre><code>WARNING: min{T1 &lt;: Real, T2 &lt;: Real}(x::AbstractArray{T1}, y::AbstractArray{T2}) is deprecated, use min.(x, y) instead.
 Stacktrace:
  [1] depwarn(::String, ::Symbol) at ./deprecated.jl:64
- [2] min(::StaticArrays.SVector{3,Float64}, ::StaticArrays.SVector{3,Float64}) at ./deprecated.jl:51
- [3] macro expansion at /home/travis/.julia/v0.6/StaticArrays/src/mapreduce.jl:82 [inlined]
- [4] _mapreduce at /home/travis/.julia/v0.6/StaticArrays/src/mapreduce.jl:74 [inlined]
- [5] mapreduce at /home/travis/.julia/v0.6/StaticArrays/src/mapreduce.jl:66 [inlined]
- [6] reduce at /home/travis/.julia/v0.6/StaticArrays/src/mapreduce.jl:164 [inlined]
- [7] minimum at /home/travis/.julia/v0.6/StaticArrays/src/mapreduce.jl:187 [inlined]
- [8] boundingbox(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.6/CompScienceMeshes/src/submesh.jl:66
- [9] (::CompScienceMeshes.#pred#53{CompScienceMeshes.Mesh{3,3,Float64}})(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.6/CompScienceMeshes/src/submesh.jl:108
- [10] submesh(::ex-ex1.##1#2, ::CompScienceMeshes.Mesh{3,3,Float64}) at /home/travis/.julia/v0.6/CompScienceMeshes/src/submesh.jl:19
+ [2] min(::SVector{3,Float64}, ::SVector{3,Float64}) at ./deprecated.jl:51
+ [3] macro expansion at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:73 [inlined]
+ [4] _mapreduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:65 [inlined]
+ [5] mapreduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:57 [inlined]
+ [6] reduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:155 [inlined]
+ [7] minimum at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:178 [inlined]
+ [8] boundingbox(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:66
+ [9] (::CompScienceMeshes.#pred#53{CompScienceMeshes.Mesh{3,3,Float64}})(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:108
+ [10] submesh(::ex-ex1.##1#2, ::CompScienceMeshes.Mesh{3,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:19
  [11] eval(::Module, ::Any) at ./boot.jl:235
- [12] #8 at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:459 [inlined]
+ [12] #8 at /home/travis/.julia/v0.7/Documenter/src/Expanders.jl:459 [inlined]
  [13] cd(::Documenter.Expanders.##8#10, ::String) at ./file.jl:70
- [14] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.6/Documenter/src/Utilities/Utilities.jl:587
- [15] runner(::Type{Documenter.Expanders.ExampleBlocks}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:457
- [16] dispatch(::Type{Documenter.Expanders.ExpanderPipeline}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
- [17] expand(::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:29
- [18] dispatch(::Type{Documenter.Builder.DocumentPipeline}, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
+ [14] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.7/Documenter/src/Utilities/Utilities.jl:587
+ [15] runner(::Type{Documenter.Expanders.ExampleBlocks}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.7/Documenter/src/Expanders.jl:457
+ [16] dispatch(::Type{Documenter.Expanders.ExpanderPipeline}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.7/Documenter/src/Selectors.jl:164
+ [17] expand(::Documenter.Documents.Document) at /home/travis/.julia/v0.7/Documenter/src/Expanders.jl:29
+ [18] dispatch(::Type{Documenter.Builder.DocumentPipeline}, ::Documenter.Documents.Document) at /home/travis/.julia/v0.7/Documenter/src/Selectors.jl:164
  [19] cd(::Documenter.##2#3{Documenter.Documents.Document}, ::String) at ./file.jl:70
- [20] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.6/Documenter/src/Documenter.jl:198
+ [20] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.7/Documenter/src/Documenter.jl:198
  [21] (::Documenter.#kw##makedocs)(::Array{Any,1}, ::Documenter.#makedocs) at ./&lt;missing&gt;:0
- [22] include_from_node1(::String) at ./loading.jl:539
+ [22] include_from_node1(::String) at ./loading.jl:563
  [23] include(::String) at ./sysimg.jl:14
  [24] eval(::Module, ::Any) at ./boot.jl:235
  [25] process_options(::Base.JLOptions) at ./client.jl:286
  [26] _start() at ./client.jl:371
-while loading /home/travis/.julia/v0.6/CompScienceMeshes/docs/make.jl, in expression starting on line 3
+while loading /home/travis/.julia/v0.7/CompScienceMeshes/docs/make.jl, in expression starting on line 3
 </code></pre>
 
 <p>Note that we started out creating a large rectangular mesh and a small one. Next we translate the small one to the center of the large one. We can use <code>submesh</code> to select the part of the mesh that does not coincide with the hole by providing an appropriate predicate.</p>
