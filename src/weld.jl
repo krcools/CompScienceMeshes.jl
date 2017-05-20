@@ -16,8 +16,13 @@ function weld(Γ₁, Γ₂)
     T = eltype(eltype(Γ₁.vertices))
     tol = sqrt(eps(T))
 
-    radii = zeros(numvertices(Γ₁))
-    tree = Octree(Γ₁.vertices, radii)
+    #radii = zeros(numvertices(Γ₁))
+    #tree = Octree(Γ₁.vertices, radii)
+    verts1 = skeleton(Γ₁,0)
+    radii = zeros(numcells(verts1))
+    indcs = [v[1] for v in cells(verts1)]
+    cntrs = [cartesian(center(chart(verts1,v))) for v in cells(verts1)]
+    tree = Octree(cntrs, radii)
 
     nv1 = numvertices(Γ₁)
     nv2 = numvertices(Γ₂)
@@ -30,12 +35,13 @@ function weld(Γ₁, Γ₂)
 
     for (j,v) in enumerate(Γ₂.vertices)
         found = false
-        pred(c,s) = fitsinbox(Array(v), 0.0, c, s)
+        pred(c,s) = fitsinbox(Array(v), 0.0, c, s+tol)
         for box in boxes(tree, pred)
             for i in box
-                u = Γ₁.vertices[i]
+                #u = Γ₁.vertices[i]
+                u = cntrs[i]
                 if norm(u-v) < tol
-                    idmap[j] = i
+                    idmap[j] = indcs[i]
                     num_equal_vertices += 1
                     found = true
                     # we implicitly assume that the first copy of a point
@@ -52,7 +58,6 @@ function weld(Γ₁, Γ₂)
         end
     end
 
-    #V = [Γ₁.vertices; Γ₂.vertices]
     V = [V1; V2]
     F = [Γ₁.faces; Γ₂.faces]
 

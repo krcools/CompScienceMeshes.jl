@@ -30,4 +30,6 @@ include("test_trgauss.jl")
 include("test_chartquad.jl")
 include("test_nbd.jl")
 
+include("test_mapper.jl")
+
 end

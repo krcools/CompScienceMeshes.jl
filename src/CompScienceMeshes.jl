@@ -32,6 +32,8 @@ export submesh
 export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
+export mapper, restriction
+
 # link to the chart concept
 export chart
 
@@ -95,5 +97,8 @@ include("primitives.jl")
 include("submesh.jl")
 include("baryref.jl")
 include("weld.jl")
+
+include("mapper.jl")
+include("restrict.jl")
 
 end # module

@@ -10,6 +10,7 @@ Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
 
 cartesian(mp::MeshPointNM) = mp.cart
 parametric(mp::MeshPointNM) = mp.bary
+chart(nbd::MeshPointNM) = mp.patch
 
 "Return the barycentric coordinates of `mp`"
 barycentric(mp::MeshPointNM) = SVector(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])

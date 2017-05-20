@@ -40,5 +40,5 @@ function load_gid_mesh(file)
             triangles[triangleCount] = Pt{3,Int}(map(parse, line[2:4]));
     end
 
-    return Mesh{3,3, Float64}(vertices[1:vertexCount], triangles[1:triangleCount])
+    Mesh(vertices[1:vertexCount], triangles[1:triangleCount])
 end

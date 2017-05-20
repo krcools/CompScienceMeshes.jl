@@ -9,6 +9,12 @@ export vertexarray, cellarray
 type Mesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
+    dict::Dict{SVector{D1,Int},Int}
+end
+
+function Mesh(vertices, faces)
+    dict = Dict((f,i) for (i,f) in enumerate(faces))
+    Mesh(vertices, faces, dict)
 end
 
 vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]

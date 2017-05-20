@@ -61,6 +61,8 @@ Create a mesh for a rectangle of width (along the x-axis) `width` and height (al
 
 The target edge size is `delta` and the dimension of the
     embedding universe is `udim` (>= 2).
+
+The mesh is oriented such that the normal is pointing down. This is subject to change.
 """
 function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
 
@@ -205,11 +207,11 @@ Line(10)={2,6};
 Line(11)={3,7};
 Line(12)={4,8};
 
-Line Loop(1)={1,2,3,4};
-Line Loop(2)={-1,9,5,-10};
-Line Loop(3)={-2,10,6,-11};
-Line Loop(4)={-3,11,7,-12};
-Line Loop(5)={-4,12,8,-9};
+Line Loop(1)={-1,-2,-3,-4};
+Line Loop(2)={1,-9,-5,10};
+Line Loop(3)={2,-10,-6,11};
+Line Loop(4)={3,-11,-7,12};
+Line Loop(5)={4,-12,-8,9};
 Line Loop(6)={5,6,7,8};
 
 Plane Surface(1)={1};
