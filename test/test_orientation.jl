@@ -14,3 +14,7 @@ end
 fn = joinpath(dirname(@__FILE__),"assets","cube2.in")
 m = readmesh(fn)
 @test isoriented(m)
+
+fn = joinpath(dirname(@__FILE__),"assets","sphere2.in")
+m = readmesh(fn)
+@test isoriented(m)

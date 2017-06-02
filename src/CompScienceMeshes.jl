@@ -1,8 +1,12 @@
+__precompile__()
+
 module CompScienceMeshes
 
 using StaticArrays
 using Compat
 import Base.getindex
+
+export getcommonedge
 
 # defaults
 export index
@@ -65,11 +69,11 @@ export trgauss, sqgauss, legendre
 export SegmentedAxis
 export minmaxdist, rings, ring
 
-#typealias Pt{N,T} StaticArrays.SVector{N,T}
 @compat Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
 include("utils.jl")
+include("combinatorics.jl")
 
 # quadrature rules for segements, triangles, and squares
 include("quadrature/SegmentGauss.jl")
@@ -89,16 +93,19 @@ include("mesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
 
+include("fileio/TRI_mesh.jl")
 include("fileio/readmesh.jl")
 include("fileio/gmsh.jl")
 include("fileio/gid.jl")
-
 include("primitives.jl")
+#include("../examples/waveguide_with_post.jl")
 include("submesh.jl")
 include("baryref.jl")
 include("weld.jl")
 
 include("mapper.jl")
 include("restrict.jl")
+
+
 
 end # module
