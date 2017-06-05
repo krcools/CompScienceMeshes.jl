@@ -241,7 +241,7 @@ function (::Type{ReferenceSimplex{D,T,N}}){D,T,N}()
     o = zero(SVector{D,T})
     push!(P,o)
 
-    ReferenceSimplex(simplex(P...))
+    ReferenceSimplex{D,T,N}(simplex(P...))
 end
 
 
