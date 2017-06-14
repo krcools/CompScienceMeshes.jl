@@ -110,18 +110,8 @@ normal
 <p><a id='Numerical-Quadrature-1'></a></p>
 <h3 id="numerical-quadrature">Numerical Quadrature</h3>
 <p>This package provides a number of routines that aim to facilitate numerical quadrature over charts. In addition, it includes a default set of quadrature rules for segments (1D) and triangles (2D).</p>
-<p><a id='CompScienceMeshes.quadpoints-Tuple{Any,Any}' href='#CompScienceMeshes.quadpoints-Tuple{Any,Any}'>#</a>
-<strong><code>CompScienceMeshes.quadpoints</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>pw = quadpoints(chart, rule)
-</code></pre>
-
-<p>Returns a collection of (point, weight) tuples corresponding to the numerical quadrature <code>rule</code> defined on the domain of <code>chart</code>. The weights returned take into account the Jacobian determinant resulting from mapping from the reference domain to the configuration space.</p>
-<p>Functions can be integrated like:</p>
-<pre><code class="julia">PW = quadpoints(chart, rule)
-I = sum(pw[2]*f(pw[1]) for pw in PW)
-</code></pre>
-
-<p><a target='_blank' href='https://github.com/krcools/CompScienceMeshes.jl/tree/d89a371d3a84db11e038f1bb284141b2afb935bb/src/quadpoints.jl#L19-L32' class='documenter-source'>source</a><br></p></div>
+<pre><code>quadpoints(chart, rule)
+</code></pre></div>
         </div>
 
         <footer class="col-md-12">

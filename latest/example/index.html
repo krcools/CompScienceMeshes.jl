@@ -116,10 +116,10 @@ Stacktrace:
  [3] @generated body at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:73 [inlined]
  [4] _mapreduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:65 [inlined]
  [5] mapreduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:57 [inlined]
- [6] reduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:155 [inlined]
+ [6] reduce at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:156 [inlined]
  [7] minimum at /home/travis/.julia/v0.7/StaticArrays/src/mapreduce.jl:178 [inlined]
  [8] boundingbox(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:66
- [9] (::CompScienceMeshes.#pred#57{CompScienceMeshes.Mesh{3,3,Float64}})(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:108
+ [9] (::CompScienceMeshes.#pred#65{CompScienceMeshes.Mesh{3,3,Float64}})(::CompScienceMeshes.Simplex{3,2,1,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:108
  [10] submesh(::ex-ex1.##1#2, ::CompScienceMeshes.Mesh{3,3,Float64}) at /home/travis/.julia/v0.7/CompScienceMeshes/src/submesh.jl:19
  [11] eval(::Module, ::Any) at ./boot.jl:236
  [12] #8 at /home/travis/.julia/v0.7/Documenter/src/Expanders.jl:459 [inlined]
@@ -134,11 +134,12 @@ Stacktrace:
  [21] cd(::Documenter.##2#3{Documenter.Documents.Document}, ::String) at ./file.jl:70
  [22] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.7/Documenter/src/Documenter.jl:198
  [23] (::Documenter.#kw##makedocs)(::Array{Any,1}, ::Documenter.#makedocs) at ./&lt;missing&gt;:0
- [24] include_from_node1(::String) at ./loading.jl:551
- [25] include(::String) at ./sysimg.jl:14
- [26] eval(::Module, ::Any) at ./boot.jl:236
- [27] process_options(::Base.JLOptions) at ./client.jl:288
- [28] _start() at ./client.jl:373
+ [24] include_from_node1(::Module, ::String) at ./loading.jl:549
+ [25] include(::Module, ::String) at ./sysimg.jl:14
+ [26] include(::String) at ./client.jl:376
+ [27] eval(::Module, ::Any) at ./boot.jl:236
+ [28] process_options(::Base.JLOptions) at ./client.jl:293
+ [29] _start() at ./client.jl:378
 while loading /home/travis/.julia/v0.7/CompScienceMeshes/docs/make.jl, in expression starting on line 3
 </code></pre>
 
