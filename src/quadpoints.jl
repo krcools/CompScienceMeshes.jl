@@ -32,7 +32,7 @@ PW = quadpoints(chart, rule)
 I = sum(pw[2]*f(pw[1]) for pw in PW)
 ```
 """
-function quadpoints(chart, rule)
+function quadpoints(chart::Simplex, rule)
     #P, V = quadpoints(domain(chart), rule)
     #Q = [neighborhood(chart,p) for p in P]
     #W = [jacobian(q)*v for (q,v) in zip(Q,V)]
