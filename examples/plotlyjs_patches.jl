@@ -1,7 +1,7 @@
 import PlotlyJS
 import Colors
 
-const cm = mapslices(
+cm = mapslices(
     r->Colors.RGB(r[1],r[2],r[3]),
     readcsv(Pkg.dir("CompScienceMeshes","examples","cm.csv")),
     [2])

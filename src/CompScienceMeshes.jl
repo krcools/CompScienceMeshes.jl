@@ -80,6 +80,7 @@ include("quadrature/SquareGauss.jl")
 
 # simplices and related algorithms
 include("charts.jl")
+include("sphere.jl")
 include("overlap.jl")
 include("intersect.jl")
 include("isinside.jl")
