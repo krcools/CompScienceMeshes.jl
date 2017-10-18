@@ -11,7 +11,7 @@ export euclidianbasis, point
 # default mesh creation
 export mesh, readmesh, writemesh
 export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
-
+export subdMesh
 # mesh interface
 export dimension, universedimension, vertextype, coordtype
 export numvertices, vertices
@@ -27,8 +27,10 @@ export weld
 # mesh refinement
 export barycentric_refinement, bisecting_refinement
 
+export  Loop_subdivision
+
 # submesh selection and cell retrieval
-export submesh
+export GSubdMesh
 export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
@@ -87,6 +89,8 @@ include("mesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
 
+include("subdMesh.jl")
+
 include("fileio/readmesh.jl")
 include("fileio/gmsh.jl")
 include("fileio/gid.jl")
@@ -94,6 +98,7 @@ include("fileio/gid.jl")
 include("primitives.jl")
 include("submesh.jl")
 include("baryref.jl")
+include("subdivision.jl")
 include("weld.jl")
 
 end # module
