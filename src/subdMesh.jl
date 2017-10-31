@@ -1,4 +1,4 @@
-export SEdge,SElement,SVertex,subdMesh,shapefun_reg,shapefun_reg_der,shapefun_reg_der2
+export SEdge,SElement,SVertex,subdMesh
 
 type SElement
     # RingElements::Vector{Int64}
@@ -17,6 +17,7 @@ type SVertex
     Elements::Vector{Int64}
     Valence::Int64
     Edges::Vector{Int64}
+    # Coords::Vector{Float64}
 end
 
 type subdMesh
@@ -214,8 +215,6 @@ function GSubdMesh(mesh::Mesh)
         end
         # append!(Selements,SF)
         Selements[F] = SF
-        print(Ringnodes)
-        print("\n")
     end
     mesh=subdMesh(Sedges,Svertices,Selements)
 end
@@ -307,140 +306,4 @@ function find_edges(F,Face,edges,connectMat)
         end
     end
     EdgesIndices,orientation
-end
-
-function shapefun_reg(v,w)
-    u=1.0-v-w;
-
-    x = zeros(1,12)
-
-    x[4] = (u*u*u*u + 2.0*u*u*u*v)/12.0
-
-    x[5] = (u*u*u*u + 2.0*u*u*u*w)/12.0
-
-    x[3] = (u*u*u*u + 2.0*u*u*u*w + 6.0*u*u*u*v + 6.0*u*u*v*w + 12.0*u*u*v*v + 6.0*u*v*v*w + 6.0*u*v*v*v + 2.0*v*v*v*w + v*v*v*v) / 12.0
-
-    x[1] = (6.0*u*u*u*u + 24.0*u*u*u*w + 24.0*u*u*w*w + 8.0*u*w*w*w + w*w*w*w + 24.0*u*u*u*v + 60.0*u*u*v*w + 36.0*u*v*w*w + 6.0*v*w*w*w + 24.0*u*u*v*v + 36.0*u*v*v*w + 12.0*v*v*w*w + 8.0*u*v*v*v + 6.0*v*v*v*w + v*v*v*v) / 12.0
-
-    x[6] = (u*u*u*u + 6.0*u*u*u*w + 12.0*u*u*w*w + 6.0*u*w*w*w + w*w*w*w + 2.0*u*u*u*v + 6.0*u*u*v*w + 6.0*u*v*w*w + 2.0*v*w*w*w) / 12.0
-
-    x[10] = (2.0*u*v*v*v + v*v*v*v) / 12.0
-
-    x[2] = (u*u*u*u + 6.0*u*u*u*w + 12.0*u*u*w*w + 6.0*u*w*w*w + w*w*w*w + 8.0*u*u*u*v + 36.0*u*u*v*w + 36.0*u*v*w*w + 8.0*v*w*w*w + 24.0*u*u*v*v + 60.0*u*v*v*w + 24.0*v*v*w*w + 24.0*u*v*v*v + 24.0*v*v*v*w + 6.0*v*v*v*v) / 12.0
-
-    x[7] = (u*u*u*u + 8.0*u*u*u*w + 24.0*u*u*w*w + 24.0*u*w*w*w + 6.0*w*w*w*w + 6.0*u*u*u*v + 36.0*u*u*v*w + 60.0*u*v*w*w + 24.0*v*w*w*w + 12.0*u*u*v*v + 36.0*u*v*v*w + 24.0*v*v*w*w + 6.0*u*v*v*v + 8.0*v*v*v*w + v*v*v*v)/12.0
-
-    x[12] = (2.0*u*w*w*w + w*w*w*w) / 12.0
-
-    x[9] = (2.0*v*v*v*w + v*v*v*v) / 12.0
-
-    x[8] = (2.0*u*w*w*w + w*w*w*w + 6.0*u*v*w*w + 6.0*v*w*w*w + 6.0*u*v*v*w + 12.0*v*v*w*w + 2.0*u*v*v*v + 6.0*v*v*v*w + v*v*v*v) / 12.0
-
-    x[11] = (w*w*w*w + 2.0*v*w*w*w) / 12.0
-
-    return x
-end
-
-function shapefun_reg_der(v,w)
-    u=1.0-v-w
-    der1=zeros(2,12)
-    der1[1,4] = (-6.0*v*pow(u,2.0) - 2.0*pow(u,3.0))/12.0
-    der1[2,4] = (-6.0*v*pow(u,2.0) - 4.0*pow(u,3.0))/12.0
-
-    der1[1,5] = (-4.0*pow(u,3.0)-6.0*pow(u,2.0)*w)/12.0
-    der1[2,5] = (-2.0*pow(u,3.0)-6.0*pow(u,2.0)*w)/12.0
-
-    der1[1,3] = (-2.0*pow(v,3.0)-6.0*pow(v,2.0)*u + 6.0*v*pow(u,2.0)+2.0*pow(u,3.0))/12.0
-    der1[2,3] = (-4.0*pow(v,3.0)-18.0*pow(v,2.0)*u - 12.0*v*pow(u,2.0)-2.0*pow(u,3.0) - 6.0*pow(v,2.0)*w-12.0*v*u*w - 6.0*pow(u,2.0)*w)/12.0
-
-    der1[1,1] = (-4.0*pow(v,3.0)-24.0*pow(v,2.0)*u - 24.0*v*pow(u,2.0)-18.0*pow(v,2.0)*w - 48.0*v*u*w-12.0*pow(u,2.0)*w - 12.0*v*pow(w,2.0) - 12.0*u*pow(w,2.0) - 2.0*pow(w,3.0))/12.0
-    der1[2,1] = (-2.0*pow(v,3.0)-12.0*pow(v,2.0)*u - 12.0*v*pow(u,2.0)-12.0*pow(v,2.0)*w - 48.0*v*u*w-24.0*pow(u,2.0)*w - 18.0*v*pow(w,2.0)-24.0*u*pow(w,2.0) - 4.0*pow(w,3.0))/12.0
-
-    der1[1,6] = (-6.0*v*pow(u,2.0)-2.0*pow(u,3.0) - 12.0*v*u*w-12.0*pow(u,2.0)*w - 6.0*v*pow(w,2.0)-18.0*u*pow(w,2.0) - 4.0*pow(w,3.0))/12.0
-
-    der1[2,6] = (2.0*pow(u,3.0)+6.0*pow(u,2.0)*w - 6.0*u*pow(w,2.0)-2.0*pow(w,3.0))/12.0
-
-    der1[1,10] = (2.0*pow(v,3.0)+6.0*pow(v,2.0)*u)/12.0
-    der1[2,10] = -pow(v,3.0)/6.0
-
-    der1[1,2] = (24.0*pow(v,2.0)*u+24.0*v*pow(u,2.0) + 4.0*pow(u,3.0)+12.0*pow(v,2.0)*w + 48.0*v*u*w+18.0*pow(u,2.0)*w + 12.0*v*pow(w,2.0)+12.0*u*pow(w,2.0) + 2.0*pow(w,3.0))/12.0
-    der1[2,2] = (12.0*pow(v,2.0)*u+12.0*v*pow(u,2.0) + 2.0*pow(u,3.0)-12.0*pow(v,2.0)*w + 6.0*pow(u,2.0)*w-12.0*v*pow(w,2.0) - 6.0*u*pow(w,2.0)-2.0*pow(w,3.0))/12.0
-
-    der1[1,7] = (-2.0*pow(v,3.0)-6.0*pow(v,2.0)*u + 6.0*v*pow(u,2.0)+2.0*pow(u,3.0) - 12.0*pow(v,2.0)*w+12.0*pow(u,2.0)*w - 12.0*v*pow(w,2.0)+12.0*(1.0-v-w)*pow(w,2.0))/12.0
-    der1[2,7] = (2.0*pow(v,3.0)+12.0*pow(v,2.0)*u + 18.0*v*pow(u,2.0)+4.0*pow(u,3.0) + 12.0*pow(v,2.0)*w+48.0*v*u*w + 24.0*pow(u,2.0)*w+12.0*v*pow(w,2.0) + 24.0*u*pow(w,2.0))/12.0
-
-    der1[1,12] = -pow(w,3.0)/6.0
-    der1[2,12] = (6.0*u*pow(w,2.0)+2.0*pow(w,3.0))/12.0
-
-    der1[1,9] = (4.0*pow(v,3.0)+6.0*pow(v,2.0)*w)/12.0
-    der1[2,9] = pow(v,3.0)/6.0
-
-    der1[1,8]= (2.0*pow(v,3.0)+6.0*pow(v,2.0)*u + 12.0*pow(v,2.0)*w+12.0*v*u*w + 18.0*v*pow(w,2.0)+6.0*u*pow(w,2.0) + 4.0*pow(w,3.0))/12.0
-
-    der1[2,8]= (4.0*pow(v,3.0)+6.0*pow(v,2.0)*u + 18.0*pow(v,2.0)*w+12.0*v*u*w + 12.0*v*pow(w,2.0)+6.0*u*pow(w,2.0) + 2.0*pow(w,3.0))/12.0
-
-    der1[1,11] = pow(w,3.0)/6.0
-    der1[2,11] = (6.0*v*pow(w,2.0)+4.0*pow(w,3.0))/12.0
-
-    return der1
-
-end
-
-function shapefun_reg_der2(v,w)
-    u = 1.0-v-w
-    ders=zeros(3,12)
-    der2[1,4] = v*u
-    der2[2,4] = v*u+pow(u,2.0)
-    der2[3,4] = (12.0*v*u+6.0*pow(u,2.0))/12.0
-
-    der2[1,5] = pow(u,2.0)+u*w
-    der2[2,5] = u*w
-    der2[3,5] = (6.0*pow(u,2.0)+12.0*u*w)/12.0
-
-    der2[1,3] = -2.0*v*u
-    der2[2,3] = pow(v,2.0)+v*u+v*w+u*w
-    der2[3,3] = (6.0*pow(v,2.0)-12.0*v*u -6.0*pow(u,2.0))/12.0
-
-    der2[1,1] = pow(v,2.0)-2.0*pow(u,2.0) + v*w-2.0*u*w
-    der2[2,1] = -2.0*v*u-2.0*pow(u,2.0) + v*w+pow(w,2.0)
-    der2[3,1] = (6.0*pow(v,2.0)-12.0*pow(u,2.0) + 24.0*v*w+6.0*pow(w,2.0))/12.0
-
-    der2[1,6] = v*u + v*w + u*w + pow(w,2.0)
-    der2[2,6] = - 2.0*u*w
-    der2[3,6] = (- 6.0*pow(u,2.0) - 12.0*u*w + 6.0*pow(w,2.0))/12.0
-
-    der2[1,10] = v*u
-    der2[2,10] = 0.0
-    der2[3,10] = -pow(v,2.0)/2.0
-
-    der2[1,2] = (-24.0*pow(v,2.0)+12.0*pow(u,2.0)-24.0*v*w + 12.0*u*w)/12.0
-    der2[2,2] = (-24.0*pow(v,2.0)-24.0*v*u-24.0*v*w - 24.0*u*w)/12.0
-    der2[3,2] = (-12.0*pow(v,2.0)+6.0*pow(u,2.0)-24.0*v*w - 12.0*u*w-6.0*pow(w,2.0))/12.0
-
-    der2[1,7] = -2.0*v*u-2.0*v*w-2.0*u*w - 2.0*pow(w,2.0)
-    der2[2,7] = v*u+pow(u,2.0)-2.0*v*w - 2.0*pow(w,2.0)
-    der2[3,7] = (-6.0*pow(v,2.0)-12.0*v*u+6.0*pow(u,2.0) - 24.0*v*w-12.0*pow(w,2.0))/12.0
-
-    der2[1,12] = 0.0
-    der2[2,12] = u*w
-    der2[3,12] = -pow(w,2.0)/2.0
-
-    der2[1,9] = (12.0*pow(v,2.0)+12.0*v*w)/12.0
-    der2[2,9] = 0.0
-    der2[3,9] = pow(v,2.0)/2.0
-
-    der2[1,8]= (12.0*v*u+12.0*v*w+12.0*u*w + 12.0*pow(w,2.0))/12.0
-    der2[2,8]= pow(v,2.0)+v*u+v*w+u*w
-    der2[3,8]= (6.0*pow(v,2.0)+12.0*v*u+24.0*v*w + 12.0*u*w+6.0*pow(w,2.0))/12.0
-
-    der2[1,11]= 0.0
-    der2[2,11]= v*w+pow(w,2.0)
-    der2[3,11]= pow(w,2.0)/2.0
-
-  return der2;
-
-end
-
-function pow(x,y)
-    return x^y
 end
