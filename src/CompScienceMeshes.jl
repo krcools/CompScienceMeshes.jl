@@ -32,7 +32,7 @@ export barycentric_refinement, bisecting_refinement
 export  Loop_subdivision
 
 # submesh selection and cell retrieval
-export GSubdMesh
+export GSubdMesh,submesh
 export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
 
