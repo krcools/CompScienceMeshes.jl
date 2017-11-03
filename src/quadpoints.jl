@@ -8,13 +8,11 @@ end
 function quadpoints(chart::ReferenceSimplex{1}, rule)
     u, w = legendre(rule, 0.0, 1.0)
     [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
-    #[neighborhood(chart, u[:,i]) for i in eachindex(w)], w
 end
 
 function quadpoints(chart::ReferenceSimplex{2}, rule)
     u, w = trgauss(rule)
     [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
-    #[neighborhood(chart, u[:,i]) for i in eachindex(w)], w
 end
 
 
@@ -33,10 +31,6 @@ I = sum(pw[2]*f(pw[1]) for pw in PW)
 ```
 """
 function quadpoints(chart::Simplex, rule)
-    #P, V = quadpoints(domain(chart), rule)
-    #Q = [neighborhood(chart,p) for p in P]
-    #W = [jacobian(q)*v for (q,v) in zip(Q,V)]
-    #return collect(zip(Q, W))
     PV = quadpoints(domain(chart), rule)
     map(PV) do pv
         q = neighborhood(chart, pv[1])
