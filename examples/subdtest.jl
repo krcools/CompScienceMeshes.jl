@@ -1,5 +1,23 @@
 using CompScienceMeshes
-G = readmesh("/Users/Benjamin/Documents/sphere.in")
+
+# G = readmesh("examples/sphere.in")
+# edges = skeleton(G,1)
+# faces = skeleton(G,2)
+# connectMat = connectivity(edges,faces)
+# NV, NE, NF = numvertices(G), numcells(edges), numcells(faces)
+# nv = NV + NE
+# verts = Array{vertextype(G)}(nv)
+# G1 = bisecting_refinement(G)
+# G2 = Loop_subdivision(G)
+# G3 = Loop_subdivision(G2)
+# G4 = Loop_subdivision(G3)
+# writemesh(G2,"examples/sphere_subd1.in")
+# writemesh(G3,"examples/sphere_subd2.in")
+# writemesh(G4,"examples/sphere_subd3.in")
+fn = joinpath(dirname(@__FILE__),"sphere_subd3.in")
+#G = readmesh("/Users/Benjamin/Documents/sphere.in")
+G = readmesh(fn)
+# G = Loop_subdivision(G)
 subdG=GSubdMesh(G)
 nelem = length(subdG.elements)
 area = 0.0
