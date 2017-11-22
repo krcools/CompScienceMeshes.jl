@@ -366,6 +366,9 @@ function matrix_A(ival)
 end
 
 function shape_function(v,w,ival)
+    if v+w > 1.0
+        error("u+v can not larger than 1.0")
+    end
     if ival == 6
         return reg_shapefun(v,w,0)
     else
@@ -374,6 +377,9 @@ function shape_function(v,w,ival)
 end
 
 function shape_function_der(v,w,ival)
+    if v+w > 1.0
+        error("u+v can not larger than 1.0")
+    end
     if ival == 6
         return reg_shapefun(v,w,1)
     else
@@ -382,6 +388,9 @@ function shape_function_der(v,w,ival)
 end
 
 function shape_function_der2(v,w,ival)
+    if v+w > 1.0
+        error("u+v can not larger than 1.0")
+    end
     if ival == 6
         return reg_shapefun(v,w,2)
     else

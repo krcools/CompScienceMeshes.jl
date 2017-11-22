@@ -39,6 +39,15 @@ function quadpoints(chart::Simplex, rule)
     end
 end
 
+function quadpoints(chart::subd_chart, rule)
+    u, w = trgauss(rule)
+    PV = [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
+    map(PV) do pv
+        q = pv[1]
+        w = jacobian(q)*pv[2]
+        (q,w)
+    end
+end
 
 """
     quadpoints(refspace, charts, rules)

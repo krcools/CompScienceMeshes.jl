@@ -1,7 +1,6 @@
 export SEdge,SElement,SVertex,subdMesh
 
 type SElement
-    # RingElements::Vector{Int64}
     RingNodes::Vector{Int64}
     Edges::Vector{Int64}
 end
@@ -17,13 +16,14 @@ type SVertex
     Elements::Vector{Int64}
     Valence::Int64
     Edges::Vector{Int64}
-    # Coords::Vector{Float64}
+    Coords::SVector{3,Float64}
 end
 
 type subdMesh
     edges::Vector{SEdge}
     vertices::Vector{SVertex}
     elements::Vector{SElement}
+    mesh::Mesh
 end
 """
     GSubdMesh(mesh::Mesh)
@@ -58,11 +58,12 @@ function GSubdMesh(mesh::Mesh)
                 end
             end
         end
+        coords = mesh.vertices[V]
         # delete duplicate vertices
         # RingverticesIndices = unique(RingverticesIndices)
         # calculate valence for vertex V
         valence = length(ElementIndices)
-        SV=SVertex(ElementIndices,valence,EdgeIndices)
+        SV=SVertex(ElementIndices,valence,EdgeIndices,coords)
         # append!(Svertices, SV)
         Svertices[V] = SV
     end
@@ -216,7 +217,7 @@ function GSubdMesh(mesh::Mesh)
         # append!(Selements,SF)
         Selements[F] = SF
     end
-    mesh=subdMesh(Sedges,Svertices,Selements)
+    subdmesh=subdMesh(Sedges,Svertices,Selements,mesh)
 end
 """
     find_neighbor(faces,edges,F,EdgesIndices,orientation,Sedges)

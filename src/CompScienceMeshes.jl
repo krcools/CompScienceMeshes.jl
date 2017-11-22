@@ -80,21 +80,26 @@ include("quadrature/SegmentGauss.jl")
 include("quadrature/TriangleGauss.jl")
 include("quadrature/SquareGauss.jl")
 
+# mesh component
+include("mesh.jl")
+include("subdMesh.jl")
+
+
 # simplices and related algorithms
 include("rectangle.jl")
 include("charts.jl")
+include("subd_chart.jl")
 include("sphere.jl")
 include("overlap.jl")
 include("intersect.jl")
 include("isinside.jl")
 include("neighborhood.jl")
+include("subd_neighborhood.jl")
 include("quadpoints.jl")
 
-# mesh component
-include("mesh.jl")
+include("submesh.jl")
 include("flipped.jl")
 include("timeaxis.jl")
-include("subdMesh.jl")
 include("subd_shape.jl")
 include("gaussquarature.jl")
 include("fileio/TRI_mesh.jl")
@@ -103,7 +108,6 @@ include("fileio/gmsh.jl")
 include("fileio/gid.jl")
 include("primitives.jl")
 #include("../examples/waveguide_with_post.jl")
-include("submesh.jl")
 include("baryref.jl")
 include("subdivision.jl")
 include("weld.jl")
