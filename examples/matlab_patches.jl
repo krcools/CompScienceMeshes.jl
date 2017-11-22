@@ -1,18 +1,15 @@
 using MATLAB
 
 function patch(Γ)
-    # V = Float64[v[j] for v in Γ.vertices, j in 1:universedimension(Γ)]
-    # F = Int[f[j] for f in Γ.faces, j in 1:dimension(Γ)+1]
+
     V = vertexarray(Γ)
     F = cellarray(Γ)
 
     @mput V F
-    @matlab begin
-        #M = Mesh(V,F)
-        hold("on")
-        #patch(M)
-        patch("Vertices", V, "Faces", F, "FaceColor", "red")
-    end
+    mat"""
+        hold('on')
+        patch('Vertices', V, 'Faces', F, 'FaceColor', 'red')
+    """
 
     mat"axis equal"
     mat"colorbar"
@@ -26,16 +23,24 @@ function patch(Γ, C)
     F = cellarray(Γ)
 
     @mput V F C
-    @matlab begin
-        #M = Mesh(V,F)
-        hold("on")
-        #patch(M, C, "LineStyle", "none")
-        patch("Vertices", V, "Faces", F, "FaceVertexCData", C, "FaceColor", "flat")
-    end
+    mat"""
+        hold('on')
+        patch('Vertices', V, 'Faces', F, 'FaceVertexCData', C, 'FaceColor', 'flat')
+    """
 
     mat"axis equal"
     mat"colorbar"
     mat"view(3)"
+end
+
+
+function jmatlab_quiver(mesh, facecurs)
+    els = elements(mesh)
+    cts = center.(els)
+    C = [ct[i] for ct in cts, i in 1:3]
+    N = [fc[i] for fc in facecurs, i in 1:3]
+    @mput C N
+    mat"quiver3(C(:,1),C(:,2),C(:,3), N(:,1),N(:,2),N(:,3))"
 end
 
 function jmatlab_quiver(m)
@@ -51,27 +56,33 @@ function jmatlab_quiver(m)
         N[i,:] = [n[1],n[2],n[3]]
     end
     @mput C N
-    @matlab quiver3(C(:,1),C(:,2),C(:,3), N(:,1),N(:,2),N(:,3))
+    mat"quiver3(C(:,1),C(:,2),C(:,3), N(:,1),N(:,2),N(:,3))"
 end
 
 function jmatlab_plot(x,y)
     @mput x
     @mput y
-    @matlab plot(x,y)
+    mat"plot(x,y)"
 end
 
 
 # function quiver(Γ, fcr)
 #
 #   D = length(eltype(fcr))
-#   Q = Float64[real(f[i]) for f in fcr, i in 1:D]
 #   V = vertexarray(Γ)
 #   F = cellarray(Γ)
 #
-#   @mput V F Q
+#   C = [cartesian(center(chart(Γ,c))) for c in cells(Γ)]
+#   C = [C[i][j] for i in eachindex(C), j in 1:3]
+#
+#   Q = [fcr[i][j] for i in eachindex(fcr), j in 1:3]
+#
+#   @show size(C)
+#   @show size(Q)
+#
+#   @mput V F C Q
 #   mat"""
-#   M = Mesh(V,F);
-#   [G, N] = faceNormals(M);
-#   quiver3x(G,Q,3);
+#   patch('Vertices', V, 'Faces', F, 'FaceColor', 'red')
+#   quiver3(C(:,1),C(:,2),C(:,3),Q(:,1),Q(:,2),Q(:,3))
 #   """
 # end
