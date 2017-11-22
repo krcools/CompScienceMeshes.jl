@@ -14,7 +14,7 @@ volume(p::SphereChart) = 4π * p.radius^2
 coordtype{P,T}(ch::Type{SphereChart{P,T}}) = T
 coordtype(p::SphereChart) = coordtype(typeof(p))
 
-dimension{P,T}(p::SphereChart{P,T}) = 2
+dimension{P,T}(p::Type{SphereChart{P,T}}) = 2
 dimension(p::SphereChart) = dimension(typeof(p))
 
 universedimension{P,T}(::Type{SphereChart{P,T}}) = 3
