@@ -6,6 +6,8 @@ type subd_chart
     vertices::Vector{SVector{3,Float64}}
 end
 
+domain(ch::subd_chart) = ReferenceSimplex{2,Float64,3}()
+
 function chart(Smesh::subdMesh,E)
     element = Smesh.elements[E]
     Svertices = Smesh.vertices
