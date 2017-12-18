@@ -30,7 +30,7 @@ PW = quadpoints(chart, rule)
 I = sum(pw[2]*f(pw[1]) for pw in PW)
 ```
 """
-function quadpoints(chart::Simplex, rule)
+function quadpoints(chart::Union{Simplex,subd_chart}, rule)
     PV = quadpoints(domain(chart), rule)
     map(PV) do pv
         q = neighborhood(chart, pv[1])
@@ -39,15 +39,15 @@ function quadpoints(chart::Simplex, rule)
     end
 end
 
-function quadpoints(chart::subd_chart, rule)
-    u, w = trgauss(rule)
-    PV = [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
-    map(PV) do pv
-        q = pv[1]
-        w = jacobian(q)*pv[2]
-        (q,w)
-    end
-end
+# function quadpoints(chart::subd_chart, rule)
+#     u, w = trgauss(rule)
+#     PV = [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
+#     map(PV) do pv
+#         q = pv[1]
+#         w = jacobian(q)*pv[2]
+#         (q,w)
+#     end
+# end
 
 """
     quadpoints(refspace, charts, rules)
