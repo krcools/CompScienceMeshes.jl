@@ -24,8 +24,8 @@ end
 function getelementVertices(chart::subd_chart)
     verticescoords = chart.vertices
     verticecoords3 = Vector{SVector{3,Float64}}(3)
-    verticecoords3[1] = verticescoords[1].Coords
-    verticecoords3[2] = verticescoords[2].Coords
-    verticecoords3[3] = verticescoords[chart.N-6].Coords
-    return verticescoords3
+    verticecoords3[1] = verticescoords[1]
+    verticecoords3[2] = verticescoords[2]
+    verticecoords3[3] = verticescoords[chart.N-6]
+    return verticecoords3
 end
