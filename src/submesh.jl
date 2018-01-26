@@ -63,8 +63,11 @@ Returns the boundingbox of a patch in terms of its center and halfsize.
 """
 function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T})
 
-    ll = minimum(p.vertices)
-    ur = maximum(p.vertices)
+    # ll = minimum(p.vertices)
+    # ur = maximum(p.vertices)
+
+    ll = first(p.vertices); for v in p.vertices; ll = min.(v, ll); end
+    ur = first(p.vertices); for v in p.vertices; ll = max.(v, ll); end
 
     center = (ll + ur) / 2
     halfsize = maximum(ur - center)

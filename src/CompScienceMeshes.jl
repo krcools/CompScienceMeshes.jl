@@ -2,6 +2,8 @@ module CompScienceMeshes
 
 using StaticArrays
 using Compat
+using Requires
+
 import Base.getindex
 
 export getcommonedge
@@ -115,6 +117,6 @@ include("weld.jl")
 include("mapper.jl")
 include("restrict.jl")
 
-
+include("plotlyjs_glue.jl")
 
 end # module
