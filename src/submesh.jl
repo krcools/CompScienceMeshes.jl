@@ -77,8 +77,11 @@ end
 
 function boundingbox(V)
 
-    ll = minimum(V)
-    ur = maximum(V)
+    # ll = minimum(V)
+    # ur = maximum(V)
+
+    ll = first(V); for v ∈ V; ll = min.(v, ll); end
+    ur = first(V); for v ∈ V; ur = max.(v, ur); end
 
     c = (ll + ur) / 2
     s = maximum(ur - c)
