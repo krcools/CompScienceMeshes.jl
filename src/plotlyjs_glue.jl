@@ -1,7 +1,7 @@
 export patch
-@require PlotlyJS @require Colors begin
+@require PlotlyJS begin
     fn = joinpath(dirname(@__FILE__),"..","examples","cm.csv")
-    cm = mapslices(r->Colors.RGB(r[1],r[2],r[3]), readcsv(fn), [2])
+    cm = mapslices(r->(r[1],r[2],r[3]), readcsv(fn), [2])
     function patch(Γ::Mesh, fcr=nothing)
 
         v = vertexarray(Γ)
