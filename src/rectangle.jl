@@ -3,7 +3,7 @@ N: universe dimension
 D: manifold dimension
 T: coordinate type
 """
-immutable RectangleChart{N,D,T}
+struct RectangleChart{N,D,T}
   origin::SVector{N,T}
   tangents::SVector{D,SVector{N,T}}
   normal::SVector{N,T}
@@ -15,7 +15,7 @@ function RectangleChart(o, tgs)
   RectangleChart(o, tgs, n)
 end
 
-immutable RectangleNBD{N,D,T}
+struct RectangleNBD{N,D,T}
   chart::RectangleChart{N,D,T}
   parm::SVector{D,T}
   cart::SVector{N,T}

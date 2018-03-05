@@ -4,26 +4,26 @@
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-immutable SphereChart{P,T}
+struct SphereChart{P,T}
     center::P
     radius::T
 end
 
 volume(p::SphereChart) = 4π * p.radius^2
 
-coordtype{P,T}(ch::Type{SphereChart{P,T}}) = T
+coordtype(ch::Type{SphereChart{P,T}}) where {P,T} = T
 coordtype(p::SphereChart) = coordtype(typeof(p))
 
-dimension{P,T}(p::Type{SphereChart{P,T}}) = 2
+dimension(p::Type{SphereChart{P,T}}) where {P,T} = 2
 dimension(p::SphereChart) = dimension(typeof(p))
 
-universedimension{P,T}(::Type{SphereChart{P,T}}) = 3
+universedimension(::Type{SphereChart{P,T}}) where {P,T} = 3
 universedimension(p::SphereChart) = universedimension(typeof(p))
 
-immutable ThetaPhiPlane{T} end
-domain{P,T}(ch::SphereChart{P,T}) = ThetaPhiPlane{T}()
+struct ThetaPhiPlane{T} end
+domain(ch::SphereChart{P,T}) where {P,T} = ThetaPhiPlane{T}()
 
-immutable SphereNeighborhood{P,Q,T}
+struct SphereNeighborhood{P,Q,T}
     sphere::SphereChart{P,T}
     paramters::Q
     cartesian::P

@@ -1,25 +1,25 @@
 export SEdge,SElement,SVertex,subdMesh
 
-type SElement
+mutable struct SElement
     RingNodes::Vector{Int64}
     Edges::Vector{Int64}
 end
 
-type SEdge
+mutable struct SEdge
     EndPoints::Vector{Int64}
     RelatedPoints::Vector{Int64}
     TwoElems::Vector{Int64}
     orientation::Vector{Int64}
 end
 
-type SVertex
+mutable struct SVertex
     Elements::Vector{Int64}
     Valence::Int64
     Edges::Vector{Int64}
     Coords::SVector{3,Float64}
 end
 
-type subdMesh
+mutable struct subdMesh
     edges::Vector{SEdge}
     vertices::Vector{SVertex}
     elements::Vector{SElement}

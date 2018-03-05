@@ -70,7 +70,7 @@ function weld(Γ₁, Γ₂)
 
 end
 
-@generated function map_ids{N,T}(c::SVector{N,T}, idmap)
+@generated function map_ids(c::SVector{N,T}, idmap) where {N,T}
     xp = :(SVector{$N,$T}())
     for i in 1:N
         push!(xp.args, :(idmap[c[$i]]))

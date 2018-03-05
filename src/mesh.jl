@@ -6,7 +6,7 @@ using Compat.Iterators
 export vertexarray, cellarray
 
 
-type Mesh{U,D1,T}
+mutable struct Mesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
     dict::Dict{SVector{D1,Int},Int}
@@ -283,7 +283,7 @@ function fliporientation(m::Mesh)
     fliporientation!(n)
 end
 
-@generated function fliporientation{N,T}(I::SVector{N,T})
+@generated function fliporientation(I::SVector{N,T}) where {N,T}
     @assert N >= 2
     xp = :(SVector{N,T}(I[2],I[1]))
     for i in 3:N

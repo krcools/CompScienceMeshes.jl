@@ -5,7 +5,7 @@ Compute the intersection of two charts of equal dimension.
 
 Compute an array of charts such that the disjoint union of those charts produces the intersection of the two charts provided as inputs. In particular the sum of integrals over the returned charts will equal the integral over the intersection of the two given charts.
 """
-function intersection{U,C,T}(p1::Simplex{U,1,C,2,T}, p2::Simplex{U,1,C,2,T})
+function intersection(p1::Simplex{U,1,C,2,T}, p2::Simplex{U,1,C,2,T}) where {U,C,T}
 
     tol = sqrt(eps(T))
     PT = eltype(p1.vertices)
@@ -34,7 +34,7 @@ end
 
 ATTENTION: currently the implementation for triangles assumes that one of the triangles is contained in the other.
 """
-function intersection{U,C}(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3})
+function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
   [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end

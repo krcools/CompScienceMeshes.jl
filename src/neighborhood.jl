@@ -1,4 +1,4 @@
-immutable MeshPointNM{U,D,C,N,T}
+struct MeshPointNM{U,D,C,N,T}
     patch::Simplex{U,D,C,N,T}
     bary::SVector{D,T}
     cart::SVector{U,T}
@@ -32,7 +32,7 @@ function neighborhood(p::Simplex, bary)
   MeshPointNM(p, P(bary), cart)
 end
 
-@generated function center{U,D,C,N,T}(p::Simplex{U,D,C,N,T})
+@generated function center(p::Simplex{U,D,C,N,T}) where {U,D,C,N,T}
     uv = ones(T,D)/(D+1)
     :(neighborhood(p, $uv))
 end

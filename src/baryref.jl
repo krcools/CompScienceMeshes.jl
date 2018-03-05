@@ -7,7 +7,7 @@ Create the mesh obtained by inserting an extra vertex in the barycenters of all 
 recusively creating fine cells by connecting the barycenter of a k-cell to the already
 constructed refined (k-1)-cells on its boundary.
 """
-function barycentric_refinement{U}(mesh::Mesh{U,2})
+function barycentric_refinement(mesh::Mesh{U,2}) where U
 
     # Get the points and the faces (segments) we will use in the refinement process
     Edges = skeleton(mesh, 1)
@@ -54,7 +54,7 @@ function barycentric_refinement{U}(mesh::Mesh{U,2})
     return Mesh(verts, edges)
 end
 
-function barycentric_refinement{U}(mesh::Mesh{U,3})
+function barycentric_refinement(mesh::Mesh{U,3}) where U
 
     D1 = 3
 
@@ -113,7 +113,7 @@ Every face is subdived in four small faces.
 
 Only defined for 2D meshes.
 """
-function bisecting_refinement{U}(mesh::Mesh{U,3})
+function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     D1 = 3
 

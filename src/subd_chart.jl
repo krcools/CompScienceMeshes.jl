@@ -1,5 +1,5 @@
 export subd_chart, chart, getelementVertices
-type subd_chart
+mutable struct subd_chart
     index::Int64
     N::Int64
     RingNodes::Vector{Int64}

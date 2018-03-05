@@ -1,4 +1,4 @@
-immutable WeightPointValue{W,P,V}
+struct WeightPointValue{W,P,V}
   weight::W
   point::P
   value::V

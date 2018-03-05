@@ -1,6 +1,6 @@
 using CompScienceMeshes
 
-function meshsegment{T<:Real}(L::T, delta::T, udim=2)
+function meshsegment(L::T, delta::T, udim=2) where T<:Real
 
   PT = SVector{udim, T}
   CT = SVector{2,Int}
@@ -24,7 +24,7 @@ function meshsegment{T<:Real}(L::T, delta::T, udim=2)
   Mesh(vertices, faces)
 end
 
-function meshcircle{T<:Real}(radius::T, delta::T, udim=2)
+function meshcircle(radius::T, delta::T, udim=2) where T<:Real
 
   PT = SVector{udim,T}
   CT = SVector{2,Int}
@@ -64,7 +64,7 @@ The target edge size is `delta` and the dimension of the
 
 The mesh is oriented such that the normal is pointing down. This is subject to change.
 """
-function meshrectangle{T}(width::T, height::T, delta::T, udim=3)
+function meshrectangle(width::T, height::T, delta::T, udim=3) where T
 
   PT = SVector{udim,T}
   CT = SVector{3,Int}
