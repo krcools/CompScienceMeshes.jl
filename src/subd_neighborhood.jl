@@ -1,5 +1,5 @@
 export neighborhood,parametric,cartesian,jacobian,normal,shapefuns,shapeders,get_shape_curl
-type subd_point
+mutable struct subd_point
     cart::Vector{Float64}
     paracoords::Vector{Float64}
     J::Array{Float64,2}

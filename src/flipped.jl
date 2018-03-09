@@ -1,4 +1,4 @@
-immutable FlippedMesh{M}
+struct FlippedMesh{M}
         base::M
 end
 
@@ -6,7 +6,7 @@ Base.:-(m::FlippedMesh) = m.base
 
 #cells(m::FlippedMesh,i) = flip(cells(m.base,i))
 
-immutable FlippedMeshCellIterator{CA}
+struct FlippedMeshCellIterator{CA}
     cellarray::CA
 end
 

@@ -71,7 +71,7 @@ export trgauss, sqgauss, legendre
 export SegmentedAxis
 export minmaxdist, rings, ring
 
-@compat Pt{N,T} = StaticArrays.SVector{N,T}
+Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
 include("utils.jl")

@@ -61,7 +61,7 @@ Returns the boundingbox of a patch in terms of its center and halfsize.
 
     function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T}) -> center, halfsize
 """
-function boundingbox{U,D,C,N,T}(p::Simplex{U,D,C,N,T})
+function boundingbox(p::Simplex{U,D,C,N,T}) where {U,D,C,N,T}
 
     # ll = minimum(p.vertices)
     # ur = maximum(p.vertices)
@@ -90,7 +90,7 @@ function boundingbox(V)
 end
 
 
-boundingbox{N,T<:Number}(p::SVector{N,T}) = p, zero(eltype(p))
+boundingbox(p::SVector{N,T}) where {N,T<:Number} = p, zero(eltype(p))
 
 
 """

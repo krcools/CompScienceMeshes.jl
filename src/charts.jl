@@ -6,7 +6,7 @@
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-immutable Simplex{U,D,C,N,T}
+struct Simplex{U,D,C,N,T}
     vertices::SVector{N,SVector{U,T}}
     tangents::SVector{D,SVector{U,T}}
     normals::SVector{C,SVector{U,T}}
@@ -19,7 +19,7 @@ end
 
 Return coordinate type used by simplex.
 """
-coordtype{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = T
+coordtype(::Type{Simplex{U,D,C,N,T}}) where {U,D,C,N,T} = T
 coordtype(p::Simplex) = coordtype(typeof(p))
 
 
@@ -34,7 +34,7 @@ volume(p::Simplex) = p.volume
 """
 A tuple of points, aka an interval behaves trivially like a chart
 """
-volume{T}(x::Tuple{T,T}) = norm(x[2]-x[1])
+volume(x::Tuple{T,T}) where {T} = norm(x[2]-x[1])
 
 
 """
@@ -42,7 +42,7 @@ volume{T}(x::Tuple{T,T}) = norm(x[2]-x[1])
 
 Return the manifold dimension of the simplex.
 """
-dimension{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = D
+dimension(::Type{Simplex{U,D,C,N,T}}) where {U,D,C,N,T} = D
 
 """
     dimension(simplex)
@@ -65,7 +65,7 @@ Base.length(p::Simplex) = dimension(typeof(p))+1
 
 Return the dimension of the universe in which `p` is embedded.
 """
-universedimension{U,D,C,N,T}(::Type{Simplex{U,D,C,N,T}}) = U
+universedimension(::Type{Simplex{U,D,C,N,T}}) where {U,D,C,N,T} = U
 universedimension(p::Simplex) = universedimension(typeof(p))
 
 
@@ -95,7 +95,7 @@ third form as it will not incur notable performance hits.
 Note that D is the dimension of the simplex, i.e. the number
 of vertices supplied minus one.
 """
-@generated function simplex{D1,P}(vertices::SVector{D1,P})
+@generated function simplex(vertices::SVector{D1,P}) where {D1,P}
     U = length(P)
     D = D1 - 1
     C = U-D
@@ -114,7 +114,7 @@ end
 
 simplex(vertices...) = simplex(SVector((vertices...)))
 
-@generated function simplex{D}(vertices, ::Type{Val{D}})
+@generated function simplex(vertices, ::Type{Val{D}}) where D
     P = eltype(vertices)
     D1 = D + 1
     xp = :(())
@@ -159,7 +159,7 @@ end
 
 
 
-function _normals{C}(tangents, ::Type{Val{C}})
+function _normals(tangents, ::Type{Val{C}}) where C
     PT = eltype(tangents)
     D  = length(tangents)
     U = length(PT)
@@ -198,7 +198,7 @@ end
 
 Compute the barycentric coordinates on 'simplex' of 'point'.
 """
-function carttobary{U,D,C,N,T}(p::Simplex{U,D,C,N,T}, cart)
+function carttobary(p::Simplex{U,D,C,N,T}, cart) where {U,D,C,N,T}
 
     G = [dot(p.tangents[i], p.tangents[j]) for i in 1:D, j in 1:D]
     #w = [dot(p.tangents[i], cart - p.vertices[end]) for i in 1:D]
@@ -222,14 +222,14 @@ space element over which integration is desired.
 
 For more details see the implementation in quadpoints.jl
 """
-immutable ReferenceSimplex{D,T,N}
+struct ReferenceSimplex{D,T,N}
     # N: number of defining points
     # D: dimension of the simplex
     # T: type of the coordinates
     simplex::Simplex{D,D,0,N,T}
 end
 
-function (::Type{ReferenceSimplex{D,T,N}}){D,T,N}()
+function ReferenceSimplex{D,T,N}() where {D,T,N}
     P = SVector{D,T}[]
     for i in 1:D
         a = zeros(T,D)
@@ -248,5 +248,5 @@ end
 barytocart(ch::ReferenceSimplex, u) = barytocart(ch.simplex, u)
 carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
 
-domain{U,D,C,T,N}(ch::Simplex{U,D,C,N,T}) = ReferenceSimplex{D,T,N}()
+domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} = ReferenceSimplex{D,T,N}()
 neighborhood(ch::ReferenceSimplex, u) = u
