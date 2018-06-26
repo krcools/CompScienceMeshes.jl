@@ -79,8 +79,8 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
         verts[NV+NE+F] = cartesian(center(chart(faces, Face)))
     end
 
-    D = transpose(connectivity(edges, faces, identity))
-    rows, vals = rowvals(D), nonzeros(D)
+    D = copy(transpose(connectivity(edges, faces, identity)))
+    ]srows, vals = rowvals(D), nonzeros(D)
 
     # add six faces in each coarse face
     nf = 6NF
@@ -137,7 +137,7 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     # Build a matrix that given a coarse face gives
     # access to the coarse edges making up its boundary
-    D = transpose(connectivity(edges, faces, identity))
+    D = copy(transpose(connectivity(edges, faces, identity)))
     rows, vals = rowvals(D), nonzeros(D)
 
     # add four faces in each coarse face

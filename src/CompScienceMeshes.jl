@@ -71,6 +71,8 @@ export trgauss, sqgauss, legendre
 export SegmentedAxis
 export minmaxdist, rings, ring
 
+using SparseArrays
+
 Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
