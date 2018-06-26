@@ -80,7 +80,7 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
     end
 
     D = copy(transpose(connectivity(edges, faces, identity)))
-    ]srows, vals = rowvals(D), nonzeros(D)
+    rows, vals = rowvals(D), nonzeros(D)
 
     # add six faces in each coarse face
     nf = 6NF
