@@ -16,7 +16,7 @@ function Ylm(K, r)
     T = eltype(r)
     Y = zeros(Complex{T}, K*K)
 
-    Y[1] = 1/√4π
+    Y[1] = 1/√(4π)
 
     facphip =  x + im*y;
     facphim = -x + im*y;
