@@ -1,5 +1,7 @@
 module CompScienceMeshes
 
+using LinearAlgebra
+
 using StaticArrays
 using Compat
 using Requires
