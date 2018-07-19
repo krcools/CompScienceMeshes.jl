@@ -2171,7 +2171,7 @@ the quadrature weights.
 """
 function trgauss(n)
     @assert 1 <= n <= length(triangleGaussA)
-    u = [triangleGaussA[n] triangleGaussB[n]].'
+    u = copy(transpose([triangleGaussA[n] triangleGaussB[n]]))
     w = triangleGaussW[n]
     return u, w/2
 end

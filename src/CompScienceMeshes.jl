@@ -1,6 +1,8 @@
 module CompScienceMeshes
 
+using DelimitedFiles
 using LinearAlgebra
+using SparseArrays
 
 using StaticArrays
 using Compat

@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 fn = joinpath(dirname(@__FILE__),"FPLZX.msh")
 m = CompScienceMeshes.load_gid_mesh(fn)

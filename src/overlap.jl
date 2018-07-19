@@ -1,4 +1,4 @@
-import Base.cross
+import LinearAlgebra.cross
 cross(a::Pt{2,T}, b::Pt{2,T}) where {T} = a[1]*b[2] - a[2]*b[1]
 
 """
@@ -25,7 +25,7 @@ Compute whether two segments in 3D space overlap
 """
 function overlap(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T}) where {T,U,C}
 
-    const tol = sqrt(eps(T))
+    tol = sqrt(eps(T))
 
     # Are these edges on the same line?
     o = q.vertices[2]
@@ -57,7 +57,7 @@ Compute whether two triangles in 3D space overlap
 """
 function overlap(p::Simplex{3,2,1,3,T}, q::Simplex{3,2,1,3,T}) where T
 
-  const tol = sqrt(eps(T))
+  tol = sqrt(eps(T))
 
   # Are the patches in the same plane?
   u1 = q.tangents[1]

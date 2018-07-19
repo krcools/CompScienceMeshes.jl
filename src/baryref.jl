@@ -64,7 +64,7 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
     nv = NV + NE + NF
-    verts = Array{vertextype(mesh)}(nv)
+    verts = Array{vertextype(mesh)}(undef,nv)
     for V in 1 : numvertices(mesh)
         verts[V] = mesh.vertices[V]
     end
@@ -123,7 +123,7 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
     nv = NV + NE
-    verts = Array{vertextype(mesh)}(nv)
+    verts = Array{vertextype(mesh)}(undef,nv)
 
     # copy over the existing vertices
     for V in 1 : numvertices(mesh)

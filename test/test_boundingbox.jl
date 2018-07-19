@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 m = meshrectangle(1.0,1.0,1.0,3)
 p = chart(m, cells(m,i))

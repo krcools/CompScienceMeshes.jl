@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using CompScienceMeshes
 
 
@@ -56,14 +56,14 @@ for cl in cells(m)
     #p = chart(m, cells(m,i))
     v = vertices(m, cl)
     p = simplex(v)
-    c = (p.vertices[1] + p.vertices[2]) / 2
-    @test dot(c, p.normals[1]) > 0
+    _c = (p.vertices[1] + p.vertices[2]) / 2
+    @test dot(_c, p.normals[1]) > 0
 end
 
 
 ## test cellpairs on non-oriented meshes
 using CompScienceMeshes
-using Base.Test
+using Test
 
 p1 = point(1,0,0)
 p2 = point(0,1,0)

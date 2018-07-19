@@ -112,7 +112,7 @@ of vertices supplied minus one.
     end
 end
 
-simplex(vertices...) = simplex(SVector((vertices...)))
+simplex(vertices...) = simplex(SVector((vertices...,)))
 
 @generated function simplex(vertices, ::Type{Val{D}}) where D
     P = eltype(vertices)

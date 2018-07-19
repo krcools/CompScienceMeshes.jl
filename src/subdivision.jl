@@ -6,7 +6,6 @@ Every face is subdived into four small faces and use weights to smooth the surfa
 
 Only defined for 2D meshes.
 """
-
 function Loop_subdivision(mesh::Mesh{U,3}) where U
 
     D1 = 3

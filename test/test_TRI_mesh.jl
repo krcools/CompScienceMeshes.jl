@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 filename = joinpath(dirname(@__FILE__),"from_hollow_waveguide.tri.txt")
 Γ = CompScienceMeshes.read_TRI_mesh(filename)

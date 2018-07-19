@@ -1,7 +1,11 @@
 module PkgTests
 
+using LinearAlgebra
+using InteractiveUtils
+
+using SparseArrays
 using StaticArrays
-using Base.Test
+using Test
 
 import CompScienceMeshes
 

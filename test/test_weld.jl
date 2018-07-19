@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 
 using StaticArrays
 using CompScienceMeshes
@@ -17,7 +17,7 @@ m = weld(m1, m2)
 
 ## The mysterious case of the cuboid
 using CompScienceMeshes
-using Base.Test
+using Test
 
 width, height, depth = 1.0, 1.0, 1.0
 

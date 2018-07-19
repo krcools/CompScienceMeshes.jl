@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using CompScienceMeshes
 
 sp = CompScienceMeshes.SphereChart(point(1,2,3), 1.0)
@@ -45,11 +45,11 @@ end
 
 K = 3
 I = zeros(K^2)
-for (p,w) in quadpoints(sp, 20)
-    Y = Ylm(K, cartesian(p))
+for (_p,w) in quadpoints(sp, 20)
+    Y = Ylm(K, cartesian(_p))
     for l in 0:K-1
-        for m in -l:l
-            i = l*(l+1)+m+1
+        for _m in -l:l
+            i = l*(l+1)+_m+1
             I[i] += w * real(Y[i] * conj(Y[i]))
         end
     end

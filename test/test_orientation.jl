@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 function isoriented(m::Mesh)
 
