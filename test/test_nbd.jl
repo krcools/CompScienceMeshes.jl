@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 p1 = point(1,0,0)
 p2 = point(0,1,0)

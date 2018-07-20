@@ -66,11 +66,11 @@ function quadpoints(f, charts, rules)
 
     WPV = WeightPointValue{W,P,V}
 
-    qd = Array{Vector{WPV}}(length(rules), length(charts))
+    qd = Array{Vector{WPV}}(undef,length(rules), length(charts))
     for j in eachindex(charts)
         for i in eachindex(rules)
             pw = quadpoints(charts[j], rules[i])
-            qd[i,j] = Vector{WPV}(length(pw))
+            qd[i,j] = Vector{WPV}(undef,length(pw))
             for k in eachindex(pw)
                 qd[i,j][k] = WeightPointValue(pw[k][2],pw[k][1],f(pw[k][1]))
             end

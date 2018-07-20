@@ -1,6 +1,6 @@
 #using FixedSizeArrays
 using CompScienceMeshes
-using Base.Test
+using Test
 
 p = point(0.0, 1.0)
 q = point(2.0, 1.0)

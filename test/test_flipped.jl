@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 V = [
     point(0,0,0),
@@ -19,8 +19,8 @@ g = -f
 @test g === m
 
 T = [index(2,1,3), index(3,1,4)]
-for (i,c) in enumerate(cells(f))
-    @test c == T[i]
+for (i,_c) in enumerate(cells(f))
+    @test _c == T[i]
 end
 
 # @test f.faces[1] == index(2,1,3)

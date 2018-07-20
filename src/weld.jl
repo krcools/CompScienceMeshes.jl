@@ -27,7 +27,7 @@ function weld(Γ₁, Γ₂)
     nv1 = numvertices(Γ₁)
     nv2 = numvertices(Γ₂)
 
-    idmap = collect(nv1 + (1:nv2))
+    idmap = collect(nv1 .+ (1:nv2))
     num_equal_vertices = 0
 
     V1 = Γ₁.vertices

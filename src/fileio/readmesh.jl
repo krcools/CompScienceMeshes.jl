@@ -41,7 +41,8 @@ function readmesh(filename)
         vertices = zeros(P, num_vertices)
         for i = 1 : num_vertices
             l = readline(f)
-            vertices[i] = P(float(split(l)))
+            vertices[i] = P(parse.(T,split(l)))
+            #vertices[i] = P(float(split(l)))
         end
 
         # determin the mesh dimension (plus 1)

@@ -112,7 +112,7 @@ of vertices supplied minus one.
     end
 end
 
-simplex(vertices...) = simplex(SVector((vertices...)))
+simplex(vertices...) = simplex(SVector((vertices...,)))
 
 @generated function simplex(vertices, ::Type{Val{D}}) where D
     P = eltype(vertices)
@@ -131,7 +131,7 @@ function _normals(tangents, ::Type{Val{1}})
     T  = eltype(PT)
 
     n = zeros(T,D+1)
-    b = Array{T}(D,D)
+    b = Array{T}(undef,D,D)
 
     for i in 1:D+1
         fill!(b, zero(T))

@@ -1,5 +1,9 @@
 module CompScienceMeshes
 
+using DelimitedFiles
+using LinearAlgebra
+using SparseArrays
+
 using StaticArrays
 using Compat
 using Requires
@@ -70,6 +74,8 @@ export trgauss, sqgauss, legendre
 # marked for deprecation
 export SegmentedAxis
 export minmaxdist, rings, ring
+
+using SparseArrays
 
 Pt{N,T} = StaticArrays.SVector{N,T}
 

@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 m = meshsegment(1.0, 1.0, 3)
 

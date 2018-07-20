@@ -1,6 +1,6 @@
 using CompScienceMeshes
 using StaticArrays
-using Base.Test
+using Test
 
 p1 = point(1.0, 0.0, 0.0)
 p2 = point(10.0, 0.0, 1.0)
@@ -29,7 +29,7 @@ r = 0.0
 for wpv in wpvs[1,1]
     w = wpv.weight
     v = wpv.value
-    r += w * v
+    global r += w * v
 end
 
 @test r ≈ 1/3*(2^3-1^3)

@@ -18,7 +18,7 @@ function load_gid_mesh(file)
     readline(file); # Coordinates
 
     # Read the vertices
-    vertices = Vector{Pt{3,Float64}}(lineCount)
+    vertices = Vector{Pt{3,Float64}}(undef,lineCount)
     vertexCount = 0;
     while !eof(file)
             line = split(readline(file));
@@ -31,7 +31,7 @@ function load_gid_mesh(file)
     readline(file); # Elements
 
     # Read the triangles
-    triangles = Vector{Pt{3,Int}}(lineCount-vertexCount);
+    triangles = Vector{Pt{3,Int}}(undef,lineCount-vertexCount);
     triangleCount = 0;
     while !eof(file)
             line = split(readline(file));

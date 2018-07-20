@@ -322,8 +322,10 @@ function boundary(mesh)
     # get the edge-face connection matrix
     conn = connectivity(edges, faces)
 
-    # find the edges that only have one edjacent face
-    i = find(x -> x < 2, sum(abs.(conn), 1))
+    # find the edges that only have one adjacent face
+    #i = find(x -> x < 2, sum(abs.(conn), dims=1))
+    sums = sum(abs.(conn), dims=1)
+    i = (LinearIndices(sums))[findall(x->x<2, sums)]
 
     # create a mesh out of these
     bnd = Mesh(mesh.vertices, edges.faces[i])

@@ -48,6 +48,8 @@ cartesian(nbd::SphereNeighborhood) = nbd.cartesian
 
 function quadpoints(ch::SphereChart, L)
     UW = zip(legendre(L+1, -1.0, 1.0)...)
-    dp = 2π / (2L+1); P = linspace(0, 2π-dp, 2L+1)
+    dp = 2π / (2L+1)
+    #P = linspace(0, 2π-dp, 2L+1)
+    P = range(0, stop=2π-dp, length=2L+1)
     [(neighborhood(ch, (p,acos(u))), dp*w) for (u,w) in UW for p in P]
 end

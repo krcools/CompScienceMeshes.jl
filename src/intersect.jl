@@ -110,7 +110,7 @@ function sutherlandhodgman2d(subject,clipper)
     for a in clipper
 
         resize!(input, length(clipped))
-        copy!(input, clipped)
+        copyto!(input, clipped)
         resize!(clipped, 0)
 
         isempty(input) || (q = last(input))

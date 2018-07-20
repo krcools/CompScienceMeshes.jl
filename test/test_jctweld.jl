@@ -1,5 +1,5 @@
 using CompScienceMeshes
-using Base.Test
+using Test
 
 vrts = [
     point(0.0, 0.0, 0.0),

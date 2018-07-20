@@ -6,7 +6,6 @@ Every face is subdived into four small faces and use weights to smooth the surfa
 
 Only defined for 2D meshes.
 """
-
 function Loop_subdivision(mesh::Mesh{U,3}) where U
 
     D1 = 3
@@ -92,7 +91,7 @@ function Loop_subdivision(mesh::Mesh{U,3}) where U
 
     # Build a matrix that given a coarse face gives
     # access to the coarse edges making up its boundary
-    D = transpose(connectivity(edges, faces, identity))
+    D = copy(transpose(connectivity(edges, faces, identity)))
     rows, vals = rowvals(D), nonzeros(D)
 
     # add four faces in each coarse face

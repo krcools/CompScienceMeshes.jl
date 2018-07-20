@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using CompScienceMeshes
 
 mesh = meshrectangle(1.0, 1.0, 1.0)

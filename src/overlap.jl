@@ -1,4 +1,4 @@
-import Base.cross
+import LinearAlgebra.cross
 cross(a::Pt{2,T}, b::Pt{2,T}) where {T} = a[1]*b[2] - a[2]*b[1]
 
 """
