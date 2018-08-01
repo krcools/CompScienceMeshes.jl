@@ -156,6 +156,15 @@ function _normals(tangents, ::Type{Val{1}})
 
 end
 
+function _normals(tangents::SVector{2,SVector{3,T}}, ::Type{Val{1}}) where {T}
+
+    n = tangents[1] × tangents[2]
+    l = norm(n)
+
+    P = SVector{3,T}
+    SVector{1,P}(n/l), 0.5*l
+end
+
 
 
 
