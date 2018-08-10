@@ -24,7 +24,8 @@ function load_gid_mesh(file)
             line = split(readline(file));
             size(line, 1) == 4 || break; # End Coordinates
             vertexCount += 1;
-            vertices[vertexCount] = Pt{3,Float64}(map(parse, line[2:4]));
+            #vertices[vertexCount] = Pt{3,Float64}(map(Meta.parse, line[2:4]));
+            vertices[vertexCount] = Pt{3,Float64}(parse.(Float64,line[2:4]))
     end
 
     readline(file); # "\n"
@@ -37,7 +38,7 @@ function load_gid_mesh(file)
             line = split(readline(file));
             size(line, 1) == 4 || break; # End Elements
             triangleCount += 1;
-            triangles[triangleCount] = Pt{3,Int}(map(parse, line[2:4]));
+            triangles[triangleCount] = Pt{3,Int}(map(Meta.parse, line[2:4]));
     end
 
     Mesh(vertices[1:vertexCount], triangles[1:triangleCount])
