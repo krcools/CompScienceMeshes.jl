@@ -37,12 +37,12 @@ function GSubdMesh(mesh::Mesh)
     connectMat = connectivity(edges,faces)
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
     # nv = NV + NE
-    Svertices = Vector{SVertex}(NV)
-    Sedges = Vector{SEdge}(NE)
-    Selements = Vector{SElement}(NF)
+    Svertices = Vector{SVertex}(undef,NV)
+    Sedges = Vector{SEdge}(undef,NE)
+    Selements = Vector{SElement}(undef,NF)
     for V in 1 : numvertices(mesh)
-        ElementIndices = []
-        EdgeIndices = []
+        ElementIndices = Int[]
+        EdgeIndices = Int[]
         for (F, Face) in enumerate(cells(faces))
             for iv = 1 : 3
                 # if V is a vertex of the face add all the vertices to the mask
@@ -114,7 +114,7 @@ function GSubdMesh(mesh::Mesh)
             SF=SElement(Ringnodes,EdgesIndices)
         else
             # print("element $(F) has 1 extraordinary point!")
-            Ringnodes = Vector{Int64}(irreg_valence+6)
+            Ringnodes = Vector{Int64}(undef,irreg_valence+6)
             Ringnodes[1] = VertexIndices[irreg_index]
             next = [2,3,1]
             next2 = [3,1,2]
@@ -225,8 +225,8 @@ end
     Given a face find out the neighbor elements (share edge) and vertices.
 """
 function find_neighbor(faces,edges,F,EdgesIndices,Sedges)
-    neighborFaces = Vector{Int64}(3)
-    neighborVertices = Vector{Int64}(3)
+    neighborFaces = Vector{Int64}(undef,3)
+    neighborVertices = Vector{Int64}(undef,3)
     for iE = 1:3
         E = EdgesIndices[iE]
         twoelement = Sedges[E].TwoElems
@@ -243,8 +243,8 @@ function find_neighbor(faces,edges,F,EdgesIndices,Sedges)
 end
 
 function find_neighbor2(neighborFaces,faces,edges,VertexIndices,EdgesIndices,Sedges,connectMat)
-    neighborFaces2 = Vector{Int64}(6)
-    neighborVertices2 = Vector{Int64}(6)
+    neighborFaces2 = Vector{Int64}(undef,6)
+    neighborVertices2 = Vector{Int64}(undef,6)
     C=[1,2,2,3,3,1]
     for i = 1 : 3
         F = neighborFaces[i]
@@ -279,8 +279,8 @@ function find_neighbor2(neighborFaces,faces,edges,VertexIndices,EdgesIndices,Sed
 end
 
 function find_edges(F,Face,edges,connectMat)
-    EdgesIndices = Vector{Int64}(3)
-    orientation = Vector{Int64}(3)
+    EdgesIndices = Vector{Int64}(undef,3)
+    orientation = Vector{Int64}(undef,3)
     for (E, Edge) in enumerate(cells(edges))
         if connectMat[F,E] == 1
             if Edge[1] == Face[1]||Edge[2] == Face[2]
