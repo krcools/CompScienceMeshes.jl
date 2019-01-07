@@ -116,8 +116,7 @@ Create a mesh of a sphere of radius `radius` by parsing a .geo script
 The target edge size is `delta`.
 """
 function meshsphere(radius, delta)
-    s =
-"""
+    s = """
 lc = $delta;
 
 Point(1)={0,0,0,lc};
@@ -158,7 +157,7 @@ Ruled Surface(4)={4} In Sphere{1};
 
     # feed the file to gmsh
     fno = tempname()
-    run(`gmsh $fn -2 -format msh -o $fno`)
+    run(`gmsh $fn -2 -format msh2 -o $fno`)
     fdo = open(fno,"r")
     m = read_gmsh_mesh(fdo)
     close(fdo)

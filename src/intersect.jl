@@ -100,10 +100,10 @@ function sutherlandhodgman2d(subject,clipper)
 
     PT = eltype(subject)
 
-    clipped = copy(subject)
+    clipped = Array(copy(subject))
     sizehint!(clipped, 8)
 
-    input = copy(clipped)
+    input = Array(copy(clipped))
     sizehint!(input, 8)
 
     b = last(clipper)
