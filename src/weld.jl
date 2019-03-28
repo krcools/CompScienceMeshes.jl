@@ -16,8 +16,6 @@ function weld(Γ₁, Γ₂)
     T = eltype(eltype(Γ₁.vertices))
     tol = sqrt(eps(T))
 
-    #radii = zeros(numvertices(Γ₁))
-    #tree = Octree(Γ₁.vertices, radii)
     verts1 = skeleton(Γ₁,0)
     radii = zeros(numcells(verts1))
     indcs = [v[1] for v in cells(verts1)]
@@ -30,7 +28,7 @@ function weld(Γ₁, Γ₂)
     idmap = collect(nv1 .+ (1:nv2))
     num_equal_vertices = 0
 
-    V1 = Γ₁.vertices
+    V1 = vertices(Γ₁)
     V2 = similar(V1,0)
 
     for (j,v) in enumerate(Γ₂.vertices)
@@ -38,7 +36,6 @@ function weld(Γ₁, Γ₂)
         pred(c,s) = fitsinbox(Array(v), 0.0, c, s+tol)
         for box in boxes(tree, pred)
             for i in box
-                #u = Γ₁.vertices[i]
                 u = cntrs[i]
                 if norm(u-v) < tol
                     idmap[j] = indcs[i]
@@ -62,7 +59,8 @@ function weld(Γ₁, Γ₂)
     F = [Γ₁.faces; Γ₂.faces]
 
     nc1 = numcells(Γ₁)
-    for (i,c) in enumerate(Γ₂.faces)
+    # for (i,c) in enumerate(Γ₂.faces)
+    for (i,c) in enumerate(cells(Γ₂))
         F[nc1+i] = map_ids(c, idmap)
     end
 

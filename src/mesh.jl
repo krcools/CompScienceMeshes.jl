@@ -5,16 +5,28 @@ using Compat.Iterators
 
 export vertexarray, cellarray
 
+"""
+    `U::Int`: indicating dimension of the embedding space
+    `D1::Int`: one plus the manifold dimension
+    `T<:AbstractFloat`: the type of a vertex coordinate
+"""
+abstract type AbstractMesh{U,D1,T} end
 
-mutable struct Mesh{U,D1,T}
+mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
+    """
+    maps a face on its index in enumeration
+    """
     dict::Dict{SVector{D1,Int},Int}
 end
 
 function Mesh(vertices, faces)
     dict = Dict((f,i) for (i,f) in enumerate(faces))
-    Mesh(vertices, faces, dict)
+    T = eltype(eltype(vertices))
+    U = length(eltype(vertices))
+    D1 = length(eltype(faces))
+    Mesh{U,D1,T}(vertices, faces, dict)
 end
 
 vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]

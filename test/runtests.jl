@@ -14,6 +14,7 @@ import CompScienceMeshes
 
 include("test_mesh.jl")
 include("test_flipped.jl")
+include("test_flipped_welding.jl")
 include("test_weld.jl")
 include("test_baryref.jl")
 include("test_gid_reader.jl")
