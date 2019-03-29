@@ -16,7 +16,7 @@ function weld(Γ₁, Γ₂)
     T = eltype(eltype(Γ₁.vertices))
     tol = sqrt(eps(T))
 
-    verts1 = skeleton(Γ₁,0)
+    verts1 = skeleton(Γ₁,0) # TODO: check this, it might break for unused verts
     radii = zeros(numcells(verts1))
     indcs = [v[1] for v in cells(verts1)]
     cntrs = [cartesian(center(chart(verts1,v))) for v in cells(verts1)]

@@ -643,3 +643,19 @@ end
 Return a chart describing the supplied cell of `mesh`.
 """
 chart(mesh::Mesh, cell) = simplex(vertices(mesh,cell))
+
+
+"""
+    isoriented(mesh) -> Bool
+
+Returns true is all cells are consistently oriented, false otherwise.
+"""
+function isoriented(m::AbstractMesh)
+
+    @assert dimension(m) >= 0
+    edges = skeleton(m, dimension(m)-1)
+
+    D = connectivity(edges, m)
+    S = (abs.(sum(D,dims=1)) .<= 1)
+    return all(S)
+end

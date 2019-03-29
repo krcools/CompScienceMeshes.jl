@@ -81,7 +81,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
 include("utils.jl")
-include("combinatorics.jl")
+# include("combinatorics.jl")
 
 # quadrature rules for segements, triangles, and squares
 include("quadrature/SegmentGauss.jl")
@@ -91,6 +91,7 @@ include("quadrature/SquareGauss.jl")
 # mesh component
 include("mesh.jl")
 include("meshes/flippedmesh.jl")
+include("meshes/embedding.jl")
 include("subdMesh.jl")
 
 
