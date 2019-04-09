@@ -93,7 +93,7 @@ Line Loop(1) = {8, 5, 6, 7};
 //+
 Line Loop(2) = {17, 18, 19, 20};
 //+
-Plane Surface(1) = {1, 2};
+Plane Surface(1) = {-1, -2};
 //+
 Line Loop(3) = {8, -9, 2, 12};
 //+
@@ -113,11 +113,11 @@ Plane Surface(5) = {6};
 //+
 Line Loop(7) = {2, 3, 4, 1};
 //+
-Plane Surface(6) = {7};
+Plane Surface(6) = {-7};
 //+
-Line Loop(8) = {23, 24, 21, 22};
+Line Loop(8) = {22, 23, 21, 24};
 //+
-Plane Surface(7) = {8};
+Plane Surface(7) = {-8};
 //+
 Line Loop(9) = {22, 31, -20, -29};
 //+
@@ -137,7 +137,7 @@ Plane Surface(11) = {12};
 //+
 Line Loop(13) = {26, 13, -28, -18};
 //+
-Plane Surface(12) = {13};
+Plane Surface(12) = {-13};
 //+
 Line Loop(14) = {19, 30, -14, -28};
 //+
