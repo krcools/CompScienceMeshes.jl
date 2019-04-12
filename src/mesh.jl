@@ -344,6 +344,28 @@ function boundary(mesh)
 end
 
 
+"""
+Complement to boundary. This function selects those edges that have at
+least two faces adjacent. The case with more than two neighboring faces
+occurs on non-manifold structures (e.g. containing junctions)
+"""
+function interior(mesh::Mesh, edges=skeleton(mesh,1))
+    @assert dimension(mesh) == 2
+    @assert vertices(mesh) === vertices(edges)
+
+    C = connectivity(edges, mesh)
+    @assert size(C) == (numcells(mesh), numcells(edges))
+
+    nn = vec(sum(abs.(C), dims=1))
+    T = CompScienceMeshes.celltype(edges)
+    interior_edges = Vector{T}()
+    for (i,edge) in pairs(cells(edges))
+        nn[i] > 1 && push!(interior_edges, edge)
+    end
+    Mesh(vertices(mesh), interior_edges)
+end
+
+
 
 """
     vertextocellmap(mesh) -> vertextocells, numneighbors
