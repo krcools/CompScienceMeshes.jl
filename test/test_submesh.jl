@@ -41,3 +41,15 @@ pred3 = x -> overlaps(simplex(vertices(mesh, x)))
 pred4 = x -> pred2(x) || pred3(x)
 γ3 = submesh(pred4, edges)
 @test numcells(γ3) == 10
+
+#test interior_vpredicate
+function boundaryvertices(mesh::Mesh)
+    vpred = interior_vpredicate(mesh)
+    bidx = findall(!vpred,1:numvertices(mesh))
+    bnd = mesh.vertices[bidx]
+end
+
+tr = meshrectangle(1.0,1.0,1/4)
+bv = boundaryvertices(tr)
+btr = boundary(tr)
+@test length(bv) == numcells(skeleton(btr,0))

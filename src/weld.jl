@@ -2,16 +2,18 @@ using CollisionDetection
 
 
 """
-    weld(mesh1, mesh2, ...) -> welded_mesh
+    weld(mesh1, mesh2, ...;boundary=false) -> welded_mesh
 
 Build a mesh by welding or pasting together the inputs. Vertices from different
 meshes that coincide up to the tolerance will be merged into one. The order
 cells appear in the output mesh is equal to the order in the inputs.
+boundary = true; will merge only vertices of different meshes if one of
+them exists on the 'open' boundary of the mesh.
 """
 function weld end
 
 
-function weld(Γ₁, Γ₂)
+function weld(Γ₁, Γ₂; boundary=false)
 
     T = eltype(eltype(Γ₁.vertices))
     tol = sqrt(eps(T))
@@ -31,13 +33,18 @@ function weld(Γ₁, Γ₂)
     V1 = vertices(Γ₁)
     V2 = similar(V1,0)
 
+    in_interior1 = interior_vpredicate(Γ₁)
+    in_interior2 = interior_vpredicate(Γ₂)
+    cpred(u,v,i,j) = boundary ? norm(u-v) < tol && (!in_interior1(indcs[i])
+                || !in_interior2(j)) : norm(u-v) < tol
+
     for (j,v) in enumerate(Γ₂.vertices)
         found = false
         pred(c,s) = fitsinbox(Array(v), 0.0, c, s+tol)
         for box in boxes(tree, pred)
             for i in box
                 u = cntrs[i]
-                if norm(u-v) < tol
+                if cpred(u,v,i,j) #norm(u-v) < tol
                     idmap[j] = indcs[i]
                     num_equal_vertices += 1
                     found = true
@@ -64,7 +71,7 @@ function weld(Γ₁, Γ₂)
         F[nc1+i] = map_ids(c, idmap)
     end
 
-    return Mesh(V,F)
+    return Mesh(V,unique(F))
 
 end
 
@@ -77,11 +84,11 @@ end
 end
 
 
-function weld(meshes...)
+function weld(meshes...; boundary=false)
     @assert length(meshes) > 1
-    G = weld(meshes[1], meshes[2])
+    G = weld(meshes[1], meshes[2], boundary=boundary)
     for i in 3:length(meshes)
-        G = weld(G, meshes[i])
+        G = weld(G, meshes[i], boundary=boundary)
     end
     G
 end

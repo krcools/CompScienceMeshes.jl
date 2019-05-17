@@ -41,6 +41,7 @@ export  Loop_subdivision
 export GSubdMesh,submesh
 export octree, boundingbox
 export overlap_gpredicate, interior_tpredicate, inclosure_gpredicate
+export interior_vpredicate
 
 export mapper, restriction
 
