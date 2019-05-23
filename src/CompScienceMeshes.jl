@@ -91,6 +91,7 @@ include("quadrature/SquareGauss.jl")
 
 # mesh component
 include("mesh.jl")
+include("scomplex.jl")
 include("meshes/flippedmesh.jl")
 include("meshes/embedding.jl")
 include("subdMesh.jl")

@@ -13,6 +13,7 @@ import CompScienceMeshes
 @test CompScienceMeshes.point(Int,1,2,3) == SVector{3,Int}(1,2,3)
 
 include("test_mesh.jl")
+include("test_scomplex.jl")
 include("test_flipped.jl")
 include("test_flipped_welding.jl")
 include("test_weld.jl")
