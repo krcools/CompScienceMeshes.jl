@@ -102,3 +102,24 @@ m3 = weld(front, right)
 
 
 #patch(m)
+
+#Test boundary weld
+a = 1.0; h = 1/4
+fn = joinpath(dirname(@__FILE__),"assets","rectangle.msh")
+plate = CompScienceMeshes.read_gmsh_mesh(fn)
+# plate = meshrectangle(a, a, h, 3) #use this when weld bug is fixed
+sheet = weld(plate,plate,boundary=true)
+SV = skeleton(sheet,0)
+SE = skeleton(sheet,1)
+SF = skeleton(sheet,2)
+PV = skeleton(plate,0)
+PE = skeleton(plate,1)
+PF = skeleton(plate,2)
+
+@testset "boundary weld" begin
+    @test numcells(SF) == 2*numcells(PF)
+    @test numcells(SE) == 2*numcells(PE) - numcells(boundary(plate))
+    @test numcells(SV) == 2*numcells(PV) - 16
+    @test numcells(PV) - numcells(PE) + numcells(PF) == 1
+    @test numcells(SV) - numcells(SE) + numcells(SF) == 2
+end

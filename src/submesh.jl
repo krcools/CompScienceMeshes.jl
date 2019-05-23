@@ -184,7 +184,26 @@ function interior_tpredicate(mesh::Mesh)
     return pred
 end
 
-
+"""
+Creates a predicate that can be used to check wheter a vertex is interior to
+a surface (true) or on its boundary (false).
+In particular it expects as argument an index pointing into the vertex buffer of `mesh`.
+"""
+function interior_vpredicate(mesh::Mesh)
+    #TODO: update to accept simplex as argument
+    @assert dimension(mesh) == 2
+    skel = skeleton(mesh,1)
+    edges = cells(skel)
+    vtoc,vton = vertextocellmap(skel)
+    pred = interior_tpredicate(mesh)
+    function vpred(vidx)
+        for j = 1:vton[vidx]
+            pred(edges[vtoc[vidx,j]]) ? nothing : return false;
+        end
+        return true
+    end
+    return vpred
+end
 
 """
     submesh(selection, mesh)
