@@ -21,7 +21,7 @@ function __init__()
 
             m, M = extrema(a)
             if isapprox(m, M)
-                n = ones(Integer, a)
+                n = ones(Integer, size(a))
             else
                 n = floor.(Integer, (a.-m)/(M-m)*(length(cm)-1)).+1
             end
