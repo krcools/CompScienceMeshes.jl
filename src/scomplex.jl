@@ -65,25 +65,30 @@ function chart(m::SComplex2D, face::NTuple{3,Int})
     # Get the comprising vertices in the correct order
     P = vertextype(m)
 
-    vs = P[]
+    # vs = P[]
+    vs = Vector{P}(undef,3)
+    k = 1
     for i in face
         edge = m.edges[abs(i)]
         if i > 0
-            v = m.vertices[edge[1][1]]
+            v = m.vertices[m.nodes[edge[1]][1]]
+            vs[mod1(k+1,3)] = v
         else
-            v = m.vertices[edge[2][1]]
+            v = m.vertices[m.nodes[edge[2]][1]]
+            vs[mod1(k+1,3)] = v
         end
-        push!(vs,v)
+        k += 1
     end
 
+    @assert k == 4
     return simplex(vs...)
 end
 
-function chart(m::SComplex1D, node::NTuple{2,Int})
-    i = node[1]
-    j = node[2]
-    v = m.vertices[i]
-    w = m.vertices[j]
+function chart(m::SComplex1D, edge::NTuple{2,Int})
+    i = edge[1]
+    j = edge[2]
+    v = m.vertices[m.nodes[i][1]]
+    w = m.vertices[m.nodes[j][1]]
     simplex(v,w)
 end
 
