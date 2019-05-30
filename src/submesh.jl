@@ -98,7 +98,7 @@ boundingbox(p::SVector{N,T}) where {N,T<:Number} = p, zero(eltype(p))
 
 Create a predicate that for a given patch determinees if it overlaps with the provided target mesh `γ`.
 """
-function overlap_gpredicate(γ::Mesh)
+function overlap_gpredicate(γ::AbstractMesh)
 
     if numcells(γ) == 0
         return simplex -> false
@@ -114,7 +114,8 @@ function overlap_gpredicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
-                p2 = chart(γ, γ.faces[i])
+                # p2 = chart(γ, γ.faces[i])
+                p2 = chart(γ, cells(γ)[i])
                 overlap(p1,p2) && return true
             end
         end
@@ -130,7 +131,7 @@ end
 Geometric predicate for determining in log(N) complexity if a the image of a chart is in
 the closure of mesh `γ`.
 """
-function inclosure_gpredicate(γ::Mesh)
+function inclosure_gpredicate(γ::AbstractMesh)
 
     if numcells(γ) == 0
         return simplex -> false
@@ -146,7 +147,8 @@ function inclosure_gpredicate(γ::Mesh)
         c1, s1 = boundingbox(p1)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
-                p2 = simplex(vertices(γ, γ.faces[i]))
+                # p2 = simplex(vertices(γ, γ.faces[i]))
+                p2 = chart(γ, cells(γ)[i])
                 isinclosure(p2, p1) && return true
             end
         end
@@ -160,7 +162,9 @@ end
 
 """
 Creates a predicate that can be used to check wheter an edge is interior to
-a surface (true) or on its boundary (false). This predicate is based on combinatorics. In particular it expects as argument a tuple of indices pointing into the vertex buffer of `mesh`.
+a surface (true) or on its boundary (false). This predicate is based on combinatorics.
+In particular it expects as argument a tuple of indices pointing into the vertex
+buffer of `mesh`.
 """
 function interior_tpredicate(mesh::Mesh)
 
@@ -189,7 +193,7 @@ Creates a predicate that can be used to check wheter a vertex is interior to
 a surface (true) or on its boundary (false).
 In particular it expects as argument an index pointing into the vertex buffer of `mesh`.
 """
-function interior_vpredicate(mesh::Mesh)
+function interior_vpredicate(mesh::AbstractMesh)
     #TODO: update to accept simplex as argument
     @assert dimension(mesh) == 2
     skel = skeleton(mesh,1)

@@ -66,7 +66,8 @@ celltype(m::Mesh) = eltype(m.faces)
 
 Returns `eltype(vertextype(mesh))`
 """
-coordtype(m::Mesh) = eltype(vertextype(m))
+coordtype(m::AbstractMesh{U,D1,T}) where {U,D1,T} = T
+# coordtype(m::Mesh) = eltype(vertextype(m))
 
 
 
@@ -76,7 +77,8 @@ coordtype(m::Mesh) = eltype(vertextype(m))
 Returns the dimension of the mesh. Note that this is
 the dimension of the cells, not of the surrounding space.
 """
-dimension(m::Mesh) = length(celltype(m)) - 1
+dimension(m::AbstractMesh{U,D1}) where {U,D1} = D1-1
+# dimension(m::Mesh) = length(celltype(m)) - 1
 
 
 
@@ -381,13 +383,14 @@ matrix of the mesh.
 """
 function vertextocellmap(mesh)
 
-    cells = mesh.faces
+    # cells = mesh.faces
+    C = cells(mesh)
 
-    numverts = numvertices(mesh)
-    numcells = length(cells)
+    numverts = length(vertices(mesh)) #numvertices(mesh)
+    numcells = length(C)
     numneighbors = zeros(Int, numverts)
     for i = 1 : numcells
-        for m in cells[i]
+        for m in C[i]
             numneighbors[m] += 1
         end
         #numneighbors[ cells[i] ] += 1
@@ -397,7 +400,7 @@ function vertextocellmap(mesh)
     vertstocells = fill(npos, numverts, maximum(numneighbors))
     numneighbors = zeros(Int, numverts)
     for i = 1 : numcells
-        cell = cells[i]
+        cell = C[i]
         for j = 1 : length(cell)
             v = cell[j]
             k = (numneighbors[v] += 1)

@@ -15,7 +15,8 @@ function weld end
 
 function weld(Γ₁, Γ₂; boundary=false)
 
-    T = eltype(eltype(Γ₁.vertices))
+    # T = eltype(eltype(Γ₁.vertices))
+    T = coordtype(Γ₁)
     tol = sqrt(eps(T))
 
     verts1 = skeleton(Γ₁,0) # TODO: check this, it might break for unused verts
@@ -73,6 +74,107 @@ function weld(Γ₁, Γ₂; boundary=false)
 
     return Mesh(V,unique(F))
 
+end
+
+
+function weld(G1::SComplex2D, G2::SComplex2D; seam)
+
+    T = coordtype(G1)
+    P = vertextype(G1)
+    tol = sqrt(eps(T))
+
+    nodes1 = skeleton(G1,0)
+    edges1 = skeleton(G1,1)
+
+    node_ctrs1 = [cartesian(center(chart(nodes1,c))) for c in cells(nodes1)]
+    edge_ctrs1 = [cartesian(center(chart(edges1,c))) for c in cells(edges1)]
+
+    node_radii1 = zeros(T, length(node_ctrs1))
+    edge_radii1 = [volume(chart(edges1,c)) for c in cells(edges1)] / 2
+
+    node_tree1 = Octree(node_ctrs1, node_radii1)
+    edge_tree1 = Octree(edge_ctrs1, edge_radii1)
+
+    nodes2 = skeleton(G2,0)
+    edges2 = skeleton(G2,1)
+
+    node_is_on_seam = inclosure_gpredicate(seam)
+    edge_is_on_seam = overlap_gpredicate(seam)
+    # is_interior_edge = interior_tpredicate(G1)
+    # is_interior_node = interior_vpredicate(G1)
+
+    Nodes2 = similar(G2.nodes, 0)
+    Edges2 = similar(G2.edges, 0)
+
+    num_equal_edges = 0
+    edges_map = collect(numcells(edges1) .+ (1:numcells(edges2)))
+    for (j,edge2) in enumerate(cells(edges2))
+        found = false
+        ctr2 = cartesian(center(chart(edges2, edge2)))
+        rad2 = volume(chart(edges2,edge2)) / 2
+        for box in boxes(edge_tree1, (c,s)->fitsinbox(ctr2, rad2, c, s+tol))
+            for i in box
+                ctr1 = edge_ctrs1[i]
+                # For now we assume edges are the same if their centroids coincide
+                if norm(ctr1-ctr2) < tol && edge_is_on_seam(chart(edges1,cells(edges1)[i]))
+                # if norm(ctr1-ctr2) < tol && !is_interior_edge(cells(edges1)[i])
+                    edges_map[j] = i
+                    num_equal_edges += 1
+                    found = true
+                    break
+                end
+                found && break
+            end
+            if !found
+                push!(Edges2, edge2)
+                edges_map[j] -= num_equal_edges
+            end
+        end
+    end
+
+    Faces2 = similar(G2.faces, 0)
+    for face in cells(G2)
+        push!(Faces2,map(p->sign(p)*getindex(edges_map,abs(p)),face))
+    end
+
+    num_equal_nodes = 0
+    nodes_map = collect(numcells(nodes1) .+ (1:numcells(nodes2)))
+    for (j,node2) in enumerate(cells(nodes2))
+        found = false
+        ctr2 = cartesian(center(chart(nodes2, node2)))
+        rad2 = 0.0
+        for box in boxes(node_tree1, (c,s)->fitsinbox(ctr2, rad2, c, s+tol))
+            for i in box
+                ctr1 = node_ctrs1[i]
+                # For now we assume edges are the same if their centroids coincide
+                if norm(ctr1-ctr2) < tol && node_is_on_seam(ctr1)
+                # if norm(ctr1-ctr2) < tol && !is_interior_node(cells(nodes1)[i][1])
+                    nodes_map[j] = i
+                    num_equal_nodes += 1
+                    found = true
+                    break
+                end
+                found && break
+            end
+            if !found
+                push!(Nodes2, node2)
+                nodes_map[j] -= num_equal_nodes
+            end
+        end
+    end
+
+    # Edges2 = similar(G2.edges, 0)
+    for (i,edge) in enumerate(Edges2)
+        edge_mapped = map(p->sign(p)*getindex(nodes_map,abs(p)),edge)
+        Edges2[i] = edge_mapped
+        # push!(Edges2, edge_mapped)
+    end
+
+    SComplex2D{T,P}(
+        vcat(G1.vertices, G2.vertices),
+        vcat(G1.nodes, Nodes2),
+        vcat(G1.edges, Edges2),
+        vcat(G1.faces, Faces2))
 end
 
 @generated function map_ids(c::SVector{N,T}, idmap) where {N,T}
