@@ -1,5 +1,6 @@
 using Test
 using CompScienceMeshes
+using LinearAlgebra
 
 verts = [
     point(0,0,0),
@@ -31,9 +32,10 @@ m = CompScienceMeshes.SComplex2D{T,P}(verts,nodes,edges,faces)
 @test numcells(m) == 2
 
 ch = chart(m, first(cells(m)))
-@test ch.vertices[1] == verts[1]
-@test ch.vertices[2] == verts[2]
-@test ch.vertices[3] == verts[3]
+@test ch.vertices[1] == verts[3]
+@test ch.vertices[2] == verts[1]
+@test ch.vertices[3] == verts[2]
+@test dot(normal(center(ch)),point(0,0,1)) > 0
 
 x1 = iterate(cells(m))
 @test x1 != nothing
@@ -42,9 +44,10 @@ x2 = iterate(cells(m), x1[2])
 c2 = x2[1]
 
 ch2 = chart(m, c2)
-@test ch2.vertices[1] == verts[3]
-@test ch2.vertices[2] == verts[2]
-@test ch2.vertices[3] == verts[4]
+@test ch2.vertices[1] == verts[4]
+@test ch2.vertices[2] == verts[3]
+@test ch2.vertices[3] == verts[2]
+@test dot(normal(center(ch2)),point(0,0,1)) > 0
 
 m0 = skeleton(m,0)
 @test dimension(m0) == 0
@@ -97,3 +100,16 @@ rr0 = skeleton(rr,0)
 @test numcells(rr) == 16
 @test numcells(rr1) == 24
 @test numcells(rr0) == 10
+
+fm = -m
+C = collect(cells(fm))
+ch1 = chart(fm,C[1])
+ch2 = chart(fm,C[2])
+
+@test dot(normal(center(ch1)), point(0,0,1)) < 0
+@test dot(normal(center(ch2)), point(0,0,1)) < 0
+
+dl = weld(m,-m,seam=boundary(m))
+@test numcells(dl) == 4
+@test numcells(skeleton(dl,1)) == 6
+@test numcells(skeleton(dl,0)) == 4

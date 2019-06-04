@@ -194,3 +194,13 @@ function SComplex2D(mesh::Mesh)
     T, P = coordtype(mesh), vertextype(mesh)
     return SComplex2D{T,P}(mesh.vertices, Nodes, Edges, Faces)
 end
+
+function Base.:-(mesh::SComplex2D)
+    Faces = similar(mesh.faces,0)
+    for f in mesh.faces
+        push!(Faces,(-f[1],-f[3],-f[2]),)
+    end
+    T = coordtype(mesh)
+    P = vertextype(mesh)
+    return SComplex2D{T,P}(mesh.vertices, mesh.nodes, mesh.edges, Faces)
+end
