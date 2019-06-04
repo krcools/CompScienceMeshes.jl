@@ -125,10 +125,12 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
                 end
                 found && break
             end
-            if !found
-                push!(Edges2, edge2)
-                edges_map[j] -= num_equal_edges
-            end
+        end
+        if !found
+            push!(Edges2, edge2)
+            edges_map[j] -= num_equal_edges
+        else
+            @show ctr2[3]
         end
     end
 
@@ -156,10 +158,10 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
                 end
                 found && break
             end
-            if !found
-                push!(Nodes2, node2)
-                nodes_map[j] -= num_equal_nodes
-            end
+        end
+        if !found
+            push!(Nodes2, node2)
+            nodes_map[j] -= num_equal_nodes
         end
     end
 
