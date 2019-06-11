@@ -19,7 +19,8 @@ function embedding(small::AbstractMesh, big::AbstractMesh)
 
     cells_big = collect(cells(big))
     for (i,c) in enumerate(cells(small))
-        V = vertices(small,c)
+        # V = vertices(small,c)
+        V = chart(small, c).vertices
         ch = chart(small,c)
         x = cartesian(center(ch))
         pred(c,s) = fitsinbox(x, 0.0, c, s+tol)
@@ -27,7 +28,8 @@ function embedding(small::AbstractMesh, big::AbstractMesh)
         for box in boxes(tree_big, pred)
             for j in box
                 c′ = cells_big[j]
-                V′ = vertices(big,c′)
+                # V′ = vertices(big,c′)
+                V′ = chart(big,c′).vertices
                 ch′ = chart(big, c′)
                 if norm(V[1]-V′[1]) + norm(V[2]-V′[2]) < tol
                     cols[i] = j

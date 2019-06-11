@@ -115,7 +115,6 @@ function interior_tpredicate(mesh::SComplex2D)
     edges = skeleton(mesh,1)
     D = connectivity(edges, mesh)
     d = sum(D,dims=1)
-    @show d
     M = Dict((edge,i) for (i,edge) in enumerate(cells(edges)))
     pred(cell) = (d[M[cell]] == 0)
     return pred

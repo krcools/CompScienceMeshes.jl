@@ -129,8 +129,6 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
         if !found
             push!(Edges2, edge2)
             edges_map[j] -= num_equal_edges
-        else
-            @show ctr2[3]
         end
     end
 
