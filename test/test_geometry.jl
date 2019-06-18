@@ -80,3 +80,38 @@ e = skeleton(m,1)
 @test numcells(e) == 5
 
 cps = cellpairs(m,e)
+
+#Test unstructed mesh rectangle
+r1 = meshrectangle(1.0,1.0,1/1)
+r2 = meshrectangle(1.0,1.0,1/1,structured=false)
+
+@test numcells(r1) == 2
+@test numcells(r2) == 4
+@test numvertices(r2) == 5
+@test numcells(boundary(r2)) == 4
+@test numcells(CompScienceMeshes.interior(r2)) == 4
+@test numcells(boundary(r1)) == numcells(boundary(r2))
+
+#Test mesh cuboid parts
+deltaT = 1/1
+box = meshcuboid(1.0,1.0,1.0,deltaT)
+top = meshcuboid(1.0,1.0,1.0,deltaT,physical="TopPlate")
+sides = meshcuboid(1.0,1.0,1.0,deltaT,physical="SidePlates")
+bot = meshcuboid(1.0,1.0,1.0,deltaT,physical="BottomPlate")
+obox = meshcuboid(1.0,1.0,1.0,deltaT,physical="OpenBox")
+
+@test numcells(boundary(box)) == 0
+@test numcells(boundary(top)) == numcells(boundary(bot))  == 4
+@test numvertices(box) == 14
+@test numcells(box) == 24
+@test numcells(skeleton(box,1)) == 36
+@test numcells(top) + numcells(bot) + numcells(sides) == numcells(box)
+@test numcells(obox) == numcells(box) - numcells(top)
+
+e1 = skeleton(top,1)
+E1 = skeleton(box,1)
+
+cols = vec([6 16 17 13 18 19 20 21])
+Z11 = sparse(collect(1:8),cols,ones(8),numcells(e1),numcells(E1))
+S11 = CompScienceMeshes.embedding(e1,E1)
+@test S11 == Z11
