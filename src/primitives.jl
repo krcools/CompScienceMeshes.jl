@@ -64,7 +64,11 @@ The target edge size is `delta` and the dimension of the
 
 The mesh is oriented such that the normal is pointing down. This is subject to change.
 """
-function meshrectangle(width::T, height::T, delta::T, udim=3) where T
+function meshrectangle(width::T, height::T, delta::T, udim=3; structured=true) where T
+  if !structured
+	  @assert udim==3 "Only 3D Unstructured mesh currently supported"
+	  return meshrectangle!(width, height, delta)
+  end
 
   PT = SVector{udim,T}
   CT = SVector{3,Int}
@@ -177,9 +181,11 @@ Creates a mesh for a cuboid of width (along the x-axis) `width`, height (along
     incorporating these parameters into the GMSH mesher.
 
 The target edge size is `delta`.
+physical => in {"TopPlate", "BottomPlate", "SidePlates", "OpenBox"} extracts and
+returns only the specified part of the cuboid
 
 """
-function meshcuboid(width, height, length, delta)
+function meshcuboid(width, height, length, delta;physical="ClosedBox")
     s =
 """
 lc = $delta;
@@ -220,8 +226,14 @@ Plane Surface(4)={4};
 Plane Surface(5)={5};
 Plane Surface(6)={6};
 
-Surface Loop(1)={1,2,3,4,5,6};
+//classify parts of geometry
+Physical Surface("TopPlate") = {3};
+Physical Surface("BottomPlate") = {5};
+Physical Surface("SidePlates") = {1,2,4,6};
+Physical Surface("OpenBox") = {1,2,4,5,6};
+Physical Surface("ClosedBox") = {1,2,3,4,5,6};
 
+Surface Loop(1)={1,2,3,4,5,6};
 Volume(1)={1};
 
 """
@@ -238,12 +250,57 @@ Volume(1)={1};
     fno = tempname()
     run(`gmsh $fn -2 -format msh -o $fno`)
     fdo = open(fno,"r")
-    m = read_gmsh_mesh(fdo)
+    m = read_gmsh_mesh(fdo,physical=physical)
 
     close(fdo)
     rm(fno)
     rm(fn)
 
+    return m
+
+end
+
+"""
+	meshrectangle!(width, height, delta)
+	Meshes unstructured rectangle (Delaunay Triangulation)
+"""
+function meshrectangle!(width, height, delta)
+    s =
+		"""
+		lc = $delta;
+
+		Point(1)={0,0,0,lc};
+		Point(4)={$width,0,0,lc};
+		Point(5)={0,$height,0,lc};
+		Point(8)={$width,$height,0,lc};
+
+		Line(4)={4,1};
+		Line(8)={8,5};
+		Line(9)={1,5};
+		Line(12)={4,8};
+
+		Line Loop(5)={4,-12,-8,9};
+
+		Plane Surface(5)={5};
+		"""
+
+    fn = tempname()
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
+    # feed the file to gmsh
+    fno = tempname()
+    run(`gmsh $fn -2 -format msh -o $fno`)
+    fdo = open(fno,"r")
+    m = CompScienceMeshes.read_gmsh_mesh(fdo)
+
+    close(fdo)
+    rm(fno)
+    rm(fn)
     return m
 
 end
