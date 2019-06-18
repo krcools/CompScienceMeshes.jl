@@ -1,7 +1,14 @@
 """
     embedding(small::AbstractMesh, big::AbstractMesh) -> S::AbstractSparseArray
+    predicate(a,b) => extra constraints that must both be fullfiled by each
+    cell `a` and `b` that are found to exist in `small` and `big` respectively.
+    `a` and `b` are the indices of the corresponding edges. It is the user's
+    responsibility to ensure that the predicate allows for all cells of `small`
+    to be mapped to a cell in `big`. Specifying a predicate is useful for cases
+    where cells in `small` matches/overlaps with multiple cells in `big`
+    #TODO: change pred to accept simplices
 """
-function embedding(small::AbstractMesh, big::AbstractMesh)
+function embedding(small::AbstractMesh, big::AbstractMesh; predicate=(a,b)->true)
 
     @assert dimension(small) == 1
     @assert dimension(big)   == 1
@@ -31,12 +38,12 @@ function embedding(small::AbstractMesh, big::AbstractMesh)
                 # V′ = vertices(big,c′)
                 V′ = chart(big,c′).vertices
                 ch′ = chart(big, c′)
-                if norm(V[1]-V′[1]) + norm(V[2]-V′[2]) < tol
+                if (norm(V[1]-V′[1]) + norm(V[2]-V′[2]) < tol) && predicate(i,j)
                     cols[i] = j
                     sgns[i] = +1
                     found = true
                     break
-                elseif norm(V[1]-V′[2]) + norm(V[2]-V′[1]) < tol
+                elseif (norm(V[1]-V′[2]) + norm(V[2]-V′[1]) < tol) && predicate(i,j)
                     cols[i] = j
                     sgns[i] = -1
                     found = true
@@ -47,7 +54,7 @@ function embedding(small::AbstractMesh, big::AbstractMesh)
         end
     end
 
-    @assert !any(cols .== 0)
+    @assert !any(cols .== 0) "Unmapped cells exist"
     @assert !any(sgns .== 0)
     sparse(rows, cols, sgns, numcells(small), numcells(big))
 end
