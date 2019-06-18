@@ -257,3 +257,73 @@ function Base.:-(mesh::SComplex2D)
     P = vertextype(mesh)
     return SComplex2D{T,P}(mesh.vertices, mesh.nodes, mesh.edges, Faces)
 end
+
+"""
+    Converts an SComplex to Mesh.
+    Convenience function only. Use with caution.
+    (Only makes sense where the SComplex can originally be replaced with a Mesh.
+    In that case, the user is expected to use Mesh)
+"""
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex2D)
+    faces = cells(m)
+    edges = cells(skeleton(m,1))
+    nodes = cells(skeleton(m,0))
+    edgemap = similar(faces)
+    for (i,face) in enumerate(faces)
+        cell = zeros(eltype(face),length(face))
+        for j in 1:length(face)
+            edge = edges[abs(face[j])]
+            if face[j] > 0 #or sign(face[j]) == 1
+              cell[j] = nodes[edge[1]][1]
+            else
+              cell[j] = nodes[edge[2]][1]
+            end
+        end
+        edgemap[i] = Tuple(cell)
+    end
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end
+
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex1D)
+    faces = cells(m)
+    nodes = cells(skeleton(m,0))
+    edgemap = similar(faces)
+    for (i,face) in enumerate(faces)
+        cell = zeros(eltype(face),length(face))
+        for j in 1:length(face)
+              cell[j] = nodes[face[j]][1]
+        end
+        edgemap[i] = Tuple(cell)
+    end
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end
+
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex0D)
+    faces = cells(m)
+    edgemap = faces
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end
