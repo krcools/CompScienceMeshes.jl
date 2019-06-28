@@ -178,7 +178,7 @@ function _normals(tangents, ::Type{Val{C}}) where C
     volume = sqrt(abs(det(metric))) / D
 
     # Fix this. This function needs to become gneerated
-    normals = SVector{C,PT}([zero(PT) for i in 1:C])
+    normals = SVector{C,PT}(PT[zero(PT) for i in 1:C])
 
     return normals, volume
 end
@@ -249,7 +249,6 @@ function ReferenceSimplex{D,T,N}() where {D,T,N}
 
     o = zero(SVector{D,T})
     push!(P,o)
-
     ReferenceSimplex{D,T,N}(simplex(P...))
 end
 
