@@ -56,3 +56,21 @@ function isinclosure(cell, point)
   return true
 
 end
+
+
+
+function touches(simplex::Simplex,line)
+  a, b = line
+  n = normal(simplex)
+  p = simplex[1]
+  t = dot(p-a,n)/dot(b-a,n)
+  x = (1-t)*a + t*b
+  u = carttobary(simplex,x)
+  T = eltype(u)
+  tol = eps(T)
+  w = one(T)
+  0-tol < u[1] < 1+tol || return false; w -= u[1]
+  0-tol < u[2] < 1+tol || return false; w -= u[2]
+  0-tol < w    < 1+tol || return false;
+  return true
+end

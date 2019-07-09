@@ -124,6 +124,8 @@ simplex(vertices...) = simplex(SVector((vertices...,)))
     :(simplex(SVector{$D1,$P}($xp)))
 end
 
+normal(s::Simplex{3,2,1,3,T}) where {T} = normalize(cross(s[1]-s[3],s[2]-s[3]))
+
 
 function _normals(tangents, ::Type{Val{1}})
     PT = eltype(tangents)
