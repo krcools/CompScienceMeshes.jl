@@ -1,4 +1,4 @@
-## Charts
+# Charts
 
 Charts represent maps from parameter domains to configuration space. Their main use is to
 provide the geometric description of the cells that make up meshes.

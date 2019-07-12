@@ -1,4 +1,4 @@
-## Computing the genus of a punctured plane
+# Computing the genus of a punctured plane
 
 In this example we will compute the genus of a punctured plane. In other words we are interested
 in the dimension of the 1st homology space.
