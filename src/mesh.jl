@@ -423,7 +423,7 @@ the edges of a given surface `mesh`,
 edges = skelton(mesh, 1)
 ```
 """
-function skeleton(mesh, dim::Integer)
+function skeleton(mesh, dim::Int)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
@@ -503,7 +503,7 @@ positive or negative depending on the relative orientation of face `k` in cell
 For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
 the graph version of the exterior derivative.
 """
-function connectivity(kcells::Mesh, mcells::Mesh, op = sign)
+function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
     vtok, _ = vertextocellmap(kcells)
     vtom, _ = vertextocellmap(mcells)
@@ -523,7 +523,7 @@ function connectivity(kcells::Mesh, mcells::Mesh, op = sign)
             for j in vtom[v,:]
                 j == npos && break
                 #mcell = cells(mcells, j)
-                mcell = mcells.faces[j]
+                mcell = cells(mcells)[j]
                 D[j,i] = op(relorientation(kcell, mcell))
             end
         end
@@ -669,6 +669,7 @@ Return a chart describing the supplied cell of `mesh`.
 """
 chart(mesh::Mesh, cell) = simplex(vertices(mesh,cell))
 
+parent(mesh::Mesh) = nothing
 
 """
     isoriented(mesh) -> Bool
@@ -683,4 +684,12 @@ function isoriented(m::AbstractMesh)
     D = connectivity(edges, m)
     S = (abs.(sum(D,dims=1)) .<= 1)
     return all(S)
+end
+
+"""
+True if m1 is a direct refinement of m2.
+"""
+function refines(m1::AbstractMesh, m2::AbstractMesh)
+    parent(m1) == nothing && return false
+    return parent(m1) == m2
 end

@@ -1,4 +1,15 @@
+mutable struct BarycentricRefinement{U,D1,T} <: AbstractMesh{U,D1,T}
+    mesh::AbstractMesh{U,D1,T}
+    parent::AbstractMesh{U,D1,T}
+end
 
+vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
+vertices(br::BarycentricRefinement) = vertices(br.mesh)
+numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
+cells(br::BarycentricRefinement) = cells(br.mesh)
+numcells(br::BarycentricRefinement) = numcells(br.mesh)
+skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
+chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
 
 """
     barycentric refinement(mesh) -> refined_mesh
@@ -101,7 +112,7 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
         end
     end
 
-    Mesh(verts, fcs)
+    BarycentricRefinement(Mesh(verts, fcs), mesh)
 end
 
 

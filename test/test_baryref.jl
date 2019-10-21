@@ -19,6 +19,8 @@ segments2=cellarray(Γ2)  ## get the faces
 m = meshrectangle(1.0, 1.0, 0.25, 3)
 f = barycentric_refinement(m)
 
+
+@test CompScienceMeshes.refines(f,m)
 @test numcells(f) == 6*numcells(m)
 
 m1 = skeleton(m,1)
