@@ -5,12 +5,12 @@ os:
   - osx
 julia:
   - 0.7
-  - 1.0
+  - 1.1
 notifications:
   email: false
 after_success:
   - julia -e 'cd(Pkg.dir("CompScienceMeshes")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'ps=Pkg.PackageSpec(name="Documenter", version="0.19"); Pkg.add(ps); Pkg.pin(ps)'
   - julia -e 'cd(Pkg.dir("CompScienceMeshes")); include(joinpath("docs", "make.jl"))'
 # uncomment the following lines to override the default test script
 #script:
