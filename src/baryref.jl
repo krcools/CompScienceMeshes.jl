@@ -11,6 +11,8 @@ numcells(br::BarycentricRefinement) = numcells(br.mesh)
 skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
 chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
 
+parent(mesh::BarycentricRefinement) = mesh.parent
+
 """
     barycentric refinement(mesh) -> refined_mesh
 
