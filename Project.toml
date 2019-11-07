@@ -1,6 +1,6 @@
 name = "CompScienceMeshes"
 uuid = "3e66a162-7b8c-5da0-b8f8-124ecd2c3ae1"
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 CollisionDetection = "2b5bf9a6-f3f8-5352-af9c-82bb4af718d8"
