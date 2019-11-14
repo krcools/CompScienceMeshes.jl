@@ -183,3 +183,122 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     Mesh(verts, fcs)
 end
+
+"""
+    los_triangle_center(vertices) -> center
+
+Compute the center for a "line-of-sight" refinement.
+"""
+function los_triangle_center(r)
+
+    n = (r[1]-r[3]) × (r[2]-r[3])
+    n /= norm(n)
+
+    l = [
+        norm(r[2]-r[3]),
+        norm(r[3]-r[1]),
+        norm(r[1]-r[2])]
+
+    α = [
+        acos((l[2]^2 + l[3]^2 - l[1]^2)/(2*l[2]*l[3])),
+        acos((l[3]^2 + l[1]^2 - l[2]^2)/(2*l[3]*l[1])),
+        acos((l[1]^2 + l[2]^2 - l[3]^2)/(2*l[1]*l[2]))]
+
+    if α[1] ≥ π/2
+        β = 2/3 * sin(α[2]) * sin(α[3]) / cos(α[2] - α[3])
+        t = -β * dot(r[2]-r[3], r[3]-r[1]) / dot(n×(r[2]-r[1]), r[3]-r[1])
+        r = r[1] + β*(r[2]-r[1]) + t*cross(n, r[2]-r[1])
+    elseif α[2] ≥ π/2
+        β = 2/3 * sin(α[3]) * sin(α[1]) / cos(α[3] - α[1])
+        t = -β * dot(r[3]-r[1], r[1]-r[2]) / dot(n×(r[3]-r[2]), r[1]-r[2])
+        r = r[2] + β*(r[3]-r[2]) + t*cross(n, r[3]-r[2])
+    elseif α[3] ≥ π/2
+        β = 2/3 * sin(α[1]) * sin(α[2]) / cos(α[1] - α[2])
+        t = -β * dot(r[1]-r[2], r[2]-r[3]) / dot(n×(r[1]-r[3]), r[2]-r[3])
+        r = r[3] + β*(r[1]-r[3]) + t*cross(n, r[1]-r[3])
+    else
+        r = (r[1]+r[2]+r[3]) / 3
+    end
+    return r
+end
+
+
+function lineofsight_refinement(mesh::Mesh{U,3}) where U
+
+    D1 = 3
+
+    edges = skeleton(mesh,1)
+    faces = skeleton(mesh,2)
+
+    NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
+
+    nv = NV + NE + NF
+    verts = Array{vertextype(mesh)}(undef,nv)
+    for V in 1 : numvertices(mesh)
+        verts[V] = mesh.vertices[V]
+    end
+
+    # add a vertex in each face los-centre
+    for (F,Face) in enumerate(cells(faces))
+        R = vertices(mesh)[Face]
+        # @show F
+        losc = los_triangle_center(R)
+        verts[NV+NE+F] = losc
+    end
+
+    # For each edge, find the neighboring triangles, and connect
+    # them with a straight line. At a new vertex at the edge crossing
+    C = connectivity(edges, faces, identity)
+    rows = rowvals(C)
+    # vals = nonzeros(EF)
+    for (E,Edge) in  enumerate(cells(edges))
+        K = nzrange(C,E)
+        # Breaks on open meshes
+        @assert length(K) == 2
+        Fs = rows[K]
+        c1 = verts[NV+NE+Fs[1]]
+        c2 = verts[NV+NE+Fs[2]]
+        e1 = verts[Edge[1]]
+        e2 = verts[Edge[2]]
+        c1c2 = c2 - c1
+        e1e2 = e2 - e1
+        c1e1 = e1 - c1
+        l12 = norm(c1c2)
+        S = c1c2 * c1c2'
+        A = one(S) - S / l12^2
+        t = -dot(c1e1, A*e1e2) / dot(e1e2, A*e1e2)
+        m = e1 + t * e1e2
+        verts[NV+E] = m
+    end
+
+    # # add a vertex in each edge centroid
+    # for (E,Edge) in enumerate(cells(edges))
+    #     verts[NV+E] = cartesian(center(chart(edges, Edge)))
+    # end
+
+    D = copy(transpose(C))
+    rows = rowvals(D)
+    vals = nonzeros(D)
+    # vals = nonzeros(D)
+
+    # add six faces in each coarse face
+    nf = 6NF
+    fcs = zeros(celltype(mesh), nf)
+    for F in 1 : numcells(faces)
+        c = NV + NE + F
+
+        for i in nzrange(D, F)
+            E = rows[i]
+            e = NV + E
+
+            j = abs(vals[i]) # local index of edge E in face F
+            a = mesh.faces[F][mod1(j+1,3)]
+            b = mesh.faces[F][mod1(j+2,3)]
+
+            fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
+            fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
+        end
+    end
+
+    BarycentricRefinement(Mesh(verts, fcs), mesh)
+end
