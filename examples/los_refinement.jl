@@ -1,6 +1,6 @@
 using CompScienceMeshes
 
-coarse = meshsphere(1.0, 0.35)
+coarse = meshsphere(1.0, 0.45)
 fine = CompScienceMeshes.lineofsight_refinement(m)
 vtoc, nc = CompScienceMeshes.vertextocellmap(fine)
 
