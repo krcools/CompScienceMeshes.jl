@@ -81,6 +81,16 @@ function read_gmsh_mesh(io; physical=nothing)
     end
     resize!(f,i)
 
+    @info "sorting..."
+    Q = Pt{3,Float64}
+    ctrs = Q[]
+    for tr in f
+            ctr = sum(v[tr])/3
+            push!(ctrs,ctr)
+    end
+    sorted = sort_sfc(ctrs)
+    f = f[sorted]
+
     return Mesh(v, f)
 
 end

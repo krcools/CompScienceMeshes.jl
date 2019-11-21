@@ -82,6 +82,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
 include("utils.jl")
+include("utils/sfc_sort.jl")
 # include("combinatorics.jl")
 
 # quadrature rules for segements, triangles, and squares

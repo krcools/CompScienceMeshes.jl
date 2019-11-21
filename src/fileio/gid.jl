@@ -27,6 +27,7 @@ function load_gid_mesh(file)
             #vertices[vertexCount] = Pt{3,Float64}(map(Meta.parse, line[2:4]));
             vertices[vertexCount] = Pt{3,Float64}(parse.(Float64,line[2:4]))
     end
+    vertices= vertices[1:vertexCount]
 
     readline(file); # "\n"
     readline(file); # Elements
@@ -40,6 +41,18 @@ function load_gid_mesh(file)
             triangleCount += 1;
             triangles[triangleCount] = Pt{3,Int}(map(Meta.parse, line[2:4]));
     end
+    triangles = triangles[1:triangleCount]
+    # Mesh(vertices[1:vertexCount], triangles[1:triangleCount])
 
-    Mesh(vertices[1:vertexCount], triangles[1:triangleCount])
+    # Place them on a space filling curve
+    Q = Pt{3,Float64}
+    ctrs = Q[]
+    for tr in triangles
+            ctr = sum(vertices[tr])/3
+            push!(ctrs,ctr)
+    end
+    sorted = sort_sfc(ctrs)
+    triangles = triangles[sorted]
+
+    Mesh(vertices, triangles)
 end
