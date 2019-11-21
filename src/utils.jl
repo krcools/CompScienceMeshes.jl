@@ -47,7 +47,7 @@ function tetschoice(w1::Int64,w2::Int64)
     end
 end
 
-function relorientation(face::SArray{Tuple{2},Int64,1,2}, simplex::SArray{Tuple{3},Int64,1,3})
+function relorientation(face, simplex)
 
     v = setdiff(simplex, face)
     length(v) == 1 || return 0
