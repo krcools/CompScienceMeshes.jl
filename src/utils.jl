@@ -9,7 +9,7 @@ function relorientation(face::SArray{Tuple{3},Int64,1,3}, tet::SArray{Tuple{4},I
     a = something(findfirst(isequal(v[1]), tet),0)
     #w = sortperm(face)
     #b = parity(w)
-    return a#*(-1)^b
+    return -a#*(-1)^b
 end
 
 """
