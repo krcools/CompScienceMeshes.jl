@@ -451,7 +451,9 @@ function skeleton(mesh, dim::Int)
     # sort the simplices on a SFC
     Q = vertextype(mesh)
     ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
-    simplices = simplices[sort_sfc(ctrs)]
+    if length(simplices) > 0
+        simplices = simplices[sort_sfc(ctrs)]
+    end
 
     Mesh(mesh.vertices, simplices)
 end
