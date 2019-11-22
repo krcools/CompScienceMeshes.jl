@@ -36,6 +36,7 @@ function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},I
     return s*t
 end
 
+
 function tetschoice(w1::Int64,w2::Int64)
     a = min(w1,w2)
     b = max(w1,w2)
@@ -46,6 +47,10 @@ function tetschoice(w1::Int64,w2::Int64)
     elseif a == 3
         return b+2
     end
+end
+
+function relorientation(node::SArray{Tuple{1},Int64,1,1}, face::SArray{Tuple{3},Int64,1,3})
+    something(findfirst(isequal(node[1]), face), 0)
 end
 
 function relorientation(face, simplex)

@@ -114,7 +114,26 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
         end
     end
 
-    BarycentricRefinement(Mesh(verts, fcs), mesh)
+    Nodes = skeleton(mesh, 0)
+    node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
+
+    fine = Mesh(verts, fcs)
+    D = connectivity(Nodes, fine)
+    rows, vals = rowvals(D), nonzeros(D)
+    sorted_fcs = Vector{celltype(mesh)}()
+    for (i,Node) in enumerate(cells(Nodes))
+        for k in nzrange(D,i)
+            j = rows[k]
+            push!(sorted_fcs, fcs[j])
+        end
+    end
+
+    # sorted_fcs = fcs
+    @show length(fcs)
+    @show length(sorted_fcs)
+    @assert length(fcs) == length(sorted_fcs)
+    BarycentricRefinement(Mesh(verts, sorted_fcs), mesh)
 end
 
 
