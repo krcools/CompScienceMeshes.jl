@@ -447,6 +447,12 @@ function skeleton(mesh, dim::Int)
     end
 
     simplices = unique(simplices)
+
+    # sort the simplices on a SFC
+    Q = vertextype(mesh)
+    ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
+    simplices = simplices[sort_sfc(ctrs)]
+
     Mesh(mesh.vertices, simplices)
 end
 

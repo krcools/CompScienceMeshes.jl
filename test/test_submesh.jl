@@ -28,9 +28,14 @@ translate!(line, P(0.0, height, 0.0))
 edges = skeleton(mesh, 1)
 γ1 = submesh(line, edges)
 @test numcells(γ1) == 2
-@test γ1.faces == [
-    index(3,6),
-    index(6,9)]
+for c in cells(γ1)
+    ctr = cartesian(center(chart(edges, c)))
+    @test ctr[2] == height
+    @test ctr[3] == 0
+end
+# @test γ1.faces == [
+#     index(3,6),
+#     index(6,9)]
 
 pred2 = interior_tpredicate(mesh)
 γ2 = submesh(pred2, edges)
