@@ -15,6 +15,28 @@ function quadpoints(chart::ReferenceSimplex{2}, rule)
     [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
 end
 
+function quadpoints(chart::ReferenceSimplex{3}, rule)
+    uT, wT = trgauss(rule)
+    uL, wL = legendre(rule, 0.0, 1.0)
+
+    QT = length(wT)
+    QL = length(wL)
+
+    QP = QT*QL
+    uP = zeros(3,QP)
+    wP = zeros(QP)
+    k = 1
+    for i in 1:QT
+        for j in 1:QL
+            uP[1:2,k] = uT[:,i]
+            uP[3,k] = (1-uT[1,i]-uT[2,i]) * uL[1,j]
+            wP[k] = wT[i] * wL[j] * (1-uT[1,i]-uT[2,i])
+            k += 1
+        end
+    end
+
+    [(neighborhood(chart, uP[:,i]), wP[i]) for i in eachindex(wP)]
+end
 
 """
     pw = quadpoints(chart, rule)
