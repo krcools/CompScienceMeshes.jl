@@ -1,6 +1,6 @@
-mutable struct BarycentricRefinement{U,D1,T} <: AbstractMesh{U,D1,T}
-    mesh::AbstractMesh{U,D1,T}
-    parent::AbstractMesh{U,D1,T}
+mutable struct BarycentricRefinement{U,D1,T,M} <: AbstractMesh{U,D1,T}
+    mesh::M
+    parent::M
 end
 
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
@@ -70,6 +70,7 @@ end
 function barycentric_refinement(mesh::Mesh{U,3}) where U
 
     D1 = 3
+    T = coordtype(mesh)
 
     edges = skeleton(mesh,1)
     faces = skeleton(mesh,2)
@@ -133,7 +134,9 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
     @show length(fcs)
     @show length(sorted_fcs)
     @assert length(fcs) == length(sorted_fcs)
-    BarycentricRefinement(Mesh(verts, sorted_fcs), mesh)
+
+    M = typeof(mesh)
+    BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
 end
 
 
