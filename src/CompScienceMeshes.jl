@@ -119,6 +119,7 @@ include("gaussquarature.jl")
 include("fileio/TRI_mesh.jl")
 include("fileio/readmesh.jl")
 include("fileio/gmsh.jl")
+include("fileio/gmsh3d.jl")
 include("fileio/gid.jl")
 include("primitives.jl")
 #include("../examples/waveguide_with_post.jl")
@@ -131,4 +132,5 @@ include("restrict.jl")
 
 include("plotlyjs_glue.jl")
 
+include("stripboundedge.jl")
 end # module
