@@ -701,3 +701,16 @@ function refines(m1::AbstractMesh, m2::AbstractMesh)
     parent(m1) == nothing && return false
     return parent(m1) == m2
 end
+
+
+"""
+Create the topological union of two meshes. This requires them to be
+defined on the same vertex set. No geometric considerations are taken
+into account.
+"""
+function union(m1::Mesh, m2::Mesh)
+    @assert dimension(m1) == dimension(m2)
+    @assert vertices(m1) == vertices(m2)
+
+    Mesh(m1.vertices, hcat(m1.faces, m2.faces))
+end

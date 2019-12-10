@@ -166,13 +166,13 @@ a surface (true) or on its boundary (false). This predicate is based on combinat
 In particular it expects as argument a tuple of indices pointing into the vertex
 buffer of `mesh`.
 """
-function interior_tpredicate(mesh::Mesh)
+function interior_tpredicate(mesh::Mesh{U,3} where {U})
 
-    @assert dimension(mesh) == 2
+    # @assert dimension(mesh) == 2
 
     vtoc, vton = vertextocellmap(mesh)
 
-    function pred(simplex::SVector{2,Int})
+    function pred(simplex::SVector{2,Int} where {N})
         v = simplex[1]
         n = vton[v]
         a = vtoc[v,1:n]
@@ -182,7 +182,25 @@ function interior_tpredicate(mesh::Mesh)
         b = vtoc[v,1:n]
 
         ab = a ∩ b
-        return length(ab) == 2
+        return length(ab) > 1
+    end
+
+    return pred
+end
+
+
+function interior_tpredicate(mesh::Mesh{U,2} where {U})
+
+    # @assert dimension(mesh) == 2
+
+    vtoc, vton = vertextocellmap(mesh)
+
+    function pred(simplex::SVector{1,Int} where {N})
+        v = simplex[1]
+        n = vton[v]
+        a = vtoc[v,1:n]
+
+        return length(a) > 1
     end
 
     return pred
