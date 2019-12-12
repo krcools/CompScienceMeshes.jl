@@ -1,7 +1,15 @@
 """
 gives the ordering for nedelec2 (divergence)
 """
-
+#function relorientation(face::SArray{Tuple{3},Int64,1,3}, tet::SArray{Tuple{4},Int64,1,4})
+#    v = setdiff(tet,face)
+#    length(v) == 1 || return 0
+#
+#    a = something(findfirst(isequal(v[1]), reverse(tet)),0)
+#    w = sortperm(face)
+#    b = parity(w)
+#    return a*(-1)^b
+#end
 function relorientation(face::SArray{Tuple{3},Int64,1,3}, tet::SArray{Tuple{4},Int64,1,4})
     v = setdiff(tet,face)
     length(v) == 1 || return 0
@@ -27,6 +35,10 @@ if a tetrahedron is given by simplex(a,b,c,d), the order is:
 function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
     v = setdiff(tet, edge)
     length(v) == 2 || return 0
+
+    ##a = zeros(4,1)
+    ##a[1],a[2],a[3],a[4] = tet[1],tet[2],tet[3],tet[4]
+    ##tet = [a[4],a[1],a[2],a[3]]
 
     w1 = findfirst(isequal(edge[1]), tet)
     w2 = findfirst(isequal(edge[2]), tet)
