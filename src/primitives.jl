@@ -168,7 +168,76 @@ Ruled Surface(4)={4} In Sphere{1};
 
 end
 
+"""
+not working yet
+"""
+function tetmeshsphere(radius,delta)
+    s = """
+    lc = $delta;
 
+    Point(1)={0,0,0,lc};
+    Point(2)={$radius,0,0,lc};
+    Point(3)={-$radius,0,0,lc};
+    Point(4)={0,$radius,0,lc};
+    Point(5)={0,-$radius,0,lc};
+    Point(6)={0,0,$radius,lc};
+    Point(7)={0,0,-$radius,lc};
+
+    Circle(1)={7,1,3};
+    Circle(2)={3,1,6};
+    Circle(3)={6,1,2};
+    Circle(4)={2,1,7};
+    Circle(5)={7,1,4};
+    Circle(6)={4,1,6};
+    Circle(7)={6,1,5};
+    Circle(8)={5,1,7};
+    Circle(9)={3,1,5};
+    Circle(10)={5,1,2};
+    Circle(11)={2,1,4};
+    Circle(12)={4,1,3};
+
+    Curve Loop(1)={8,-4,-10};
+    Curve Loop(2)={11,-5,-4};
+    Curve Loop(3)={5,12,-1};
+    Curve Loop(4)={1,9,8};
+    Curve Loop(5)={6,-2,-12};
+    Curve Loop(6)={9,-7,-2};
+    Curve Loop(7)={7,10,-3};
+    Curve Loop(8)={6,3,11};
+
+    Surface(1)={1};
+    Surface(2)={2};
+    Surface(3)={3};
+    Surface(4)={4};
+    Surface(5)={5};
+    Surface(6)={6};
+    Surface(7)={7};
+    Surface(8)={8};
+
+    Surface Loop(1) = {4, 3, 2, 8, 5, 6, 7, 1};
+    Volume(1) = {1};
+    Physical Volume(1) = {1};
+    """
+
+    fn = tempname()
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
+    # feed the file to gmsh
+    fno = tempname()
+    run(`gmsh $fn -3 -format msh2 -o $fno`)
+    fdo = open(fno,"r")
+    m = read_gmsh3d_mesh(fdo)
+    close(fdo)
+    rm(fno)
+    rm(fn)
+
+    return m
+end
 """
     meshcuboid(width, height, length, delta)
 

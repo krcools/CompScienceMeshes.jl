@@ -152,7 +152,7 @@ function _normals(tangents, ::Type{Val{1}})
     normals = SVector{1,PT}([PT(n)])
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
-    volume = sqrt(abs(det(metric))) /  D
+    volume = sqrt(abs(det(metric))) /  factorial(D)
 
     return normals, volume
 
@@ -177,7 +177,7 @@ function _normals(tangents, ::Type{Val{C}}) where C
     T  = eltype(PT)
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
-    volume = sqrt(abs(det(metric))) / D
+    volume = sqrt(abs(det(metric))) / factorial(D)
 
     # Fix this. This function needs to become gneerated
     normals = SVector{C,PT}(PT[zero(PT) for i in 1:C])
