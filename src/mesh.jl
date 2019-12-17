@@ -712,5 +712,5 @@ function union(m1::Mesh, m2::Mesh)
     @assert dimension(m1) == dimension(m2)
     @assert vertices(m1) == vertices(m2)
 
-    Mesh(m1.vertices, hcat(m1.faces, m2.faces))
+    Mesh(m1.vertices, vcat(m1.faces, m2.faces))
 end
