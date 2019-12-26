@@ -37,5 +37,6 @@ function stripboundedge(Γ::Mesh{3,4,Float64})
     Γ2 = Mesh(Γ.vertices,A)
     rem = skeleton(Γ2,1)
     savedges = setdiff(edges.faces,rem.faces)
-    return Mesh(Γ2.vertices,savedges), rem, Γ2
+    B = Mesh(Γ.vertices,savedges)
+    return submesh(B,skeleton(Γ,1)), submesh(rem,skeleton(Γ,1)), submesh(Γ2,skeleton(Γ,2))
 end
