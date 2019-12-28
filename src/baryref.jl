@@ -139,6 +139,106 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
     BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
 end
 
+function barycentric_refinement(mesh::Mesh{U,4}) where U
+
+    D1 = dimension(mesh)+1
+    T = coordtype(mesh)
+
+    edges = skeleton(mesh,1)
+    faces = skeleton(mesh,2)
+    tetrs = skeleton(mesh,3)
+
+    NV, NE, NF, NT = numvertices(mesh), numcells(edges), numcells(faces), numcells(tetrs)
+
+    nv = NV + NE + NF + NT
+    verts = Array{vertextype(mesh)}(undef,nv)
+    for V in 1 : numvertices(mesh)
+        verts[V] = mesh.vertices[V]
+    end
+
+    # add a vertex in each edge centroid
+    for (E,Edge) in enumerate(cells(edges))
+        verts[NV+E] = cartesian(center(chart(edges, Edge)))
+    end
+
+    # add a vertex in each face centroid
+    for (F,Face) in enumerate(cells(faces))
+        verts[NV+NE+F] = cartesian(center(chart(faces, Face)))
+    end
+
+    # add a vertex in each tet centroid
+    for (T,Tetr) in enumerate(cells(tetrs))
+        verts[NV+NE+NF+T] = cartesian(center(chart(tetrs, Tetr)))
+    end
+
+    D = copy(transpose(connectivity(faces, tetrs, identity)))
+    C = copy(transpose(connectivity(edges, faces, identity)))
+    rows, vals = rowvals(D), nonzeros(D)
+
+    # add 24 tetrs in each coarse tetr
+    nt = 24NT
+    idx = 1
+    fcs = zeros(celltype(mesh), nt)
+    for T in 1 : numcells(tetrs)
+        c = NV + NE + NF + T # index of the tetr centroid
+
+        # iterate over all faces of tetr T
+        for i in nzrange(D, T)
+            F = rows[i]
+            f = NV + NE + F # f is the vertex index of the face center
+
+            for k in nzrange(C,F)
+                E = rowvals(C)[k]
+                e = NV + E # e is the vertex index of the edge center
+
+                a = cells(edges)[E][1]
+                b = cells(edges)[E][2]
+
+                if sign(nonzeros(C)[k]) < 0
+                    a, b = b, a
+                end
+
+                fcs[idx+0] = index(a,e,f,c)
+                fcs[idx+1] = index(b,f,e,c)
+
+                idx += 2
+            end
+
+            # j = abs(vals[i]) # local index of edge E in face F
+            # a = mesh.faces[F][mod1(abs(vals[i])+1,3)]
+            # b = mesh.faces[F][mod1(abs(vals[i])+2,3)]
+            #
+            # fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
+            # fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
+        end
+    end
+
+    # Nodes = skeleton(mesh, 0)
+    # node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    # Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
+
+    fine = Mesh(verts, fcs)
+    M = typeof(mesh)
+    BarycentricRefinement{U,4,T,M}(fine, mesh)
+    # D = connectivity(Nodes, fine)
+    # rows, vals = rowvals(D), nonzeros(D)
+    # sorted_fcs = Vector{celltype(mesh)}()
+    # for (i,Node) in enumerate(cells(Nodes))
+    #     for k in nzrange(D,i)
+    #         j = rows[k]
+    #         push!(sorted_fcs, fcs[j])
+    #     end
+    # end
+    #
+    # # sorted_fcs = fcs
+    # @show length(fcs)
+    # @show length(sorted_fcs)
+    # @assert length(fcs) == length(sorted_fcs)
+    #
+    # M = typeof(mesh)
+    # BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
+end
+
 
 """
     bisecting_refinement(mesh) -> refinement

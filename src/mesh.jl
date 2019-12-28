@@ -342,7 +342,7 @@ function boundary(mesh)
     i = (LinearIndices(sums))[findall(x->x<2, sums)]
 
     # create a mesh out of these
-    bnd = Mesh(mesh.vertices, edges.faces[i])
+    bnd = Mesh(vertices(mesh), cells(edges)[i])
 end
 
 
