@@ -206,6 +206,17 @@ function interior_tpredicate(mesh::Mesh{U,2} where {U})
     return pred
 end
 
+function interior_tpredicate(mesh::Mesh{U,4} where {U})
+
+    bnd = boundary(mesh)
+    bnd_cells = Set(sort(c) for c in cells(bnd))
+    function pred(cell::SVector{3,Int})
+        !(sort(cell) in bnd_cells)
+    end
+
+    return pred
+end
+
 """
 Creates a predicate that can be used to check wheter a vertex is interior to
 a surface (true) or on its boundary (false).

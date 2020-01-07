@@ -153,6 +153,10 @@ Return an iterable collection containing the cells making up the mesh.
 cells(mesh) = mesh.faces
 
 
+Base.IteratorSize(::Mesh) = Base.HasLength()
+Base.length(m::Mesh) = length(m.faces)
+Base.iterate(m::Mesh, state=1) = iterate(m.faces, state)
+
 # """
 #     cellvertices(mesh, i)
 #
