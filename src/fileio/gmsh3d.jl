@@ -81,6 +81,18 @@ function read_gmsh3d_mesh(io; physical=nothing)
     end
     resize!(f,i)
 
-    return Mesh(v, f)
-
+    # gmsh meshes are not always consistently oriented
+    for (i,fc) in enumerate(f)
+        vs = v[fc]
+        t1 = vs[1] - vs[4]
+        t2 = vs[2] - vs[4]
+        t3 = vs[3] - vs[4]
+        orientation = dot(t1 × t2, t3)
+        if orientation < 0
+            f[i] = @SVector[fc[1],fc[2],fc[4],fc[3]]
+        end
+    end
+    msh = Mesh(v, f)
+    @assert isoriented(msh)
+    return msh
 end

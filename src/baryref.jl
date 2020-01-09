@@ -218,6 +218,15 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
     # Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
 
     fine = Mesh(verts, fcs)
+    for (i,fc) in fcs
+        vs = verts[fc]
+        t1 = vs[1]-vs[4]
+        t2 = vs[2]-vs[4]
+        t3 = vs[3]-vs[4]
+        if dot(t1 × t2, t3) < 0
+            fcs[i] = @SVector[fc[1],fc[2],fc[4],fc[3]]
+        end
+    end
     M = typeof(mesh)
     BarycentricRefinement{U,4,T,M}(fine, mesh)
     # D = connectivity(Nodes, fine)

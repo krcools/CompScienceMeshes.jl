@@ -12,6 +12,7 @@ import CompScienceMeshes
 @test CompScienceMeshes.point(1,2,3) === SVector{3,Float64}(1.0,2.0,3.0)
 @test CompScienceMeshes.point(Int,1,2,3) == SVector{3,Int}(1,2,3)
 
+include("test_relorientation.jl")
 include("test_mesh.jl")
 include("test_interior.jl")
 include("test_scomplex.jl")
