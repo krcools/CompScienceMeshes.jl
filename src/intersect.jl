@@ -40,6 +40,12 @@ function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
 end
 
 
+function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
+  @assert overlap(p1,p2)
+  volume(p1) <= volume(p2) ? [p1] : [p2]
+end
+
+
 
 """
     intersectline(a,b,p,q)

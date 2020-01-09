@@ -222,6 +222,23 @@ function carttobary(p::Simplex{U,D,C,N,T}, cart) where {U,D,C,N,T}
     return SVector{D}(u)
 end
 
+function edges(s::Simplex{3,3})
+    C = [SVector{2}(c) for c in combinations(@SVector[1,2,3,4],2)]
+    T = eltype(eltype(s.vertices))
+    P = Simplex{3,1,2,2,T}
+    Edges = Vector{P}(undef, length(C))
+    # @show eltype(Edges)
+    # @show eltype(s.vertices)
+    for c in C
+        q = relorientation(c, @SVector[1,2,3,4])
+        Q = abs(q)
+        Edges[Q] = q > 0 ?
+            simplex(s.vertices[c[1]], s.vertices[c[2]]) :
+            simplex(s.vertices[c[2]], s.vertices[c[1]])
+    end
+    return Edges
+end
+
 
 """
     ReferenceSimplex{Dimension, CoordType, NumVertices}

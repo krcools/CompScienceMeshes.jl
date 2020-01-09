@@ -90,3 +90,17 @@ function overlap(p::Simplex{3,2,1,3,T}, q::Simplex{3,2,1,3,T}) where T
 
   return true
 end
+
+
+function overlap(p::Simplex{3,3,0,4,T}, q::Simplex{3,3,0,4,T}) where T
+    tol = sqrt(eps(T))
+    for v in p.vertices
+        u = carttobary(q,v)
+        u = vcat(u, 1-sum(u))
+        all(0+tol .<= u .<= 1-tol) && return true
+    end
+    u = carttobary(q, cartesian(center(p)))
+    u = vcat(u, 1-sum(u))
+    all(0+tol .<= u .<= 1-tol) && return true
+    return false
+end

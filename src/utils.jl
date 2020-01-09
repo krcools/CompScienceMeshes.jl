@@ -1,15 +1,20 @@
 """
 gives the ordering for nedelec2 (divergence)
 """
-function relorientation(face::SArray{Tuple{3},Int64,1,3}, tet::SArray{Tuple{4},Int64,1,4})
+function relorientation(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4}) where {T}
     v = setdiff(tet,face)
     length(v) == 1 || return 0
 
     a = something(findfirst(isequal(v[1]), tet),0)
-    face = [v[1],face[1],face[2],face[3]]
-    w = sortperm(face)
-    b = parity(w)
-    return -a*(-1)^b
+
+    Face = deleteat(tet,a)
+    p = parity(Vector{Int}(indexin(face,Face)))
+    return a * (-1)^a * (-1)^p
+
+    # face = [v[1],face[1],face[2],face[3]]
+    # w = sortperm(face)
+    # b = parity(w)
+    # return -a*(-1)^b
 end
 
 """
