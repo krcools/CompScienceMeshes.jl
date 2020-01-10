@@ -53,7 +53,7 @@ function tetschoice(w1::Int64,w2::Int64)
     end
 end
 
-function relorientation(node::SArray{Tuple{1},Int64,1,1}, face::SArray{Tuple{3},Int64,1,3})
+function relorientation(node::SArray{Tuple{1},Int64,1,1}, face::SArray{Tuple{N},Int64,1,N} where {N})
     something(findfirst(isequal(node[1]), face), 0)
 end
 

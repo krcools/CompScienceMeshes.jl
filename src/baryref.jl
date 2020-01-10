@@ -218,7 +218,8 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
     # Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
 
     fine = Mesh(verts, fcs)
-    for (i,fc) in fcs
+    for (i,fc) in enumerate(fcs)
+        # @show fc
         vs = verts[fc]
         t1 = vs[1]-vs[4]
         t2 = vs[2]-vs[4]
