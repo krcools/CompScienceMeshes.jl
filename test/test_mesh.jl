@@ -1,5 +1,6 @@
 using Test
 using CompScienceMeshes
+using LinearAlgebra
 
 rectangle = meshrectangle(1.0, 1.0, 1.0);
 
@@ -19,8 +20,8 @@ verts = skeleton(rectangle, 0)
 @test numcells(edges) == 5
 @test numcells(faces) == 2
 
-Λ  = connectivity(verts, edges)
-Σᵀ = connectivity(edges, faces)
+Λ  = connectivity(verts, edges, sign)
+Σᵀ = connectivity(edges, faces, sign)
 
 @test size(Λ)  == (5,4)
 @test size(Σᵀ) == (2,5)

@@ -54,7 +54,9 @@ function tetschoice(w1::Int64,w2::Int64)
 end
 
 function relorientation(node::SArray{Tuple{1},Int64,1,1}, face::SArray{Tuple{N},Int64,1,N} where {N})
-    something(findfirst(isequal(node[1]), face), 0)
+    idx = something(findfirst(isequal(node[1]), face), 0)
+    sgn = (-1)^(idx-1)
+    return sgn * idx
 end
 
 function relorientation(face, simplex)
