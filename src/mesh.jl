@@ -333,9 +333,12 @@ function boundary(mesh)
     # vertices have no boundary
     @assert 0 < D
 
+    I = eltype(cells(mesh))
+    length(mesh) == 0 && return Mesh(vertices(mesh), I[])
+
     # build a list of D-1 cells
-    edges = skeleton(mesh, D-1)
-    faces = skeleton(mesh, D)
+    edges = skeleton_fast(mesh, D-1)
+    faces = skeleton_fast(mesh, D)
 
     # get the edge-face connection matrix
     conn = connectivity(edges, faces)
@@ -460,6 +463,42 @@ function skeleton(mesh, dim::Int)
     end
 
     Mesh(mesh.vertices, simplices)
+end
+
+
+function skeleton_fast(mesh, dim::Int)
+
+    meshdim = dimension(mesh)
+    @assert 0 <= dim <= meshdim
+
+    if dim == meshdim
+        return mesh
+    end
+
+    nc = numcells(mesh)
+    C = SVector{dim+1,Int}
+    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
+
+    n = 1
+    for c = 1 : nc
+
+        cell = cells(mesh)[c]
+        for simplex in combinations(cell,dim+1)
+            simplices[n] = sort(simplex)
+            n += 1
+        end
+    end
+
+    simplices = unique(simplices)
+
+    # # sort the simplices on a SFC
+    # Q = vertextype(mesh)
+    # ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
+    # if length(simplices) > 0
+    #     simplices = simplices[sort_sfc(ctrs)]
+    # end
+
+    Mesh(vertices(mesh), simplices)
 end
 
 

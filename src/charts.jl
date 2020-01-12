@@ -239,6 +239,13 @@ function edges(s::Simplex{3,3})
     return Edges
 end
 
+function edges(s::Simplex{3,2})
+    return [
+        simplex(s.vertices[2], s.vertices[3]),
+        simplex(s.vertices[3], s.vertices[1]),
+        simplex(s.vertices[1], s.vertices[2])]
+end
+
 
 """
     ReferenceSimplex{Dimension, CoordType, NumVertices}

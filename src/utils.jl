@@ -2,12 +2,22 @@
 gives the ordering for nedelec2 (divergence)
 """
 function relorientation(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4}) where {T}
-    v = setdiff(tet,face)
-    length(v) == 1 || return 0
+    # v = setdiff(tet,face)
+    # length(v) == 1 || return 0
 
-    a = something(findfirst(isequal(v[1]), tet),0)
+    # a = something(findfirst(isequal(v[1]), tet),0)
+
+    a = findfirst(x -> !(x in face), tet)
+    a == nothing && return 0
+
+    @assert 1 <= a <= 4
+    q = findnext(x ->!(x in face), tet, a+1)
+    q == nothing || return 0
+
+    v = tet[a]
 
     Face = deleteat(tet,a)
+    # @show a tet face Face indexin(face,Face)
     p = parity(Vector{Int}(indexin(face,Face)))
     return a * (-1)^a * (-1)^p
 
@@ -29,8 +39,10 @@ if a tetrahedron is given by simplex(a,b,c,d), the order is:
 """
 
 function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
-    v = setdiff(tet, edge)
-    length(v) == 2 || return 0
+    # v = setdiff(tet, edge)
+    # length(v) == 2 || return 0
+
+    count(x -> !(x in edge), tet) != 2 && return 0
 
     w1 = findfirst(isequal(edge[1]), tet)
     w2 = findfirst(isequal(edge[2]), tet)
