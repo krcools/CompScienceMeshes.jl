@@ -203,3 +203,8 @@ function Base.:-(mesh::SComplex2D)
     P = vertextype(mesh)
     return SComplex2D{T,P}(mesh.vertices, mesh.nodes, mesh.edges, Faces)
 end
+
+parent(mesh::SComplex0D) = nothing
+parent(mesh::SComplex1D) = nothing
+parent(mesh::SComplex2D) = nothing
+# parent(mesh::SComplex0D) = nothing

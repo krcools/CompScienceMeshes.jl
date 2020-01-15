@@ -136,7 +136,8 @@ function barycentric_refinement(mesh::Mesh{U,3}) where U
     @assert length(fcs) == length(sorted_fcs)
 
     M = typeof(mesh)
-    BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
+    # BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
+    BarycentricRefinement{U,3,T,M}(Mesh(verts, fcs), mesh)
 end
 
 function barycentric_refinement(mesh::Mesh{U,4}) where U
@@ -249,6 +250,9 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
     # BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
 end
 
+children(mesh::Mesh{3,4}, cell) = [24*(cell-1)+1 : 24*cell]
+parent(mesh::BarycentricRefinement{3,4}, cell) = div((cell-1),24)+1
+parent(mesh::BarycentricRefinement{U,3} where {U}, cell) = div((cell-1),6)+1
 
 """
     bisecting_refinement(mesh) -> refinement
