@@ -197,6 +197,9 @@ Change the orientation of a cell by interchanging the first to indices.
 @generated function flip(cell)
     # generate `T(cell[2],cell[1],cell[3],...)`, with `T = typeof(cell)`
     N = length(cell)
+    if N <= 1
+        return :(cell)
+    end
     xp = :($cell(cell[2], cell[1]))
     for i in 3:N
         push!(xp.args, :(cell[$i]))
@@ -341,15 +344,32 @@ function boundary(mesh)
     faces = skeleton_fast(mesh, D)
 
     # get the edge-face connection matrix
-    conn = connectivity(edges, faces)
+    conn = connectivity(edges, faces, identity)
 
     # find the edges that only have one adjacent face
     #i = find(x -> x < 2, sum(abs.(conn), dims=1))
-    sums = sum(abs.(conn), dims=1)
-    i = (LinearIndices(sums))[findall(x->x<2, sums)]
+    rows = rowvals(conn)
+    vals = nonzeros(conn)
+
+    I = celltype(edges)
+    bnd_edges = Vector{I}(undef, length(edges))
+    i = 1
+    for (e,edge) in enumerate(edges)
+        nzr = nzrange(conn,e)
+        length(nzr) != 1 && continue
+        relop = vals[nzr[1]]
+        bnd_edges[i] = (relop > 0) ? edge : flip(edge)
+        i += 1
+    end
+
+    resize!(bnd_edges, i-1)
+
+    # sums = sum(abs.(conn), dims=1)
+    # i = (LinearIndices(sums))[findall(x->x<2, sums)]
 
     # create a mesh out of these
-    bnd = Mesh(vertices(mesh), cells(edges)[i])
+    # bnd = Mesh(vertices(mesh), cells(edges)[i])
+    bnd = Mesh(vertices(mesh), bnd_edges)
 end
 
 
@@ -420,6 +440,30 @@ end
 
 
 
+# function faces(s::SVector{4,Int})
+#     return [
+#         @SVector[4,3,2],
+#         @SVector[1,3,4],
+#         @SVector[1,4,2],
+#         @SVector[1,2,3]
+#     ]
+# end
+#
+# function faces(s::SVector{3,Int})
+#     return [
+#         @SVector[2,3],
+#         @SVector[3,1],
+#         @SVector[1,2],
+#     ]
+# end
+#
+# function faces(s::SVector{2,Int})
+#     return[
+#         @SVector[2],
+#         @SVector[1]
+#     ]
+# end
+
 """
     skeleton(mesh, dim)
 
@@ -439,21 +483,8 @@ function skeleton(mesh, dim::Int)
         return mesh
     end
 
-    nc = numcells(mesh)
-    C = SVector{dim+1,Int}
-    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
-
-    n = 1
-    for c = 1 : nc
-
-        cell = mesh.faces[c]
-        for simplex in combinations(cell,dim+1)
-            simplices[n] = sort(simplex)
-            n += 1
-        end
-    end
-
-    simplices = unique(simplices)
+    sk = skeleton_fast(mesh,dim)
+    simplices = cells(sk)
 
     # sort the simplices on a SFC
     Q = vertextype(mesh)
@@ -490,16 +521,9 @@ function skeleton_fast(mesh, dim::Int)
     end
 
     simplices = unique(simplices)
-
-    # # sort the simplices on a SFC
-    # Q = vertextype(mesh)
-    # ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
-    # if length(simplices) > 0
-    #     simplices = simplices[sort_sfc(ctrs)]
-    # end
-
     Mesh(vertices(mesh), simplices)
 end
+
 
 
 

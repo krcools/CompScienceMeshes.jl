@@ -1,5 +1,6 @@
 using Test
 using CompScienceMeshes
+using StaticArrays
 
 p = simplex(
     point(0,0,0),

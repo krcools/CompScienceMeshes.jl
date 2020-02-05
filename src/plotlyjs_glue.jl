@@ -5,7 +5,7 @@ function __init__()
         @eval DelimitedFiles
         @eval fn = joinpath(dirname(@__FILE__),"..","examples","cm.csv")
         @eval cm = mapslices(r->(r[1],r[2],r[3]), readdlm(fn, ','), dims=[2])
-        @eval function patch(Γ::Mesh, fcr=nothing)
+        @eval function patch(Γ::Mesh, fcr=nothing, caxis=nothing)
 
             v = vertexarray(Γ)
             c = cellarray(Γ)
@@ -20,10 +20,15 @@ function __init__()
             end
 
             m, M = extrema(a)
+            if caxis != nothing
+                m, M = caxis
+            end
+
             if isapprox(m, M)
                 n = ones(Integer, size(a))
             else
                 n = floor.(Integer, (a.-m)/(M-m)*(length(cm)-1)).+1
+                n = clamp.(n, 1, length(cm))
             end
             fc = [cm[i] for i in n]
 

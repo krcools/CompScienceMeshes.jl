@@ -436,5 +436,8 @@ function lineofsight_refinement(mesh::Mesh{U,3}) where U
         end
     end
 
-    BarycentricRefinement(Mesh(verts, fcs), mesh)
+    D1 = 3
+    T = coordtype(mesh)
+    M = typeof(mesh)
+    BarycentricRefinement{U,D1,T,M}(Mesh(verts, fcs), mesh)
 end

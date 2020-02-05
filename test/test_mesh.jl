@@ -51,6 +51,8 @@ sphere = readmesh(file)
 m = meshrectangle(1.0,1.0,1.0)
 rotate!(m, [1,0,0]*(π/2))
 
+@test CompScienceMeshes.isoriented(boundary(m))
+
 tol = sqrt(eps())
 @test norm(vertices(m,1) - point(0.0,0.0,0.0)) < tol
 @test norm(vertices(m,2) - point(0.0,0.0,1.0)) < tol
