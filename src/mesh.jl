@@ -439,6 +439,53 @@ function vertextocellmap(mesh)
 end
 
 
+function vertextocell(mesh)
+
+    row = Dict{Int,Tuple{Int,Int}}()
+    k = 1
+    for cell in mesh
+        for v in cell
+            if haskey(row,v)
+                (i,n) = row[v]
+                row[v] = (i,n+1)
+            else
+                row[v] = (k,1)
+                k += 1
+            end
+        end
+    end
+
+    # NC = map((i,n)->n, values(row))
+    NC = fill(-1, length(row))
+    foreach(((i,n),)->(NC[i]=n), values(row))
+    @assert !any(NC .== - 1)
+    VC = fill(-1, maximum(NC), length(row))
+
+    fill!(NC, 0)
+    for (c,cell) in enumerate(mesh)
+        for v in cell
+            i, _ = row[v]
+            k = NC[i] + 1
+            VC[k,i] = c
+            NC[i] = k
+        end
+    end
+
+    LG = fill(-1, length(row))
+    for (v,(i,n)) in row
+        LG[i] = v
+    end
+    @assert !any(LG .== -1)
+
+    GL = Dict{Int,Int}()
+    for (v,(i,n)) in row
+        GL[v] = i
+    end
+
+    return copy(transpose(VC)), NC, LG, GL
+end
+
+
 
 # function faces(s::SVector{4,Int})
 #     return [
@@ -580,30 +627,45 @@ the graph version of the exterior derivative.
 """
 function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
-    vtok, _ = vertextocellmap(kcells)
-    vtom, _ = vertextocellmap(mcells)
+    # vtok, _ = vertextocellmap(kcells)
+    # vtom, _ = vertextocellmap(mcells)
+
+    vtok, _, lgk, glk = vertextocell(kcells)
+    vtom, _, lgm, glm = vertextocell(mcells)
 
     npos = -1
 
     dimk = numcells(kcells)
     dimm = numcells(mcells)
 
-    D = spzeros(Int, dimm, dimk)
+    # D = spzeros(Int, dimm, dimk)
 
-    for v in 1:numvertices(kcells)
-        for i in vtok[v,:]
+    Rows = Int[]
+    Cols = Int[]
+    Vals = Int[]
+    for vk in axes(vtok,1)
+        V = lgk[vk]
+        haskey(glm,V) || continue
+        vm = glm[V]
+        for q in axes(vtok,2)
+            i = vtok[vk,q]
             i == npos && break
-            #kcell = cells(kcells, i)
             kcell = kcells.faces[i]
-            for j in vtom[v,:]
+            for s in axes(vtom,2)
+                j = vtom[vm,s]
                 j == npos && break
-                #mcell = cells(mcells, j)
                 mcell = cells(mcells)[j]
-                D[j,i] = op(relorientation(kcell, mcell))
+                val = op(relorientation(kcell, mcell))
+                iszero(val) && continue
+                push!(Rows, j)
+                push!(Cols, i)
+                push!(Vals, op(relorientation(kcell, mcell)))
+                # D[j,i] = op(relorientation(kcell, mcell))
             end
         end
     end
 
+    D = sparse(Rows, Cols, Vals, dimm, dimk, (x,y)->y)
     return D
 end
 
