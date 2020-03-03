@@ -46,7 +46,7 @@ function submesh(sm::Mesh, bm::Mesh)
 end
 
 
-struct SubMesh{U,D1,T} <: AbstractMesh{U,D1,T}
+mutable struct SubMesh{U,D1,T} <: AbstractMesh{U,D1,T}
     supermesh::AbstractMesh{U,D1,T}
     sub2sup::Vector{Int}
     sup2sub::Vector{Int}

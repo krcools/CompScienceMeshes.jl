@@ -807,7 +807,8 @@ Return a chart describing the supplied cell of `mesh`.
 """
 chart(mesh::Mesh, cell) = simplex(vertices(mesh,cell))
 
-parent(mesh::Mesh) = nothing
+parent(mesh::AbstractMesh) = nothing
+# parent(mesh::Mesh) = nothing
 
 """
     isoriented(mesh) -> Bool
