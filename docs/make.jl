@@ -7,3 +7,6 @@ makedocs(
 #     julia = "nightly",
 #     deps = Deps.pip("mkdocs", "python-markdown-math"),
 #     repo = "github.com/krcools/CompScienceMeshes.jl.git",)
+deploydocs(
+    repo = "github.com/krcools/CompScienceMeshes.jl.git",
+)
