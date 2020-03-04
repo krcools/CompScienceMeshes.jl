@@ -10,9 +10,13 @@ notifications:
   email: false
 after_success:
   - julia -e 'cd(Pkg.dir("CompScienceMeshes")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'ps=Pkg.PackageSpec(name="Documenter", version="0.19"); Pkg.add(ps); Pkg.pin(ps)'
-  - julia -e 'cd(Pkg.dir("CompScienceMeshes")); include(joinpath("docs", "make.jl"))'
-# uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("CompScienceMeshes"); Pkg.test("CompScienceMeshes"; coverage=true)'
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.2
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                               Pkg.instantiate()'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip

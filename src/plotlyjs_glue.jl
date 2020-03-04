@@ -5,7 +5,7 @@ function __init__()
         @eval DelimitedFiles
         @eval fn = joinpath(dirname(@__FILE__),"..","examples","cm.csv")
         @eval cm = mapslices(r->(r[1],r[2],r[3]), readdlm(fn, ','), dims=[2])
-        @eval function patch(Γ::Mesh, fcr=nothing, caxis=nothing)
+        @eval function patch(Γ::AbstractMesh, fcr=nothing, caxis=nothing)
 
             v = vertexarray(Γ)
             c = cellarray(Γ)
