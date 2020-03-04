@@ -28,5 +28,5 @@ charts. In addition, it includes a default set of quadrature rules for segments 
 (2D).
 
 ```@docs
-quadpoints(chart, rule)
+quadpoints
 ```

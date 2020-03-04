@@ -1,3 +1,12 @@
+import Base.in
+function in(mesh::CompScienceMeshes.AbstractMesh)
+    cells_mesh = sort.(mesh)
+    function f(cell)
+        sort(cell) in cells_mesh
+    end
+    return f
+end
+
 """
 Creates a predicate that can be used to check wheter an edge is interior to
 a surface (true) or on its boundary (false). This predicate is based on combinatorics.
