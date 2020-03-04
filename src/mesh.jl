@@ -540,7 +540,7 @@ function skeleton(mesh, dim::Int)
         simplices = simplices[sort_sfc(ctrs)]
     end
 
-    Mesh(mesh.vertices, simplices)
+    Mesh(vertices(mesh), simplices)
 end
 
 
