@@ -722,6 +722,7 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
     facepairs = zeros(Int, 2, k)
 
     k = 1
+    Cells = cells(mesh)
     for edge in edges
 
         # neighborhood of startvertex
@@ -742,7 +743,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
         if n == 1 # boundary edge
 
             c = nbd[1]
-            cell = mesh.faces[c]
+            #cell = mesh.faces[c]
+            cell = Cells[c]
             s = relorientation(edge, cell)
             facepairs[1,k] = c
             facepairs[2,k] = -abs(s)
@@ -752,8 +754,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
             c = nbd
 
-            cell1 = mesh.faces[c[1]]
-            cell2 = mesh.faces[c[2]]
+            cell1 = Cells[c[1]] #mesh.faces[c[1]]
+            cell2 = Cells[c[2]] #mesh.faces[c[2]]
 
             r1 = relorientation(edge, cell1)
             r2 = relorientation(edge, cell2)
@@ -774,8 +776,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
             for c in drop(combinations(nbd,2), ndrops)
 
-                cell1 = mesh.faces[c[1]]
-                cell2 = mesh.faces[c[2]]
+                cell1 = Cells[c[1]] #mesh.faces[c[1]]
+                cell2 = Cells[c[2]] #mesh.faces[c[2]]
 
                 r1 = relorientation(edge, cell1)
                 r2 = relorientation(edge, cell2)
