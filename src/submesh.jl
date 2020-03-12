@@ -8,19 +8,22 @@ and that fulfill the predicate pred.
 `pred` is a function with signature `pred(cell) -> Bool` returning true if
 the simplex is to be added to the submesh under construction.
 """
-function submesh(pred, mesh::Mesh)
+function submesh(pred, mesh::AbstractMesh)
 
-    kcells = similar(mesh.faces)
+    # kcells = similar(mesh.faces)
+    kcells = cells(mesh)
 
     sub2sup = zeros(Int, 0)
     # sup2sub = zeros(Int, length(mesh))
 
-    j = 1
-    for i in 1:length(kcells)
+    j = 0
+    # for i in 1:length(kcells)
+    for (i,kcell) = enumerate(cells(mesh))
 
-        kcell = mesh.faces[i]
+        # kcell = mesh.faces[i]
+        # kcell = kcells[i]
         if pred(kcell)
-            kcells[j] = kcell
+            # kcells[j] = kcell
             push!(sub2sup, i)
             # sup2sub[i] = j
             j += 1
@@ -28,7 +31,7 @@ function submesh(pred, mesh::Mesh)
 
     end
 
-    kcells = kcells[1:j-1]
+    kcells = kcells[1:j]
 
     # sub = Mesh(mesh.vertices, kcells)
     return SubMesh(mesh, sub2sup)
