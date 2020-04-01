@@ -321,7 +321,7 @@ Create a mesh with opposite orientation.
 Base.:-(m::Mesh) = fliporientation(m)
 
 
-Base.getindex(m::Mesh, I::Vector{Int}) = Mesh(vertices(m), cells(m)[I])
+Base.getindex(m::AbstractMesh, I::Vector{Int}) = Mesh(vertices(m), cells(m)[I])
 
 
 """
