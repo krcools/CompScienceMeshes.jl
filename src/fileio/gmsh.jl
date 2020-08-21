@@ -15,7 +15,7 @@ Reads the mesh nodes and elements stored in the input .msh file (`io`, output by
 
 Returns an object `mesh` of type `Mesh`, comprising both vector arrays.
 """
-function read_gmsh_mesh(io; physical=nothing)
+function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true)
 
     entity_tag = 0
     if physical != nothing
@@ -68,20 +68,47 @@ function read_gmsh_mesh(io; physical=nothing)
     s = split(thisLine)
     NF = parse(Int, s[1])
 
+    dim2type = [1,2,4]
+    type = dim2type[dimension]
+
     thisLine = io |> readline |> strip
-    f = Vector{SVector{3,Int}}(undef,NF); i = 0
+    I = SVector{dimension+1,Int}
+    f = Vector{I}(undef,NF)
+    i = 0
     while thisLine != "\$EndElements"
         d = readdlm(IOBuffer(thisLine), Int)
         thisLine = io |> readline |> strip
-        d[2] == 2 || continue
-        tag = d[4]
-        if entity_tag == 0 || entity_tag == tag
-            f[i +=1] = SVector(d[end-2], d[end-1], d[end-0])
-        end
+        d[2] == type || continue
+        entity_tag == d[4] || entity_tag == 0 || continue
+        # f[i +=1] = SVector(d[end-2], d[end-1], d[end-0])
+        f[i+=1] = d[end-dimension:end]
     end
     resize!(f,i)
 
-    @info "sorting..."
+    @show length(v)
+    @show length(f)
+    
+    if sort
+        @info "sorting..."
+        f = sort_sfc(v,f)
+    end
+    # Q = Pt{3,Float64}
+    # ctrs = Q[]
+    # for tr in f
+    #         ctr = sum(v[tr])/3
+    #         push!(ctrs,ctr)
+    # end
+    # sorted = sort_sfc(ctrs)
+    # f = f[sorted]
+
+
+
+    return Mesh(v, f)
+
+end
+
+
+function sort_sfc(v, f)
     Q = Pt{3,Float64}
     ctrs = Q[]
     for tr in f
@@ -89,8 +116,5 @@ function read_gmsh_mesh(io; physical=nothing)
             push!(ctrs,ctr)
     end
     sorted = sort_sfc(ctrs)
-    f = f[sorted]
-
-    return Mesh(v, f)
-
+    return f[sorted]
 end

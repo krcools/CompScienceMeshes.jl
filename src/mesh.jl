@@ -850,3 +850,62 @@ function union(m1::AbstractMesh, m2::AbstractMesh)
     Cells2 = cells(m2)
     Mesh(Verts, vcat(Cells1, Cells2))
 end
+
+
+
+function breadthfirst(op, mesh, root)
+
+    dim = dimension(mesh)
+    edges = skeleton(mesh, dim-1)
+    D = connectivity(edges, mesh)
+    A = D*D'
+
+    rows = SparseArrays.rowvals(A)
+    vals = SparseArrays.nonzeros(A)
+
+    discovered = falses(length(mesh))
+    queue = DataStructures.Queue{typeof(root)}()
+    facing = DataStructures.Queue{Symbol}()
+
+    DataStructures.enqueue!(queue,root)
+    DataStructures.enqueue!(facing,:up)
+    discovered[root] = true
+
+    while !isempty(queue)
+
+        x = DataStructures.dequeue!(queue)
+        s = DataStructures.dequeue!(facing)
+        op(mesh, x, s)
+        for k in SparseArrays.nzrange(A,x)
+            r = rows[k]
+            v = vals[k]
+            r == x && continue
+            discovered[r] && continue
+            if v != -1
+                q = (s == :up) ? :down : :up
+            else
+                q = (s == :up) ? :up : :down
+            end
+            DataStructures.enqueue!(queue,r)
+            DataStructures.enqueue!(facing,q)
+            discovered[r] = true
+        end
+    end
+
+    @assert all(discovered)
+end
+
+
+function orient(mesh::Mesh)
+
+    root = 1
+    C = collect(cells(mesh))
+    function f(mesh,i,v)
+        v == :up && return
+        cell = C[i]
+        mesh.faces[i] = fliporientation(cell) 
+    end
+
+    breadthfirst(f, mesh, root)
+
+end

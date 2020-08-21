@@ -8,6 +8,8 @@ using StaticArrays
 using Compat
 using Requires
 
+import DataStructures
+
 import Base.getindex
 
 export getcommonedge
