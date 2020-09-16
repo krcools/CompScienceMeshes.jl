@@ -49,7 +49,7 @@ sphere = readmesh(file)
 @test numcells(sphere) == 666
 
 m = meshrectangle(1.0,1.0,1.0)
-rotate!(m, [1,0,0]*(π/2))
+CompScienceMeshes.rotate!(m, [1,0,0]*(π/2))
 
 @test CompScienceMeshes.isoriented(boundary(m))
 
