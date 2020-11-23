@@ -32,7 +32,7 @@ end
 """
     intersection(triangleA, triangle B)
 
-ATTENTION: currently the implementation for triangles assumes that one of the triangles is contained in the other.
+The output inherits the orientation from the first operand
 """
 function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)

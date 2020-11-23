@@ -46,10 +46,63 @@ a = point(-0.66680743687093,-0.618706884644307,-0.415415013001886)
 b = point(-0.749749110862659,-0.5769223790589465,-0.27886492563758547)
 c = point(-0.7730161102625658,-0.5161730964944257,-0.32438162142568566)
 
-isct = CompScienceMeshes.sutherlandhodgman([p,q,r],[a,b,c])
+isct1 = CompScienceMeshes.sutherlandhodgman([p,q,r],[a,b,c])
 
-@assert isct == [
+@test isct1 == [
     point(-0.7730161102625658,-0.5161730964944257,-0.32438162142568566),
     point(-0.66680743687093,-0.618706884644307,-0.415415013001886),
     point(-0.66680743687093,-0.618706884644307,-0.415415013001886),
     point(-0.749749110862659,-0.5769223790589465,-0.27886492563758547)]
+
+splx1 = simplex(
+    point(0,0,0),
+    point(1,0,0),
+    point(0,1,0))
+splx2 = simplex(
+    point(0,-1,0),
+    point(1,1,0),
+    point(0.5,1,0))
+
+# Verify that all parts of the intersection are oriented consistently
+# and equal to the orientation of the inputs
+isct2 = intersection(splx1, splx2)
+@test length(isct2) == 2
+
+for splx in isct2
+    @test normal(splx) ≈ point(0,0,1)
+end
+
+# Repeat this test but now with the orientation of the second
+# operand flipped
+splx1 = simplex(
+    point(0,0,0),
+    point(1,0,0),
+    point(0,1,0))
+splx2 = simplex(
+    point(1,1,0),
+    point(0,-1,0),
+    point(0.5,1,0))
+
+isct2 = intersection(splx1, splx2)
+@test length(isct2) == 2
+
+for splx in isct2
+    @test normal(splx) ≈ point(0,0,1)
+end
+
+# Repeat this test but now with the orientation of the first operand flipped
+splx1 = simplex(
+    point(1,0,0),
+    point(0,0,0),
+    point(0,1,0))
+splx2 = simplex(
+    point(0,-1,0),
+    point(1,1,0),
+    point(0.5,1,0))
+
+isct2 = intersection(splx1, splx2)
+@test length(isct2) == 2
+
+for splx in isct2
+    @test normal(splx) ≈ point(0,0,-1)
+end

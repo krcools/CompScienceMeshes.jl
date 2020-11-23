@@ -5,6 +5,7 @@ end
 
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
 vertices(br::BarycentricRefinement) = vertices(br.mesh)
+vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
 numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
 cells(br::BarycentricRefinement) = cells(br.mesh)
 numcells(br::BarycentricRefinement) = numcells(br.mesh)

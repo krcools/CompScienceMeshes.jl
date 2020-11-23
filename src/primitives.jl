@@ -229,7 +229,11 @@ function tetmeshsphere(radius,delta)
 
     # feed the file to gmsh
     fno = tempname()
-    run(`gmsh $fn -3 -format msh2 -o $fno`)
+    @show fn
+    @show fno
+    cmd = `gmsh $fn -3 -format msh2 -o $fno`
+    @show cmd
+    run(cmd)
     fdo = open(fno,"r")
     m = read_gmsh3d_mesh(fdo)
     close(fdo)
@@ -238,6 +242,34 @@ function tetmeshsphere(radius,delta)
 
     return m
 end
+
+
+function meshball(;radius, h)
+
+    fn = joinpath(@__DIR__,"geos/structured_sphere.geo")
+    io = open(fn)
+    str = read(io, String)
+    close(io)
+
+    str = replace(str, "lc = 1.0;" => "lc = $h;")
+    str = replace(str, "r = 1.0;" => "r = $radius;")
+
+    temp_geo = tempname()
+    open(temp_geo, "w") do io
+        print(io, str)
+    end
+
+    temp_msh = tempname()
+    run(`gmsh $temp_geo -3 -format msh2 -o $temp_msh`)
+    m = read_gmsh3d_mesh(temp_msh)
+
+    rm(temp_msh)
+    rm(temp_geo)
+
+    return m
+end
+
+
 """
     meshcuboid(width, height, length, delta)
 
