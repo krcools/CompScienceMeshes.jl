@@ -78,7 +78,6 @@ function relorientation(face, simplex)
 
     # find the position of the missing vertex
     v = v[1]
-    #i = Base.findfirst(simplex, v)
     i = something(findfirst(isequal(v), simplex),0)
     s = (-1)^(i-1)
 
@@ -92,9 +91,14 @@ function relorientation(face, simplex)
     end
 
     # get the permutation that maps face to face2
-    #p = indexin(face, face2)
-    #p = [ findfirst(face2,v) for v in face ]
     p = [something(findfirst(isequal(v),face2),0) for v in face]
 
     return s * levicivita(p) * i
 end
+
+relorientation(p::SVector{4}, q::SVector{3}) = relorientation(q,p)
+relorientation(p::SVector{4}, q::SVector{2}) = relorientation(q,p)
+relorientation(p::SVector{4}, q::SVector{1}) = relorientation(q,p)
+relorientation(p::SVector{3}, q::SVector{2}) = relorientation(q,p)
+relorientation(p::SVector{3}, q::SVector{1}) = relorientation(q,p)
+relorientation(p::SVector{2}, q::SVector{1}) = relorientation(q,p)

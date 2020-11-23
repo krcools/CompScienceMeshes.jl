@@ -627,9 +627,6 @@ the graph version of the exterior derivative.
 """
 function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
-    # vtok, _ = vertextocellmap(kcells)
-    # vtom, _ = vertextocellmap(mcells)
-
     vtok, _, lgk, glk = vertextocell(kcells)
     vtom, _, lgm, glm = vertextocell(mcells)
 
@@ -637,8 +634,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
     dimk = numcells(kcells)
     dimm = numcells(mcells)
-
-    # D = spzeros(Int, dimm, dimk)
 
     Rows = Int[]
     Cols = Int[]
@@ -650,7 +645,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            # kcell = kcells.faces[i]
             kcell = cells(kcells)[i]
             for s in axes(vtom,2)
                 j = vtom[vm,s]
@@ -661,7 +655,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
                 push!(Rows, j)
                 push!(Cols, i)
                 push!(Vals, op(relorientation(kcell, mcell)))
-                # D[j,i] = op(relorientation(kcell, mcell))
             end
         end
     end
