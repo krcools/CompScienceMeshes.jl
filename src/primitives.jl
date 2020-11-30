@@ -270,6 +270,36 @@ function meshball(;radius, h)
 end
 
 
+function meshcylinder(;radius, height, h)
+
+    fn = joinpath(@__DIR__,"geos/cylinder3.geo")
+    io = open(fn)
+    str = read(io, String)
+    close(io)
+
+    str = replace(str, "r = 1.0;" => "r = $radius;")
+    str = replace(str, "z = 1.0;" => "z = $height;")
+    str = replace(str, "h = 1.0;" => "h = $h;")
+
+    # println(str)
+
+
+    temp_geo = tempname()
+    open(temp_geo, "w") do io
+        print(io, str)
+    end
+
+    temp_msh = tempname()
+    run(`gmsh $temp_geo -3 -format msh2 -o $temp_msh`)
+    m = read_gmsh3d_mesh(temp_msh)
+
+    rm(temp_msh)
+    rm(temp_geo)
+
+    return m
+end
+
+
 """
     meshcuboid(width, height, length, delta)
 
