@@ -1,7 +1,7 @@
 """
 gives the ordering for nedelec2 (divergence)
 """
-function relorientation(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4}) where {T}
+function relorientation_gen(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4}) where {T}
     # v = setdiff(tet,face)
     # length(v) == 1 || return 0
 
@@ -27,6 +27,22 @@ function relorientation(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4
     # return -a*(-1)^b
 end
 
+const RelOp34 = cat(
+    [0 0 0 0; 0 0 4 -3; 0 -4 0 2; 0 3 -2 0],
+    [0 0 -4 3; 0 0 0 0; 4 0 0 -1; -3 0 1 0],
+    [0 4 0 -2; -4 0 0 1; 0 0 0 0; 2 -1 0 0],
+    [0 -3 2 0; 3 0 -1 0; -2 1 0 0; 0 0 0 0],
+    dims=3)
+
+function relorientation(face::SArray{Tuple{3},T,1,3}, tet::SArray{Tuple{4},T,1,4}) where {T}
+
+    i = findfirst(==(face[1]),tet); i == nothing && return 0
+    j = findfirst(==(face[2]),tet); j == nothing && return 0
+    k = findfirst(==(face[3]),tet); k == nothing && return 0
+    return RelOp34[i,j,k]
+
+end
+
 """
 gives the ordering for nedelec1 (curl)
 if a tetrahedron is given by simplex(a,b,c,d), the order is:
@@ -50,6 +66,13 @@ function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},I
     s = sign(w2-w1)
 
     return s*t
+end
+
+const RelOp23 = [0 3 -2; -3 0 1; 2 -1 0]
+function relorientation(face::SVector{2,Int}, cell::SVector{3,Int})
+    i = findfirst(==(face[1]), cell); i == nothing && return 0
+    j = findfirst(==(face[2]), cell); j == nothing && return 0
+    return RelOp23[i,j]
 end
 
 

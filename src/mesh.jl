@@ -22,7 +22,8 @@ mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
 end
 
 function Mesh(vertices, faces)
-    dict = Dict((f,i) for (i,f) in enumerate(faces))
+    # dict = Dict((f,i) for (i,f) in enumerate(faces))
+    dict = Dict{Int,Int}()
     T = eltype(eltype(vertices))
     U = length(eltype(vertices))
     D1 = length(eltype(faces))
@@ -459,14 +460,16 @@ function vertextocell(mesh)
     NC = fill(-1, length(row))
     foreach(((i,n),)->(NC[i]=n), values(row))
     @assert !any(NC .== - 1)
-    VC = fill(-1, maximum(NC), length(row))
+    # VC = fill(-1, maximum(NC), length(row))
+    VC = fill(-1, length(row), maximum(NC))
 
     fill!(NC, 0)
     for (c,cell) in enumerate(mesh)
         for v in cell
             i, _ = row[v]
             k = NC[i] + 1
-            VC[k,i] = c
+            # VC[k,i] = c
+            VC[i,k] = c
             NC[i] = k
         end
     end
@@ -482,7 +485,8 @@ function vertextocell(mesh)
         GL[v] = i
     end
 
-    return copy(transpose(VC)), NC, LG, GL
+    # return copy(transpose(VC)), NC, LG, GL
+    return VC, NC, LG, GL
 end
 
 
@@ -638,6 +642,12 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
     Rows = Int[]
     Cols = Int[]
     Vals = Int[]
+
+    sh = 2 * max(dimm, dimk)
+    sizehint!(Rows, sh)
+    sizehint!(Cols, sh)
+    sizehint!(Vals, sh)
+
     for vk in axes(vtok,1)
         V = lgk[vk]
         haskey(glm,V) || continue

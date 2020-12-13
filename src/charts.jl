@@ -186,6 +186,22 @@ function _normals(tangents, ::Type{Val{C}}) where C
 end
 
 
+function _normals(tangents::SVector{1,SVector{3,T}} where {T}, ::Type{Val{2}})
+    P = eltype(tangents)
+    normals = SVector{2,P}(zero(P), zero(P))
+    # volume = dot(cross(tangents[1], tangents[2]), tangents[3]) / 6
+    volume = norm(tangents[1])
+    return normals, volume
+end
+
+function _normals(tangents::SVector{3,SVector{3,T}} where {T}, ::Type{Val{0}})
+    P = eltype(tangents)
+    normals = SVector{0,P}()
+    volume = dot(cross(tangents[1], tangents[2]), tangents[3]) / 6
+    return normals, volume
+end
+
+
 
 """
     barytocart(simplex, uv)
@@ -222,22 +238,36 @@ function carttobary(p::Simplex{U,D,C,N,T}, cart) where {U,D,C,N,T}
     return SVector{D}(u)
 end
 
+const _combs24 = [SVector{2}(c) for c in combinations(@SVector[1,2,3,4],2)]
+const _edgeidx24 = [relorientation(c, SVector(1,2,3,4)) for c in _combs24]
+const _combs24_pos = [(p > 0 ? _combs24[i] : reverse(_combs24[i])) for (i,p) in enumerate(_edgeidx24)]
+const _edgeidx24_abs = abs.(_edgeidx24)
+
 function edges(s::Simplex{3,3})
-    C = [SVector{2}(c) for c in combinations(@SVector[1,2,3,4],2)]
     T = eltype(eltype(s.vertices))
     P = Simplex{3,1,2,2,T}
-    Edges = Vector{P}(undef, length(C))
-    # @show eltype(Edges)
-    # @show eltype(s.vertices)
-    for c in C
-        q = relorientation(c, @SVector[1,2,3,4])
-        Q = abs(q)
-        Edges[Q] = q > 0 ?
-            simplex(s.vertices[c[1]], s.vertices[c[2]]) :
-            simplex(s.vertices[c[2]], s.vertices[c[1]])
+    Edges = Vector{P}(undef, length(_combs24_pos))
+    for (i,c) in zip(_edgeidx24_abs, _combs24_pos)
+        edge = simplex(s.vertices[c[1]], s.vertices[c[2]])
+        Edges[i] = edge
     end
     return Edges
 end
+
+# function edges(s::Simplex{3,3})
+#     C = [SVector{2}(c) for c in combinations(@SVector[1,2,3,4],2)]
+#     T = eltype(eltype(s.vertices))
+#     P = Simplex{3,1,2,2,T}
+#     Edges = Vector{P}(undef, length(C))
+#     for c in C
+#         q = relorientation(c, @SVector[1,2,3,4])
+#         Q = abs(q)
+#         Edges[Q] = q > 0 ?
+#             simplex(s.vertices[c[1]], s.vertices[c[2]]) :
+#             simplex(s.vertices[c[2]], s.vertices[c[1]])
+#     end
+#     return Edges
+# end
 
 function edges(s::Simplex{3,2})
     return [
