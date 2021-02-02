@@ -14,6 +14,10 @@ chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
 
 parent(mesh::BarycentricRefinement) = mesh.parent
 
+vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
+cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
+
+
 """
     barycentric refinement(mesh) -> refined_mesh
 

@@ -13,6 +13,8 @@ struct Simplex{U,D,C,N,T}
     volume::T
 end
 
+dimtype(splx::Simplex{U,D}) where {U,D} = Val{D}
+
 
 """
     coordtype(simplex)
@@ -276,6 +278,23 @@ function edges(s::Simplex{3,2})
         simplex(s.vertices[1], s.vertices[2])]
 end
 
+function faces(c)
+    @SVector[
+        simplex(c[2], c[3]),
+        simplex(c[3], c[1]),
+        simplex(c[1], c[2]),
+    ]
+end
+
+function faces(c::CompScienceMeshes.Simplex{3,3,0,4,Float64})
+    @SVector[
+        simplex(c[4],c[3],c[2]),
+        simplex(c[1],c[3],c[4]),
+        simplex(c[1],c[4],c[2]),
+        simplex(c[1],c[2],c[3])
+    ]
+end
+
 
 """
     ReferenceSimplex{Dimension, CoordType, NumVertices}
@@ -314,3 +333,12 @@ carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
 
 domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} = ReferenceSimplex{D,T,N}()
 neighborhood(ch::ReferenceSimplex, u) = u
+
+"""
+    tangents(splx)
+
+Returns a matrix whose columns are the tangents of the simplex `splx`.
+"""
+tangents(splx::Simplex) = hcat((splx.tangents)...)
+
+vertices(splx::Simplex) = hcat((splx.vertices)...)
