@@ -130,7 +130,6 @@ for (i,v) in enumerate(cells(sn))
 end
 
 #Test Mesh(SComplex)
-# c2 = meshsphere(1.0,0.8)
 c2 = readmesh(joinpath(@__DIR__,"assets/sphere8.in"))
 c1 = skeleton(c2,1)
 c0 = skeleton(c2,0)
