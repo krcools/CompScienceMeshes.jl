@@ -113,3 +113,45 @@ dl = weld(m,-m,seam=boundary(m))
 @test numcells(dl) == 4
 @test numcells(skeleton(dl,1)) == 6
 @test numcells(skeleton(dl,0)) == 4
+
+#Test interior
+i_old = CompScienceMeshes.interior(r_old)
+i_new = CompScienceMeshes.interior(r_new)
+@test dimension(i_new) == 1
+@test numcells(i_new) == 8
+@test numcells(i_new) == numcells(i_old)
+@test numcells(i_new) + numcells(b_new) == numcells(skeleton(r_new,1))
+
+sn = skeleton(i_new,0)
+so = skeleton(i_old,0)
+@assert numcells(sn) == numcells(so)
+for (i,v) in enumerate(cells(sn))
+    @test v[1] == cells(so)[i][1]
+end
+
+#Test Mesh(SComplex)
+c2 = meshsphere(1.0,0.8)
+c1 = skeleton(c2,1)
+c0 = skeleton(c2,0)
+
+d2 = CompScienceMeshes.SComplex2D(c2)
+d1 = skeleton(d2,1)
+d0 = skeleton(d2,0)
+
+e2 = Mesh(d2)
+e1 = Mesh(d1)
+e0 = Mesh(d0)
+
+@test e2.vertices == c2.vertices
+@test e1.vertices == c1.vertices
+@test e0.vertices == c0.vertices
+
+@test e2.faces == c2.faces
+@test e1.faces == c1.faces
+@test e0.faces == c0.faces
+
+f2 = CompScienceMeshes.SComplex2D(e2)
+
+@test f2.faces == d2.faces
+@test f2.edges == d2.edges
+@test f2.nodes == d2.nodes
