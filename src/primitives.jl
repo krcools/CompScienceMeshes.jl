@@ -67,7 +67,7 @@ The mesh is oriented such that the normal is pointing down. This is subject to c
 function meshrectangle(width::T, height::T, delta::T, udim=3; structured=true) where T
   if !structured
 	  @assert udim==3 "Only 3D Unstructured mesh currently supported"
-	  return meshrectangle!(width, height, delta)
+	  return meshrectangle_unstructured(width, height, delta)
   end
 
   PT = SVector{udim,T}
@@ -261,10 +261,10 @@ Volume(1)={1};
 end
 
 """
-	meshrectangle!(width, height, delta)
+    meshrectangle_unstructured(width, height, delta)
 	Meshes unstructured rectangle (Delaunay Triangulation)
 """
-function meshrectangle!(width, height, delta)
+function meshrectangle_unstructured(width, height, delta)
     s =
 		"""
 		lc = $delta;
