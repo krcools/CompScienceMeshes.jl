@@ -85,7 +85,8 @@ cps = cellpairs(m,e)
 
 #Test unstructed mesh rectangle
 r1 = meshrectangle(1.0,1.0,1/1)
-r2 = meshrectangle(1.0,1.0,1/1,structured=false)
+# r2 = meshrectangle(1.0,1.0,1/1,structured=false)
+r2 = readmesh(joinpath(@__DIR__,"assets/rectangle1.in"))
 
 @test numcells(r1) == 2
 @test numcells(r2) == 4
