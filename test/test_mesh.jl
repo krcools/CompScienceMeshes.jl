@@ -48,7 +48,7 @@ sphere = readmesh(file)
 @test numcells(sphere) == 666
 
 m = meshrectangle(1.0,1.0,1.0)
-rotate!(m, [1,0,0]*(π/2))
+CompScienceMeshes.rotate!(m, [1,0,0]*(π/2))
 
 tol = sqrt(eps())
 @test norm(vertices(m,1) - point(0.0,0.0,0.0)) < tol

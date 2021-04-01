@@ -248,7 +248,7 @@ Volume(1)={1};
 
     # feed the file to gmsh
     fno = tempname()
-    run(`gmsh $fn -2 -format msh -o $fno`)
+    run(`gmsh $fn -2 -format msh2 -o $fno`)
     fdo = open(fno,"r")
     m = read_gmsh_mesh(fdo,physical=physical)
 
@@ -294,7 +294,7 @@ function meshrectangle!(width, height, delta)
 
     # feed the file to gmsh
     fno = tempname()
-    run(`gmsh $fn -2 -format msh -o $fno`)
+    run(`gmsh $fn -2 -format msh2 -o $fno`)
     fdo = open(fno,"r")
     m = CompScienceMeshes.read_gmsh_mesh(fdo)
 
