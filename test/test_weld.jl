@@ -105,7 +105,8 @@ m3 = weld(front, right)
 
 #Test boundary weld
 a = 1.0; h = 1/4
-plate = meshrectangle(a, a, h, 3,structured=false)
+# plate = meshrectangle(a, a, h, 3,structured=false)
+plate = readmesh(joinpath(@__DIR__,"assets/plate025.in"))
 sheet = weld(plate,plate,boundary=true)
 
 SV = skeleton(sheet,0)
