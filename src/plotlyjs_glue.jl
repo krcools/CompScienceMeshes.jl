@@ -1,4 +1,5 @@
 export patch
+export normalcones
 
 function __init__()
     @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" begin
@@ -37,6 +38,18 @@ function __init__()
                 i=i, j=j, k=k,
                 facecolor=fc,
             )
+        end
+
+        @eval function normalcones(mesh::AbstractMesh)
+            normals = [normal(chart(mesh,cell)) for cell in mesh]
+            centers = [cartesian(center(chart(mesh,cell))) for cell in mesh]
+            x = getindex.(centers,1)
+            y = getindex.(centers,2)
+            z = getindex.(centers,3)
+            u = getindex.(normals,1)
+            v = getindex.(normals,2)
+            w = getindex.(normals,3)
+            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=2)
         end
     end
 end

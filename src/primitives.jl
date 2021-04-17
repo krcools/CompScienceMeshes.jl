@@ -113,6 +113,7 @@ end
 
 """
     meshsphere(radius, delta)
+    meshsphere(;radius, h)
 
 Create a mesh of a sphere of radius `radius` by parsing a .geo script
     incorporating these parameters into the GMSH mesher.
@@ -171,6 +172,8 @@ Ruled Surface(4)={4} In Sphere{1};
     return m
 
 end
+
+meshsphere(;radius, h) = meshsphere(radius, h)
 
 """
 not working yet
