@@ -20,7 +20,7 @@ export euclidianbasis, point
 
 # default mesh creation
 export mesh, readmesh, writemesh
-export meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
+export mehsgeo, meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
 export subdMesh
 # mesh interface
 export dimension, universedimension, vertextype, coordtype
@@ -32,7 +32,7 @@ export connectivity, cellpairs # marked for deprecation
 # mesh transforms
 export translate, translate!, rotate, rotate!
 export fliporientation!, fliporientation
-export weld
+export weld, union
 
 # mesh refinement
 export barycentric_refinement, bisecting_refinement

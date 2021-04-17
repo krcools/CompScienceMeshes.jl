@@ -840,11 +840,13 @@ end
 
 
 """
+    union(mesh1, mesh2, ...)
+
 Create the topological union of two meshes. This requires them to be
 defined on the same vertex set. No geometric considerations are taken
 into account.
 """
-function union(m1::AbstractMesh, m2::AbstractMesh)
+function Base.union(m1::AbstractMesh, m2::AbstractMesh)
     @assert dimension(m1) == dimension(m2)
     @assert vertices(m1) == vertices(m2)
 
@@ -852,6 +854,10 @@ function union(m1::AbstractMesh, m2::AbstractMesh)
     Cells1 = cells(m1)
     Cells2 = cells(m2)
     Mesh(Verts, vcat(Cells1, Cells2))
+end
+
+function Base.union(m1::AbstractMesh, ms::Vararg{AbstractMesh})
+    return union(m1, union(ms...))
 end
 
 

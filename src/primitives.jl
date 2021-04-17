@@ -1,5 +1,37 @@
 using CompScienceMeshes
 
+
+function meshgeo(geofile; physical=nothing, kwargs...)
+    
+    io = open(geofile)
+    str = read(io, String)
+    close(io)
+    
+    for (key,val) in kwargs
+        key_str = String(key)
+        pat = Regex("$key_str\\s*=\\s*[0-9]*.?[0-9]*;")
+        sub = SubstitutionString("$key_str = $val;")
+        str = replace(str, pat => sub)
+    end
+
+    println(str)
+    # return
+    
+    temp_geo = tempname()
+    open(temp_geo, "w") do io
+        print(io, str)
+    end
+    
+    temp_msh = tempname()
+    run(`gmsh $temp_geo -2 -format msh2 -o $temp_msh`)
+    m = read_gmsh_mesh(temp_msh, physical=physical)
+    
+    rm(temp_msh)
+    rm(temp_geo)
+    
+    return m
+end
+
 function meshsegment(L::T, delta::T, udim=2) where T<:Real
 
   PT = SVector{udim, T}
