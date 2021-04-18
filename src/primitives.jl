@@ -1,7 +1,7 @@
-using CompScienceMeshes
+using GmshTools
 
 
-function meshgeo(geofile; physical=nothing, kwargs...)
+function meshgeo(geofile; physical=nothing, dim=2, kwargs...)
     
     io = open(geofile)
     str = read(io, String)
@@ -21,10 +21,25 @@ function meshgeo(geofile; physical=nothing, kwargs...)
     open(temp_geo, "w") do io
         print(io, str)
     end
-    
-    temp_msh = tempname()
-    run(`gmsh $temp_geo -2 -format msh2 -o $temp_msh`)
-    m = read_gmsh_mesh(temp_msh, physical=physical)
+
+    temp_msh = tempname() * ".msh"
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(temp_geo)
+    gmsh.model.mesh.generate(dim)
+    gmsh.write(temp_msh)
+    gmsh.finalize()
+
+    # @show temp_msh
+
+    # run(`gmsh $temp_geo -2 -format msh2 -o $temp_msh`)
+    if dim == 2
+        m = read_gmsh_mesh(temp_msh, physical=physical)
+    elseif dim == 3
+        m = read_gmsh3d_mesh(temp_msh, physical=physical)
+    else
+        error("gmsh files of dimension $(dim) cannot be read.")
+    end
     
     rm(temp_msh)
     rm(temp_geo)
@@ -191,13 +206,17 @@ Ruled Surface(4)={4} In Sphere{1};
     finally
         close(io)
     end
+    fno = tempname() * ".msh"
 
-    # feed the file to gmsh
-    fno = tempname()
-    run(`gmsh $fn -2 -format msh2 -o $fno`)
-    fdo = open(fno,"r")
-    m = read_gmsh_mesh(fdo)
-    close(fdo)
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
+
     rm(fno)
     rm(fn)
 
@@ -266,21 +285,22 @@ function tetmeshsphere(radius,delta)
         close(io)
     end
 
-    # feed the file to gmsh
-    fno = tempname()
-    @show fn
-    @show fno
-    cmd = `gmsh $fn -3 -format msh2 -o $fno`
-    @show cmd
-    run(cmd)
-    fdo = open(fno,"r")
-    m = read_gmsh3d_mesh(fdo)
-    close(fdo)
+    fno = tempname() * ".msh"
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(3)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh3d_mesh(fno)
+
     rm(fno)
     rm(fn)
 
     return m
 end
+
 
 
 function meshball(;radius, h)
@@ -298,8 +318,14 @@ function meshball(;radius, h)
         print(io, str)
     end
 
-    temp_msh = tempname()
-    run(`gmsh $temp_geo -3 -format msh2 -o $temp_msh`)
+    temp_msh = tempname() * ".msh"
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(temp_geo)
+    gmsh.model.mesh.generate(3)
+    gmsh.write(temp_msh)
+    gmsh.finalize()
+
     m = read_gmsh3d_mesh(temp_msh)
 
     rm(temp_msh)
@@ -320,16 +346,18 @@ function meshcylinder(;radius, height, h)
     str = replace(str, "z = 1.0;" => "z = $height;")
     str = replace(str, "h = 1.0;" => "h = $h;")
 
-    # println(str)
-
-
     temp_geo = tempname()
     open(temp_geo, "w") do io
         print(io, str)
     end
 
-    temp_msh = tempname()
-    run(`gmsh $temp_geo -3 -format msh2 -o $temp_msh`)
+    temp_msh = tempname() * ".msh"
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(temp_geo)
+    gmsh.model.mesh.generate(3)
+    gmsh.write(temp_msh)
+    gmsh.finalize()
     m = read_gmsh3d_mesh(temp_msh)
 
     rm(temp_msh)
@@ -413,12 +441,18 @@ Volume(1)={1};
     end
 
     # feed the file to gmsh
-    fno = tempname()
-    run(`gmsh $fn -2 -format msh2 -o $fno`)
-    fdo = open(fno,"r")
-    m = read_gmsh_mesh(fdo,physical=physical)
+    fno = tempname() * ".msh"
 
-    close(fdo)
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    # m = read_gmsh_mesh(fno)
+    m = read_gmsh_mesh(fno,physical=physical)
+
     rm(fno)
     rm(fn)
 
@@ -459,12 +493,17 @@ function meshrectangle_unstructured(width, height, delta)
     end
 
     # feed the file to gmsh
-    fno = tempname()
-    run(`gmsh $fn -2 -format msh2 -o $fno`)
-    fdo = open(fno,"r")
-    m = CompScienceMeshes.read_gmsh_mesh(fdo)
+    fno = tempname() * ".msh"
 
-    close(fdo)
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
+
     rm(fno)
     rm(fn)
     return m

@@ -20,7 +20,7 @@ export euclidianbasis, point
 
 # default mesh creation
 export mesh, readmesh, writemesh
-export mehsgeo, meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
+export mehsgeo, meshball, meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
 export subdMesh
 # mesh interface
 export dimension, universedimension, vertextype, coordtype
