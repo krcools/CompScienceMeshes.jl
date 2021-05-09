@@ -99,6 +99,7 @@ include("mesh.jl")
 include("scomplex.jl")
 include("meshes/flippedmesh.jl")
 include("meshes/embedding.jl")
+include("meshes/twosided.jl")
 include("subdMesh.jl")
 
 
