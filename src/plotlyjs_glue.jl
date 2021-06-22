@@ -25,18 +25,22 @@ function __init__()
                 m, M = caxis
             end
 
-            if isapprox(m, M)
-                n = ones(Integer, size(a))
-            else
-                n = floor.(Integer, (a.-m)/(M-m)*(length(cm)-1)).+1
-                n = clamp.(n, 1, length(cm))
+            cs = map(eachindex(cm)) do i
+                r, g, b = cm[i]
+                R = floor(Int,255*r)
+                G = floor(Int,255*g)
+                B = floor(Int,255*b)
+                I = (i-1)/(length(cm)-1)
+                [I, "rgb($R,$G,$B)"]
             end
-            fc = [cm[i] for i in n]
 
             s = PlotlyJS.mesh3d(;
                 x=x, y=y, z=z,
                 i=i, j=j, k=k,
-                facecolor=fc,
+                intensitymode="cell",
+                intensity=a,
+                colorscale=cs,
+                showscale=true,
             )
         end
 
