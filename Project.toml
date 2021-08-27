@@ -1,6 +1,6 @@
 name = "CompScienceMeshes"
 uuid = "3e66a162-7b8c-5da0-b8f8-124ecd2c3ae1"
-version = "0.3.0"
+version = "0.3.1-DEV"
 
 [deps]
 GmshTools = "82e2f556-b1bd-5f1a-9576-f93c0da5f0ee"
