@@ -22,7 +22,8 @@ mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
 end
 
 function Mesh(vertices, faces)
-    dict = Dict((f,i) for (i,f) in enumerate(faces))
+    # dict = Dict((f,i) for (i,f) in enumerate(faces))
+    dict = Dict{Int,Int}()
     T = eltype(eltype(vertices))
     U = length(eltype(vertices))
     D1 = length(eltype(faces))
@@ -459,14 +460,16 @@ function vertextocell(mesh)
     NC = fill(-1, length(row))
     foreach(((i,n),)->(NC[i]=n), values(row))
     @assert !any(NC .== - 1)
-    VC = fill(-1, maximum(NC), length(row))
+    # VC = fill(-1, maximum(NC), length(row))
+    VC = fill(-1, length(row), maximum(NC))
 
     fill!(NC, 0)
     for (c,cell) in enumerate(mesh)
         for v in cell
             i, _ = row[v]
             k = NC[i] + 1
-            VC[k,i] = c
+            # VC[k,i] = c
+            VC[i,k] = c
             NC[i] = k
         end
     end
@@ -482,7 +485,8 @@ function vertextocell(mesh)
         GL[v] = i
     end
 
-    return copy(transpose(VC)), NC, LG, GL
+    # return copy(transpose(VC)), NC, LG, GL
+    return VC, NC, LG, GL
 end
 
 
@@ -627,9 +631,6 @@ the graph version of the exterior derivative.
 """
 function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
-    # vtok, _ = vertextocellmap(kcells)
-    # vtom, _ = vertextocellmap(mcells)
-
     vtok, _, lgk, glk = vertextocell(kcells)
     vtom, _, lgm, glm = vertextocell(mcells)
 
@@ -638,11 +639,15 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
     dimk = numcells(kcells)
     dimm = numcells(mcells)
 
-    # D = spzeros(Int, dimm, dimk)
-
     Rows = Int[]
     Cols = Int[]
     Vals = Int[]
+
+    sh = 2 * max(dimm, dimk)
+    sizehint!(Rows, sh)
+    sizehint!(Cols, sh)
+    sizehint!(Vals, sh)
+
     for vk in axes(vtok,1)
         V = lgk[vk]
         haskey(glm,V) || continue
@@ -650,7 +655,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            # kcell = kcells.faces[i]
             kcell = cells(kcells)[i]
             for s in axes(vtom,2)
                 j = vtom[vm,s]
@@ -661,7 +665,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
                 push!(Rows, j)
                 push!(Cols, i)
                 push!(Vals, op(relorientation(kcell, mcell)))
-                # D[j,i] = op(relorientation(kcell, mcell))
             end
         end
     end
@@ -837,11 +840,13 @@ end
 
 
 """
+    union(mesh1, mesh2, ...)
+
 Create the topological union of two meshes. This requires them to be
 defined on the same vertex set. No geometric considerations are taken
 into account.
 """
-function union(m1::AbstractMesh, m2::AbstractMesh)
+function Base.union(m1::AbstractMesh, m2::AbstractMesh)
     @assert dimension(m1) == dimension(m2)
     @assert vertices(m1) == vertices(m2)
 
@@ -849,6 +854,10 @@ function union(m1::AbstractMesh, m2::AbstractMesh)
     Cells1 = cells(m1)
     Cells2 = cells(m2)
     Mesh(Verts, vcat(Cells1, Cells2))
+end
+
+function Base.union(m1::AbstractMesh, ms::Vararg{AbstractMesh})
+    return union(m1, union(ms...))
 end
 
 

@@ -16,6 +16,10 @@ struct SComplex2D{T,P} <: AbstractMesh{3,3,T}
     faces::Vector{NTuple{3,Int}}
 end
 
+universedimension(m::SComplex2D) = length(vertextype(m))
+universedimension(m::SComplex1D) = length(vertextype(m))
+universedimension(m::SComplex0D) = length(vertextype(m))
+
 vertextype(::SComplex2D{T,P}) where {T,P} = P
 vertextype(::SComplex1D{T,P}) where {T,P} = P
 vertextype(::SComplex0D{T,P}) where {T,P} = P
@@ -32,6 +36,10 @@ numcells(m::SComplex0D) = length(m.nodes)
 cells(m::SComplex2D) = m.faces
 cells(m::SComplex1D) = m.edges
 cells(m::SComplex0D) = m.nodes
+
+celltype(m::SComplex2D) = eltype(m.faces)
+celltype(m::SComplex1D) = eltype(m.edges)
+celltype(m::SComplex0D) = eltype(m.nodes)
 
 function skeleton(m::SComplex2D, dim::Int)
     T = coordtype(m)
@@ -127,7 +135,11 @@ function boundary(mesh::SComplex2D)
     nodes = skeleton(mesh,0)
     edges = skeleton(mesh,1)
 
-    pred = interior_tpredicate(mesh)
+    D = connectivity(edges, mesh)
+    d = sum(abs.(D),dims=1)
+    M = Dict((edge,i) for (i,edge) in enumerate(cells(edges)))
+    pred(cell) = (d[M[cell]] >= 2)
+    # pred = interior_tpredicate(mesh)
     Edges = similar(mesh.edges,0)
     for edge in cells(edges)
         !pred(edge) && push!(Edges,edge)
@@ -161,6 +173,48 @@ function boundary(mesh::SComplex2D)
     return SComplex1D{T,P}(mesh.vertices, Nodes, Edges)
 end
 
+function CompScienceMeshes.interior(mesh::CompScienceMeshes.SComplex2D, edges=skeleton(mesh,1))
+    @assert dimension(mesh) == 2
+    @assert vertices(mesh) === vertices(edges)
+
+    C = connectivity(edges, mesh)
+    @assert size(C) == (numcells(mesh), numcells(edges))
+
+    nn = vec(sum(abs.(C), dims=1))
+    T = CompScienceMeshes.celltype(edges)
+    interior_edges = Vector{T}()
+    for (i,edge) in pairs(cells(edges))
+        nn[i] > 1 && push!(interior_edges, edge)
+    end
+
+    # Keep only those nodes that are on a retained edge
+    nodes = skeleton(mesh,0)
+    kept = falses(numcells(nodes))
+    for edge in interior_edges
+        for node in edge
+            kept[node] = true
+        end
+    end
+
+    Nodes = similar(mesh.nodes,0)
+    nodes_map = zeros(Int, numcells(nodes))
+    num_kept = 0
+    for (i,b) in enumerate(kept)
+        if b
+            num_kept += 1
+            nodes_map[i] = num_kept
+            push!(Nodes, cells(nodes)[i])
+        end
+    end
+
+    for (i,edge) in enumerate(interior_edges)
+        interior_edges[i] = map(p->nodes_map[p], edge)
+    end
+
+    T = coordtype(mesh)
+    P = vertextype(mesh)
+    CompScienceMeshes.SComplex1D{T,P}(mesh.vertices, Nodes, interior_edges)
+end
 
 function SComplex2D(mesh::Mesh)
     @assert dimension(mesh) == 2
@@ -208,3 +262,72 @@ parent(mesh::SComplex0D) = nothing
 parent(mesh::SComplex1D) = nothing
 parent(mesh::SComplex2D) = nothing
 # parent(mesh::SComplex0D) = nothing
+"""
+    Converts an SComplex to Mesh.
+    Convenience function only. Use with caution.
+    (Only makes sense where the SComplex can originally be replaced with a Mesh.
+    In that case, the user is expected to use Mesh)
+"""
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex2D)
+    faces = cells(m)
+    edges = cells(skeleton(m,1))
+    nodes = cells(skeleton(m,0))
+    edgemap = similar(faces)
+    for (i,face) in enumerate(faces)
+        cell = zeros(eltype(face),length(face))
+        for j in 1:length(face)
+            edge = edges[abs(face[j])]
+            if face[j] > 0 #or sign(face[j]) == 1
+              cell[j] = nodes[edge[1]][1]
+            else
+              cell[j] = nodes[edge[2]][1]
+            end
+        end
+        edgemap[i] = Tuple(cell)
+    end
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end
+
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex1D)
+    faces = cells(m)
+    nodes = cells(skeleton(m,0))
+    edgemap = similar(faces)
+    for (i,face) in enumerate(faces)
+        cell = zeros(eltype(face),length(face))
+        for j in 1:length(face)
+              cell[j] = nodes[face[j]][1]
+        end
+        edgemap[i] = Tuple(cell)
+    end
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end
+
+function CompScienceMeshes.Mesh(m::CompScienceMeshes.SComplex0D)
+    faces = cells(m)
+    edgemap = faces
+
+    N = dimension(m) + 1
+    facevec = CompScienceMeshes.StaticArrays.SArray{Tuple{N},Int64,1,N}[]
+    for i in 1:length(edgemap)
+        push!(facevec,CompScienceMeshes.StaticArrays.SVector(edgemap[i]))
+    end
+
+    #return mesh
+    Mesh(m.vertices,facevec)
+end

@@ -49,7 +49,7 @@ sphere = readmesh(file)
 @test numcells(sphere) == 666
 
 m = meshrectangle(1.0,1.0,1.0)
-rotate!(m, [1,0,0]*(π/2))
+CompScienceMeshes.rotate!(m, [1,0,0]*(π/2))
 
 @test CompScienceMeshes.isoriented(boundary(m))
 
@@ -75,3 +75,8 @@ n = fliporientation(m)
 
 @test m.faces[1] == index(1,2,3)
 @test n.faces[1] == index(2,1,3)
+
+# test the construction of transposed connectivity matricees
+Σᵀ = connectivity(edges, faces, identity)
+Σ = connectivity(faces, edges, identity)
+@test norm(Σᵀ - Σ', Inf) == 0

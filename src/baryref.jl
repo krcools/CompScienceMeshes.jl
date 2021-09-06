@@ -5,6 +5,7 @@ end
 
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
 vertices(br::BarycentricRefinement) = vertices(br.mesh)
+vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
 numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
 cells(br::BarycentricRefinement) = cells(br.mesh)
 numcells(br::BarycentricRefinement) = numcells(br.mesh)
@@ -12,6 +13,10 @@ skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
 chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
 
 parent(mesh::BarycentricRefinement) = mesh.parent
+
+vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
+cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
+
 
 """
     barycentric refinement(mesh) -> refined_mesh

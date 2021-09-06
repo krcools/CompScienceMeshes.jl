@@ -105,10 +105,10 @@ m3 = weld(front, right)
 
 #Test boundary weld
 a = 1.0; h = 1/4
-fn = joinpath(dirname(@__FILE__),"assets","rectangle.msh")
-plate = CompScienceMeshes.read_gmsh_mesh(fn)
-# plate = meshrectangle(a, a, h, 3) #use this when weld bug is fixed
+# plate = meshrectangle(a, a, h, 3,structured=false)
+plate = readmesh(joinpath(@__DIR__,"assets/plate025.in"))
 sheet = weld(plate,plate,boundary=true)
+
 SV = skeleton(sheet,0)
 SE = skeleton(sheet,1)
 SF = skeleton(sheet,2)

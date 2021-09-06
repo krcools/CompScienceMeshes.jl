@@ -33,7 +33,7 @@ export connectivity, cellpairs # marked for deprecation
 # mesh transforms
 export translate, translate!, rotate, rotate!
 export fliporientation!, fliporientation
-export weld
+export weld, union
 
 # mesh refinement
 export barycentric_refinement, bisecting_refinement
@@ -61,6 +61,7 @@ export isinside, isinclosure, overlap
 
 # specific to simplicial charts
 export simplex, center, vertices
+export faces, edges, circumcenter
 export barytocart, carttobary
 
 export intersection
@@ -86,6 +87,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 include("defaults.jl")
 include("utils.jl")
 include("utils/sfc_sort.jl")
+include("utils/circumctr.jl")
 # include("combinatorics.jl")
 
 # quadrature rules for segements, triangles, and squares
@@ -98,6 +100,7 @@ include("mesh.jl")
 include("scomplex.jl")
 include("meshes/flippedmesh.jl")
 include("meshes/embedding.jl")
+include("meshes/twosided.jl")
 include("subdMesh.jl")
 
 

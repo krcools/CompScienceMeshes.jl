@@ -6,7 +6,7 @@ border = CompScienceMeshes.read_gmsh_mesh(fn, physical="WorldsEnd", dimension=1)
 coast  = CompScienceMeshes.read_gmsh_mesh(fn, physical="Coast", dimension=1)
 sea    = CompScienceMeshes.read_gmsh_mesh(fn, physical="Sea", dimension=2)
 
-border_vertices = skeleton(border, 0)P
+border_vertices = skeleton(border, 0)
 coast_vertices  = skeleton(coast, 0)
 sea_vertices    = skeleton(sea, 0)
 
