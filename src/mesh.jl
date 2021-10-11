@@ -525,7 +525,7 @@ the edges of a given surface `mesh`,
 edges = skelton(mesh, 1)
 ```
 """
-function skeleton(mesh, dim::Int)
+function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
 
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
@@ -535,10 +535,10 @@ function skeleton(mesh, dim::Int)
     end
 
     sk = skeleton_fast(mesh,dim)
-    simplices = cells(sk)
-
+    sort != :spacefillingcurve && return sk
+    
     # sort the simplices on a SFC
-    Q = vertextype(mesh)
+    simplices = cells(sk)
     ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
     if length(simplices) > 0
         simplices = simplices[sort_sfc(ctrs)]

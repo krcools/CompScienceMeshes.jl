@@ -25,10 +25,10 @@ Create the mesh obtained by inserting an extra vertex in the barycenters of all 
 recusively creating fine cells by connecting the barycenter of a k-cell to the already
 constructed refined (k-1)-cells on its boundary.
 """
-function barycentric_refinement(mesh::Mesh{U,2}) where U
+function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where U
 
     # Get the points and the faces (segments) we will use in the refinement process
-    Edges = skeleton(mesh, 1)
+    Edges = skeleton(mesh, 1; sort)
 
     # Note thier number and use it to find the new number of points and segments(faces)
     # after refienmnts
@@ -72,12 +72,12 @@ function barycentric_refinement(mesh::Mesh{U,2}) where U
     return Mesh(verts, edges)
 end
 
-function barycentric_refinement(mesh::Mesh{U,3}) where U
+function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where U
 
     D1 = 3
     T = coordtype(mesh)
 
-    edges = skeleton(mesh,1)
+    edges = skeleton(mesh,1; sort)
     faces = skeleton(mesh,2)
 
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
