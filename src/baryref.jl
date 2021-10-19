@@ -72,7 +72,7 @@ function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where 
     return Mesh(verts, edges)
 end
 
-function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where U
+function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve) where U
 
     D1 = 3
     T = coordtype(mesh)
@@ -85,7 +85,7 @@ function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where 
     nv = NV + NE + NF
     verts = Array{vertextype(mesh)}(undef,nv)
     for V in 1 : numvertices(mesh)
-        verts[V] = mesh.vertices[V]
+        verts[V] = vertices(mesh)[V]
     end
 
     # add a vertex in each edge centroid
@@ -104,6 +104,7 @@ function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where 
     # add six faces in each coarse face
     nf = 6NF
     fcs = zeros(celltype(mesh), nf)
+    C = cells(faces)
     for F in 1 : numcells(faces)
         c = NV + NE + F
 
@@ -112,8 +113,8 @@ function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where 
             e = NV + E
 
             j = abs(vals[i]) # local index of edge E in face F
-            a = mesh.faces[F][mod1(j+1,3)]
-            b = mesh.faces[F][mod1(j+2,3)]
+            a = C[F][mod1(j+1,3)]
+            b = C[F][mod1(j+2,3)]
 
             fcs[6(F-1)+2(j-1)+1] = index(a,e,c)
             fcs[6(F-1)+2(j-1)+2] = index(b,c,e)
@@ -140,9 +141,11 @@ function barycentric_refinement(mesh::Mesh{U,3}; sort=:spacefillingcurve) where 
     @show length(sorted_fcs)
     @assert length(fcs) == length(sorted_fcs)
 
-    M = typeof(mesh)
+    refmesh = Mesh(verts,fcs)
+    # M = typeof(refmesh)
+    M = AbstractMesh
     # BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
-    BarycentricRefinement{U,3,T,M}(Mesh(verts, fcs), mesh)
+    BarycentricRefinement{U,3,T,M}(refmesh, mesh)
 end
 
 function barycentric_refinement(mesh::Mesh{U,4}) where U
