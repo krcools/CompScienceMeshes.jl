@@ -566,11 +566,11 @@ Physical Volume(1) = {1};
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
-    gmsh.model.mesh.generate(2)
+    gmsh.model.mesh.generate(3)
     gmsh.write(fno)
     gmsh.finalize()
 
-    m = read_gmsh_mesh(fno)
+    m = read_gmsh3d_mesh(fno)
 
     rm(fno)
     rm(fn)
