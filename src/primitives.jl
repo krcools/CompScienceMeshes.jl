@@ -1,7 +1,7 @@
 using GmshTools
 
 
-function meshgeo(geofile; physical=nothing, dim=2, kwargs...)
+function meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs...)
     
     io = open(geofile)
     str = read(io, String)
@@ -17,12 +17,12 @@ function meshgeo(geofile; physical=nothing, dim=2, kwargs...)
     println(str)
     # return
     
-    temp_geo = tempname()
+    temp_geo = tempname
     open(temp_geo, "w") do io
         print(io, str)
     end
 
-    temp_msh = tempname() * ".msh"
+    temp_msh = tempname * ".msh"
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
@@ -210,7 +210,7 @@ Create a mesh of a sphere of radius `radius` by parsing a .geo script
 
 The target edge size is `delta`.
 """
-function meshsphere(radius, delta)
+function meshsphere(radius, delta; tempname=tempname())
     s = """
 lc = $delta;
 
@@ -242,14 +242,14 @@ Ruled Surface(3)={3} In Sphere{1};
 Ruled Surface(4)={4} In Sphere{1};
 """
 
-    fn = tempname()
+    fn = tempname
     io = open(fn, "w")
     try
         print(io, s)
     finally
         close(io)
     end
-    fno = tempname() * ".msh"
+    fno = tempname * ".msh"
 
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
@@ -272,7 +272,7 @@ meshsphere(;radius, h) = meshsphere(radius, h)
 """
 not working yet
 """
-function tetmeshsphere(radius,delta)
+function tetmeshsphere(radius,delta; tempname=tempname())
     s = """
     lc = $delta;
 
@@ -320,7 +320,7 @@ function tetmeshsphere(radius,delta)
     Physical Volume(1) = {1};
     """
 
-    fn = tempname()
+    fn = tempname
     io = open(fn, "w")
     try
         print(io, s)
@@ -328,7 +328,7 @@ function tetmeshsphere(radius,delta)
         close(io)
     end
 
-    fno = tempname() * ".msh"
+    fno = tempname * ".msh"
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
@@ -346,7 +346,7 @@ end
 
 
 
-function meshball(;radius, h)
+function meshball(;radius, h, tempname=tempname())
 
     fn = joinpath(@__DIR__,"geos/structured_sphere.geo")
     io = open(fn)
@@ -356,12 +356,12 @@ function meshball(;radius, h)
     str = replace(str, "lc = 1.0;" => "lc = $h;")
     str = replace(str, "r = 1.0;" => "r = $radius;")
 
-    temp_geo = tempname()
+    temp_geo = tempname
     open(temp_geo, "w") do io
         print(io, str)
     end
 
-    temp_msh = tempname() * ".msh"
+    temp_msh = tempname * ".msh"
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
@@ -378,7 +378,7 @@ function meshball(;radius, h)
 end
 
 
-function meshcylinder(;radius, height, h)
+function meshcylinder(;radius, height, h, tempname=tempname())
 
     fn = joinpath(@__DIR__,"geos/cylinder3.geo")
     io = open(fn)
@@ -389,12 +389,12 @@ function meshcylinder(;radius, height, h)
     str = replace(str, "z = 1.0;" => "z = $height;")
     str = replace(str, "h = 1.0;" => "h = $h;")
 
-    temp_geo = tempname()
+    temp_geo = tempname
     open(temp_geo, "w") do io
         print(io, str)
     end
 
-    temp_msh = tempname() * ".msh"
+    temp_msh = tempname * ".msh"
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
@@ -422,7 +422,7 @@ physical => in {"TopPlate", "BottomPlate", "SidePlates", "OpenBox"} extracts and
 returns only the specified part of the cuboid
 
 """
-function meshcuboid(width, height, length, delta;physical="ClosedBox")
+function meshcuboid(width, height, length, delta;physical="ClosedBox", tempname=tempname())
     s =
 """
 lc = $delta;
@@ -475,7 +475,7 @@ Volume(1)={1};
 
 """
 
-    fn = tempname()
+    fn = tempname
     io = open(fn, "w")
     try
         print(io, s)
@@ -484,7 +484,7 @@ Volume(1)={1};
     end
 
     # feed the file to gmsh
-    fno = tempname() * ".msh"
+    fno = tempname * ".msh"
 
     gmsh.initialize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
@@ -582,7 +582,7 @@ end
     meshrectangle_unstructured(width, height, delta)
 	Meshes unstructured rectangle (Delaunay Triangulation)
 """
-function meshrectangle_unstructured(width, height, delta)
+function meshrectangle_unstructured(width, height, delta; tempname=tempname())
     s =
 		"""
 		lc = $delta;
@@ -602,11 +602,25 @@ function meshrectangle_unstructured(width, height, delta)
 		Plane Surface(5)={5};
 		"""
 
+    fn = tempname
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
     # feed the file to gmsh
-    fno = tempname()
-    run(`gmsh $fn -3 -format msh2 -o $fno`)
-    fdo = open(fno,"r")
-    m = read_gmsh3d_mesh(fdo)
+    fno = tempname * ".msh"
+
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
 
     close(fdo)
     rm(fno)
