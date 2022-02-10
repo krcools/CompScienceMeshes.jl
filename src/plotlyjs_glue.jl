@@ -7,7 +7,7 @@ function __init__()
         @eval import DelimitedFiles
         @eval fn = joinpath(dirname(@__FILE__),"..","examples","cm.csv")
         @eval cm = mapslices(r->(r[1],r[2],r[3]), DelimitedFiles.readdlm(fn, ','), dims=[2])
-        @eval function patch(Γ::AbstractMesh, fcr=nothing, caxis=nothing)
+        @eval function patch(Γ::AbstractMesh, fcr=nothing, caxis=nothing; showscale=true)
 
             v = vertexarray(Γ)
             c = cellarray(Γ)
@@ -41,7 +41,7 @@ function __init__()
                 intensitymode="cell",
                 intensity=a,
                 colorscale=cs,
-                showscale=true,
+                showscale=showscale,
             )
         end
 

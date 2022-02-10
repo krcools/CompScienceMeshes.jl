@@ -142,7 +142,7 @@ numvertices(m::Mesh) = length(m.vertices)
 
 Returns the number of cells in the mesh.
 """
-numcells(m::Mesh) = length(m.faces)
+numcells(m::AbstractMesh) = length(m.faces)
 
 
 
@@ -458,7 +458,10 @@ function vertextocell(mesh)
 
     # NC = map((i,n)->n, values(row))
     NC = fill(-1, length(row))
-    foreach(((i,n),)->(NC[i]=n), values(row))
+    # foreach(((i,n),)->(NC[i]=n), values(row))
+    for (i,n) in values(row)
+        NC[i] = n
+    end
     @assert !any(NC .== - 1)
     # VC = fill(-1, maximum(NC), length(row))
     VC = fill(-1, length(row), maximum(NC))
@@ -644,9 +647,9 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
     Vals = Int[]
 
     sh = 2 * max(dimm, dimk)
-    sizehint!(Rows, sh)
-    sizehint!(Cols, sh)
-    sizehint!(Vals, sh)
+    # sizehint!(Rows, sh)
+    # sizehint!(Cols, sh)
+    # sizehint!(Vals, sh)
 
     for vk in axes(vtok,1)
         V = lgk[vk]
@@ -672,6 +675,48 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
     D = sparse(Rows, Cols, Vals, dimm, dimk, (x,y)->y)
     return D
 end
+
+# function connectivity2(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
+
+#     # if dimension(kcells) > dimension(mcells)
+#     #     C = connectivity_impl(mcells, kcells, op)
+#     #     return copy(transpose(C))
+#     # end
+#     return connectivity_impl(kcells, mcells, op)
+# end
+
+# import InteractiveUtils
+
+function connectivity2(kcells::AbstractMesh, mcells::AbstractMesh)
+    
+    @assert dimension(kcells) < dimension(mcells)
+
+    npos = -1
+    MCells = cells(mcells)
+    vtom, _ = vertextocellmap(mcells)
+
+    Rows = Int[]
+    Cols = Int[]
+    Vals = Int[]
+
+    for (j,kcell) in enumerate(kcells)
+        for v in kcell
+            for i in vtom[v,:]
+                i == npos && break
+                mcell = MCells[i]
+                issubset(kcell, mcell) || continue
+
+                push!(Rows, i)
+                push!(Cols, j)
+                σ = relorientation(kcell, mcell)
+                push!(Vals, σ)
+            end
+        end
+    end
+
+    sparse(Rows, Cols, Vals, length(mcells), length(kcells))
+end
+
 
 
 
