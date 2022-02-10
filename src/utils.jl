@@ -61,7 +61,7 @@ const _relorient24 = @SMatrix[
     -3 -5 -6 0]
 
 # function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
-function relorientation(edge::SVector{2,Int}, tet::SVector{4,Int})
+@inline function relorientation(edge::SVector{2,Int}, tet::SVector{4,Int})
 
     # relorient24 = [
     # 0 1 2 3
