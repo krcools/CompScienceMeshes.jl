@@ -15,7 +15,7 @@ Reads the mesh nodes and elements stored in the input .msh file (`io`, output by
 
 Returns an object `mesh` of type `Mesh`, comprising both vector arrays.
 """
-function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true)
+function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true, T=Float64)
 
     entity_tag = 0
     if physical != nothing
@@ -52,11 +52,11 @@ function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true)
     s = split(thisLine)
     NV = parse(Int, s[1])
 
-    P = SVector{3,Float64}
+    P = SVector{3,T}
     v = Vector{P}(undef,NV)
     for i in 1:NV
         thisLine = io |> readline |>  strip
-        d = readdlm(IOBuffer(thisLine), Float64)
+        d = readdlm(IOBuffer(thisLine), T)
         v[i] = P(d[2], d[3], d[4])
     end
 
@@ -109,7 +109,8 @@ end
 
 
 function sort_sfc(v, f)
-    Q = Pt{3,Float64}
+    T = eltype(eltype(v))
+    Q = Pt{3,T}
     ctrs = Q[]
     for tr in f
             ctr = sum(v[tr])/3

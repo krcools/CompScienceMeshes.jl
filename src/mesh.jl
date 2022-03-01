@@ -918,3 +918,15 @@ function orient(mesh::Mesh)
     breadthfirst(f, mesh, root)
 
 end
+
+import Base.convert
+
+"""
+    convert(::Type{NewT}, mesh::Mesh{U,D1,T}) where {NewT<:Real,U,D1,T}
+
+Converts a Mesh with coordtype T to a Mesh with coordtype NewT.
+"""
+function convert(::Type{NewT}, mesh::Mesh{U,D1,T}) where {NewT<:Real,U,D1,T}
+    vertices=[convert(SVector{U,NewT}, vertex) for vertex in mesh.vertices]
+    return Mesh(vertices, mesh.faces)
+end

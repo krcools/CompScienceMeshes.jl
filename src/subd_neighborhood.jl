@@ -1,15 +1,15 @@
 export neighborhood,parametric,cartesian,jacobian,normal,shapefuns,shapeders,get_shape_curl
-mutable struct subd_point
-    cart::Vector{Float64}
-    paracoords::Vector{Float64}
-    J::Array{Float64,2}
-    detJ::Float64
-    normal::SVector{3,Float64}
-    shapes::Matrix{Float64}
-    shapeders::Matrix{Float64}
+mutable struct subd_point{T}
+    cart::Vector{T}
+    paracoords::Vector{T}
+    J::Array{T,2}
+    detJ::T
+    normal::SVector{3,T}
+    shapes::Matrix{T}
+    shapeders::Matrix{T}
 end
-Base.getindex(p::subd_point, i::Int) = p.cart[i]
-function neighborhood(chart::subd_chart, u)
+Base.getindex(p::subd_point{T}, i::Int) where {T} = p.cart[i]
+function neighborhood(chart::subd_chart{T}, u) where {T}
     vertices = chart.vertices
     Nv = chart.N
     val = Nv - 6
@@ -31,7 +31,7 @@ function neighborhood(chart::subd_chart, u)
             t1[1] * t2[2] - t1[2] * t2[1]]
     detJ = sqrt(norm[1]*norm[1] + norm[2]*norm[2] + norm[3]*norm[3])
     norm = norm./detJ
-    return subd_point(coords,u,J,detJ,norm,shapefunc,shape_der)
+    return subd_point{T}(coords,u,J,detJ,norm,shapefunc,shape_der)
 end
 
 function parametric(d::subd_point)

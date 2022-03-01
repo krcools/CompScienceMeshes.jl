@@ -6,12 +6,12 @@ and returns a mesh with the boundary edges: b
 and returns a mesh of the faces on the boundary: c
 """
 
-function stripboundedge(Γ::Mesh{3,4,Float64})
+function stripboundedge(Γ::Mesh{3,4,T}) where T
     f = skeleton(Γ,2)
     C = connectivity(f,Γ)
 
     totfaces = length(f.faces)
-    v = SArray{Tuple{3},Float64,1,3}
+    v = SArray{Tuple{3},T,1,3}
     A = zeros(v, 2*totfaces-4*length(Γ.faces))
 
     l = 1

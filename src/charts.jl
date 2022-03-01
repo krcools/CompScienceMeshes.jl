@@ -110,7 +110,7 @@ of vertices supplied minus one.
     quote
         tangents = $xp2
         normals, volume = _normals(tangents, Val{$C})
-        Simplex(vertices, tangents, normals, volume)
+        Simplex(vertices, tangents, normals, $T(volume))
     end
 end
 
@@ -286,7 +286,7 @@ function faces(c)
     ]
 end
 
-function faces(c::CompScienceMeshes.Simplex{3,3,0,4,Float64})
+function faces(c::CompScienceMeshes.Simplex{3,3,0,4,T}) where {T}
     @SVector[
         simplex(c[4],c[3],c[2]),
         simplex(c[1],c[3],c[4]),
