@@ -66,7 +66,7 @@ function neighborhood(p::Simplex, bary)
   D = dimension(p)
   T = coordtype(p)
   P = SVector{D,T}
-  cart = barytocart(p, bary)
+  cart = barytocart(p, T.(bary))
   MeshPointNM(p, P(bary), cart)
 end
 

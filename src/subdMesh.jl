@@ -12,11 +12,11 @@ mutable struct SEdge
     orientation::Vector{Int64}
 end
 
-mutable struct SVertex
+mutable struct SVertex{T}
     Elements::Vector{Int64}
     Valence::Int64
     Edges::Vector{Int64}
-    Coords::SVector{3,Float64}
+    Coords::SVector{3,T}
 end
 
 mutable struct subdMesh

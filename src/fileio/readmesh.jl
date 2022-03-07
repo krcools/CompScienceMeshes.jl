@@ -18,7 +18,7 @@ where `U` is the universedimension of the mesh, `D1` the dimension
 of the mesh plus one, `V` the number of vertices, and `C` the number
 of cells in the mesh.
 """
-function readmesh(filename)
+function readmesh(filename;T=Float64)
     open(filename) do f
         # multi-mesh files are not supported
         readline(f)
@@ -36,7 +36,7 @@ function readmesh(filename)
         udim = length(split(l))
         seek(f,p)
 
-        T = Float64
+        #T = Float64
         P = SVector{udim,T}
         vertices = zeros(P, num_vertices)
         for i = 1 : num_vertices
