@@ -422,7 +422,7 @@ physical => in {"TopPlate", "BottomPlate", "SidePlates", "OpenBox"} extracts and
 returns only the specified part of the cuboid
 
 """
-function meshcuboid(width, height, length, delta;physical="ClosedBox", tempname=tempname())
+function meshcuboid(width::T, height::T, length::T, delta::T;physical="ClosedBox", tempname=tempname()) where T
     s =
 """
 lc = $delta;
@@ -494,7 +494,7 @@ Volume(1)={1};
     gmsh.finalize()
 
     # m = read_gmsh_mesh(fno)
-    m = read_gmsh_mesh(fno,physical=physical)
+    m = read_gmsh_mesh(fno,physical=physical,T=T)
 
     rm(fno)
     rm(fn)

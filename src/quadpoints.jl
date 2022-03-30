@@ -5,19 +5,19 @@ struct WeightPointValue{W,P,V}
 end
 
 
-function quadpoints(chart::ReferenceSimplex{1}, rule)
-    u, w = legendre(rule, 0.0, 1.0)
-    [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
+function quadpoints(chart::ReferenceSimplex{1,T}, rule) where {T}
+    u, w = legendre(rule, T(0.0), T(1.0))
+    [(neighborhood(chart, T.(u[:,i])), T.(w[i])) for i in eachindex(w)]
 end
 
-function quadpoints(chart::ReferenceSimplex{2}, rule)
+function quadpoints(chart::ReferenceSimplex{2,T}, rule) where {T}
     u, w = trgauss(rule)
-    [(neighborhood(chart, u[:,i]), w[i]) for i in eachindex(w)]
+    [(neighborhood(chart, T.(u[:,i])), T.(w[i])) for i in eachindex(w)]
 end
 
-function quadpoints(chart::ReferenceSimplex{3}, rule)
+function quadpoints(chart::ReferenceSimplex{3,T}, rule) where {T}
     uT, wT = trgauss(rule)
-    uL, wL = legendre(rule, 0.0, 1.0)
+    uL, wL = legendre(rule, T(0.0), T(1.0))
 
     QT = length(wT)
     QL = length(wL)

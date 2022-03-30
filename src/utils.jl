@@ -54,19 +54,70 @@ if a tetrahedron is given by simplex(a,b,c,d), the order is:
     c-d
 """
 
-function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
-    # v = setdiff(tet, edge)
-    # length(v) == 2 || return 0
+const _relorient24 = @SMatrix[
+    0 1 2 3
+    -1 0 4 5
+    -2 -4 0 6
+    -3 -5 -6 0]
 
-    count(x -> !(x in edge), tet) != 2 && return 0
+# function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
+@inline function relorientation(edge::SVector{2,Int}, tet::SVector{4,Int})
 
-    w1 = findfirst(isequal(edge[1]), tet)
-    w2 = findfirst(isequal(edge[2]), tet)
-    t = tetschoice(w1,w2)
-    s = sign(w2-w1)
+    # relorient24 = [
+    # 0 1 2 3
+    # -1 0 4 5
+    # -2 -4 0 6
+    # -3 -5 -6 0]
 
-    return s*t
+    # # println("relorientation 2-4")
+    # e1 = edge[1]
+    # a = 0
+    # for v in tet
+    #     a = a + 1
+    #     if e1 == v
+    #         break
+    #     end
+    # end
+    # a == 5 && return 0
+
+    # e2 = edge[2]
+    # b = 0
+    # for v in tet
+    #     b = b + 1
+    #     if e2 == v
+    #         break
+    #     end
+    # end
+    # b == 5 && return 0
+    # return relorient24[a,b]
+
+    a = findfirst(==(edge[1]), tet)
+    a == nothing && return 0
+
+    b = findfirst(==(edge[2]), tet)
+    b == nothing && return 0
+
+    return _relorient24[a,b]
+
 end
+
+# function relorientation(edge::SArray{Tuple{2},Int64,1,2}, tet::SArray{Tuple{4},Int64,1,4})
+#     # v = setdiff(tet, edge)
+#     # length(v) == 2 || return 0
+
+#     count(x -> !(x in edge), tet) != 2 && return 0
+
+#     w1 = findfirst(isequal(edge[1]), tet)
+#     w2 = findfirst(isequal(edge[2]), tet)
+
+#     @assert w1 != nothing
+#     @assert w2 != nothing
+
+#     t = tetschoice(w1,w2)
+#     s = sign(w2-w1)
+
+#     return s*t
+# end
 
 const RelOp23 = [0 3 -2; -3 0 1; 2 -1 0]
 function relorientation(face::SVector{2,Int}, cell::SVector{3,Int})

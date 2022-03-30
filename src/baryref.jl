@@ -1,6 +1,6 @@
-mutable struct BarycentricRefinement{U,D1,T,M} <: AbstractMesh{U,D1,T}
+mutable struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractMesh{U,D1,T}
     mesh::M
-    parent::M
+    parent::MP
 end
 
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
@@ -142,10 +142,11 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     @assert length(fcs) == length(sorted_fcs)
 
     refmesh = Mesh(verts,fcs)
-    # M = typeof(refmesh)
-    M = AbstractMesh
+    M = typeof(refmesh)
+    N = typeof(mesh)
+    # M = AbstractMesh
     # BarycentricRefinement{U,3,T,M}(Mesh(verts, sorted_fcs), mesh)
-    BarycentricRefinement{U,3,T,M}(refmesh, mesh)
+    BarycentricRefinement{U,3,T,M,N}(refmesh, mesh)
 end
 
 function barycentric_refinement(mesh::Mesh{U,4}) where U
@@ -237,8 +238,11 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
             fcs[i] = @SVector[fc[1],fc[2],fc[4],fc[3]]
         end
     end
-    M = typeof(mesh)
-    BarycentricRefinement{U,4,T,M}(fine, mesh)
+    
+    MR = typeof(fine)
+    MP = typeof(mesh)
+
+    BarycentricRefinement{U,4,T,MR,MP}(fine, mesh)
     # D = connectivity(Nodes, fine)
     # rows, vals = rowvals(D), nonzeros(D)
     # sorted_fcs = Vector{celltype(mesh)}()

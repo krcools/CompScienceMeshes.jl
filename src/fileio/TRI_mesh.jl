@@ -17,7 +17,7 @@ NOTE: The contents of `mesh_filename` must include the file extension, and the
     file must be stored in the current directory.
 
 """
-function read_TRI_mesh(io)
+function read_TRI_mesh(io,T=Type::Float64)
 
     thisLine = io |> readline |> strip
     while thisLine != "POINTS"
@@ -28,11 +28,11 @@ function read_TRI_mesh(io)
     s = split(thisLine)
     NV = parse(Int, s[1])
 
-    P = SVector{3,Float64}
+    P = SVector{3,T}
     v = Vector{P}(NV)
     for i in 1:NV
         thisLine = io |> readline |>  strip
-        d = readdlm(IOBuffer(thisLine), Float64)
+        d = readdlm(IOBuffer(thisLine), T)
         v[i] = P(d[2], d[3], d[4])
     end
 

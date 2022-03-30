@@ -10,6 +10,7 @@ using Test
 import CompScienceMeshes
 
 @test CompScienceMeshes.point(1,2,3) === SVector{3,Float64}(1.0,2.0,3.0)
+@test CompScienceMeshes.point(Float32,1,2,3) === SVector{3,Float32}(1.0,2.0,3.0)
 @test CompScienceMeshes.point(Int,1,2,3) == SVector{3,Int}(1,2,3)
 
 include("test_relorientation.jl")
@@ -42,5 +43,6 @@ include("test_spherequad.jl")
 include("test_nbd.jl")
 
 include("test_mapper.jl")
+include("test_convert.jl")
 
 end
