@@ -71,8 +71,9 @@ In particular it expects as argument an index pointing into the vertex buffer of
 """
 function interior_vpredicate(mesh::AbstractMesh)
     #TODO: update to accept simplex as argument
-    @assert dimension(mesh) == 2
-    skel = skeleton(mesh,1)
+    # @assert dimension(mesh) == 2
+    dim = dimension(mesh)
+    skel = skeleton(mesh,dim-1)
     edges = cells(skel)
     vtoc,vton = vertextocellmap(skel)
     pred = interior_tpredicate(mesh)

@@ -173,7 +173,7 @@ Base.iterate(m::AbstractMesh, state=1) = iterate(cells(m), state)
 
 Creates a new mesh by translating `mesh` over vector `v`
 """
-translate(Γ::Mesh, v) = Mesh([w + v for w in Γ.vertices], deepcopy(Γ.faces))
+translate(Γ::AbstractMesh, v) = Mesh([w + v for w in vertices(Γ)], deepcopy(cells(Γ)))
 
 
 
