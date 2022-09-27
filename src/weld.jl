@@ -20,9 +20,9 @@ function weld(Γ₁, Γ₂; boundary=false)
     tol = sqrt(eps(T))
 
     verts1 = skeleton(Γ₁,0) # TODO: check this, it might break for unused verts
-    radii = zeros(numcells(verts1))
+    radii = zeros(length(verts1))
     indcs = [v[1] for v in cells(verts1)]
-    cntrs = [cartesian(center(chart(verts1,v))) for v in cells(verts1)]
+    cntrs = [cartesian(center(chart(verts1,v))) for v in verts1]
     tree = Octree(cntrs, radii)
 
     nv1 = numvertices(Γ₁)
@@ -100,8 +100,6 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
 
     node_is_on_seam = inclosure_gpredicate(seam)
     edge_is_on_seam = overlap_gpredicate(seam)
-    # is_interior_edge = interior_tpredicate(G1)
-    # is_interior_node = interior_vpredicate(G1)
 
     Nodes2 = similar(G2.nodes, 0)
     Edges2 = similar(G2.edges, 0)

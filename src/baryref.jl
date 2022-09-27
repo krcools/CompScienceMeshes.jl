@@ -8,6 +8,7 @@ vertices(br::BarycentricRefinement) = vertices(br.mesh)
 vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
 numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
 cells(br::BarycentricRefinement) = cells(br.mesh)
+indices(br::BarycentricRefinement, p) = indices(br.mesh, p) 
 numcells(br::BarycentricRefinement) = numcells(br.mesh)
 skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
 chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
@@ -50,8 +51,9 @@ function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where 
     # for the second half we store the refienment points and we calculate them using
     # the old points. We insert a point between every pair of points in the original
     # coarse mesh by (point1+ point2)\2
-    for (i, Face) in enumerate(cells(mesh))
-        verts[NV+i] = cartesian(center(chart(mesh, Face)))
+    # for (i, Face) in enumerate(cells(mesh))
+    for (i,f) in enumerate(mesh)
+        verts[NV+i] = cartesian(center(chart(mesh, f)))
     end
 
     # Now we create the faces using the new points as well
@@ -89,13 +91,15 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     end
 
     # add a vertex in each edge centroid
-    for (E,Edge) in enumerate(cells(edges))
-        verts[NV+E] = cartesian(center(chart(edges, Edge)))
+    # for (E,Edge) in enumerate(cells(edges))
+    for (i,E) in enumerate(edges)
+        verts[NV+i] = cartesian(center(chart(edges, E)))
     end
 
     # add a vertex in each face centroid
-    for (F,Face) in enumerate(cells(faces))
-        verts[NV+NE+F] = cartesian(center(chart(faces, Face)))
+    # for (F,Face) in enumerate(cells(faces))
+    for (i,F) in enumerate(faces)
+        verts[NV+NE+F] = cartesian(center(chart(faces, F)))
     end
 
     D = copy(transpose(connectivity(edges, faces, identity)))
@@ -167,17 +171,17 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
     end
 
     # add a vertex in each edge centroid
-    for (E,Edge) in enumerate(cells(edges))
+    for (E,Edge) in enumerate(edges)
         verts[NV+E] = cartesian(center(chart(edges, Edge)))
     end
 
     # add a vertex in each face centroid
-    for (F,Face) in enumerate(cells(faces))
+    for (F,Face) in enumerate(faces)
         verts[NV+NE+F] = cartesian(center(chart(faces, Face)))
     end
 
     # add a vertex in each tet centroid
-    for (T,Tetr) in enumerate(cells(tetrs))
+    for (T,Tetr) in enumerate(tetrs)
         verts[NV+NE+NF+T] = cartesian(center(chart(tetrs, Tetr)))
     end
 
@@ -292,8 +296,9 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
     end
 
     # add a vertex in each edge centroid
-    for (E, Edge) in enumerate(cells(edges))
-        verts[NV+E] = cartesian(center(chart(edges, Edge)))
+    # for (E, Edge) in enumerate(cells(edges))
+    for (i,E) in enumerate(edges)
+        verts[NV+i] = cartesian(center(chart(edges, E)))
     end
 
     # Build a matrix that given a coarse face gives
@@ -450,6 +455,8 @@ function lineofsight_refinement(mesh::Mesh{U,3}) where U
 
     D1 = 3
     T = coordtype(mesh)
-    M = typeof(mesh)
-    BarycentricRefinement{U,D1,T,M}(Mesh(verts, fcs), mesh)
+    fine = Mesh(verts, fcs)
+    M = typeof(fine)
+    MP = typeof(mesh)
+    BarycentricRefinement{U,D1,T,M,MP}(Mesh(verts, fcs), mesh)
 end

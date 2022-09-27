@@ -20,8 +20,10 @@ for U in [Float32, Float64]
     @test g === m
 
     T = [index(2,1,3), index(3,1,4)]
-    for (i,_c) in enumerate(cells(f))
-        @test _c == T[i]
+    # for (i,_c) in enumerate(cells(f))
+    for i in f
+        inds = CompScienceMeshes.indices(f,i)
+        @test inds == T[i]
     end
 end
 # @test f.faces[1] == index(2,1,3)

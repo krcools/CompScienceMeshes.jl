@@ -25,11 +25,11 @@ end
 line = meshsegment(width, 1/3, 3)
 translate!(line, P(0.0, height, 0.0))
 
-edges = skeleton(mesh, 1)
-γ1 = submesh(line, edges)
+m1 = skeleton(mesh, 1)
+γ1 = submesh(line, m1)
 @test numcells(γ1) == 2
-for c in cells(γ1)
-    ctr = cartesian(center(chart(edges, c)))
+for c in γ1
+    ctr = cartesian(center(chart(γ1, c)))
     @test ctr[2] == height
     @test ctr[3] == 0
 end
@@ -38,13 +38,13 @@ end
 #     index(6,9)]
 
 pred2 = interior_tpredicate(mesh)
-γ2 = submesh(pred2, edges)
+γ2 = submesh(pred2, m1)
 @test numcells(γ2) == 8
 
 overlaps = overlap_gpredicate(line)
-pred3 = x -> overlaps(simplex(vertices(mesh, x)))
-pred4 = x -> pred2(x) || pred3(x)
-γ3 = submesh(pred4, edges)
+pred3 = (m,x) -> overlaps(chart(m,x))
+pred4 = (m,x) -> pred2(m,x) || pred3(m,x)
+γ3 = submesh(pred4, m1)
 @test numcells(γ3) == 10
 
 #test interior_vpredicate

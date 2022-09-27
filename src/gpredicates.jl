@@ -14,8 +14,9 @@ function octree(mesh::AbstractMesh)
     points = zeros(P, ncells)
     radii = zeros(T, ncells)
 
-    for (i,cl) in enumerate(cells(mesh))
-        ch = chart(mesh, cl)
+    # for (i,cl) in enumerate(cells(mesh))
+    for (i,p) in enumerate(mesh)
+        ch = chart(mesh, p)
         points[i] = cartesian(center(ch))
         radii[i] = maximum(norm(v-points[i]) for v in ch.vertices)
     end
@@ -45,7 +46,8 @@ function overlap_gpredicate(γ::AbstractMesh)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
                 # p2 = chart(γ, γ.faces[i])
-                p2 = chart(γ, cells(γ)[i])
+                # p2 = chart(γ, cells(γ)[i])
+                p2 = chart(γ, i)
                 overlap(p1,p2) && return true
             end
         end
@@ -78,7 +80,8 @@ function inclosure_gpredicate(γ::AbstractMesh)
         for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
             for i in box
                 # p2 = simplex(vertices(γ, γ.faces[i]))
-                p2 = chart(γ, cells(γ)[i])
+                # p2 = chart(γ, cells(γ)[i])
+                p2 = chart(γ, i)
                 isinclosure(p2, p1) && return true
             end
         end

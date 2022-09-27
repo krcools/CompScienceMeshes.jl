@@ -3,7 +3,8 @@ using CompScienceMeshes
 using LinearAlgebra
 using StaticArrays
 
-for T in [Float64, Float32]
+T = Float64
+# for T in [Float64, Float32]
     rectangle = meshrectangle(T(1.0), T(1.0), T(1.0));
 
     @test vertices(rectangle,1) == point(T, 0.0, 0.0, 0.0)
@@ -29,7 +30,6 @@ for T in [Float64, Float32]
     @test size(Σᵀ) == (2,5)
 
     @test norm(Σᵀ*Λ, Inf) ≈ 0
-
     bnd = boundary(rectangle)
 
     @test dimension(bnd) == 1
@@ -82,4 +82,4 @@ for T in [Float64, Float32]
     Σᵀ = connectivity(edges, faces, identity)
     Σ = connectivity(faces, edges, identity)
     @test norm(Σᵀ - Σ', Inf) == 0
-end
+# end
