@@ -622,7 +622,6 @@ function meshrectangle_unstructured(width, height, delta; tempname=tempname())
 
     m = read_gmsh_mesh(fno)
 
-    close(fdo)
     rm(fno)
     rm(fn)
 
