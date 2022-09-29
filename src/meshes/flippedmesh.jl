@@ -9,3 +9,5 @@ vertices(m::FlippedMesh) = m.mesh.vertices
 
 Base.:-(m::AbstractMesh) = FlippedMesh(m)
 Base.:-(m::FlippedMesh) = m.mesh
+
+Base.iterate(m::FlippedMesh, state=0) = iterate(m.mesh, state)
