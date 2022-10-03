@@ -157,7 +157,7 @@ function meshrectangle(width::T, height::T, delta::T, udim=3; structured=true) w
     Mesh(vertices, faces)
 end
 
-function meshcircle(radius::T, delta::T, udim=3) where T<:Real
+function meshdisk(radius::T, delta::T, tempname=tempname()) where T<:Real
     s = """
 lc = $delta;
 
@@ -179,7 +179,7 @@ Line Loop(1)={2,3,4,1};
 Plane Surface(1) = {1};
 """
 
-    fn = tempname()
+    fn = tempname
     io = open(fn, "w")
     try
         print(io, s)
@@ -188,11 +188,17 @@ Plane Surface(1) = {1};
     end
 
     # feed the file to gmsh
-    fno = tempname()
-    run(`gmsh $fn -2 -format msh2 -o $fno`)
-    fdo = open(fno,"r")
-    m = read_gmsh_mesh(fdo)
-    close(fdo)
+    fno = tempname * ".msh"
+
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
+
     rm(fno)
     rm(fn)
 
