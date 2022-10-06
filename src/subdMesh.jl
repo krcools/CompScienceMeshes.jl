@@ -25,6 +25,9 @@ mutable struct subdMesh
     elements::Vector{SElement}
     mesh::Mesh
 end
+
+function coordtype(m::subdMesh) coordtype(m.mesh) end
+
 """
     GSubdMesh(mesh::Mesh)
 

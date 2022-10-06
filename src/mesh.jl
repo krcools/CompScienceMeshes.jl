@@ -12,6 +12,7 @@ export vertexarray, cellarray
 """
 abstract type AbstractMesh{U,D1,T} end
 
+
 mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
@@ -28,6 +29,10 @@ function Mesh(vertices, faces)
     U = length(eltype(vertices))
     D1 = length(eltype(faces))
     Mesh{U,D1,T}(vertices, faces, dict)
+end
+
+function indices(m::Mesh, cell)
+    return m.faces[cell]
 end
 
 vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]
@@ -110,6 +115,7 @@ vertices(m::Mesh) = m.vertices
 # memory allocation. The returned vector in that case will also
 # be statically typed and of the same size as `I`.
 vertices(m::Mesh, i::Number) = m.vertices[i]
+cellvertices(m::AbstractMesh, cell) = vertices(m, indices(m, cell))
 @generated function vertices(m::Mesh, I::SVector)
     N = length(I)
     xp = :(())
@@ -151,12 +157,14 @@ numcells(m::AbstractMesh) = length(m.faces)
 
 Return an iterable collection containing the cells making up the mesh.
 """
-cells(mesh) = mesh.faces
+cells(mesh::Mesh) = mesh.faces
+# function cells(mesh) eachindex(mesh.faces) end
 
 
 Base.IteratorSize(::AbstractMesh) = Base.HasLength()
 Base.length(m::AbstractMesh) = length(cells(m))
-Base.iterate(m::AbstractMesh, state=1) = iterate(cells(m), state)
+# Base.iterate(m::AbstractMesh, state=0) = iterate(cells(m), state)
+Base.iterate(m::AbstractMesh, state=0) = iterate(eachindex(cells(m)), state)
 
 # """
 #     cellvertices(mesh, i)
@@ -359,17 +367,12 @@ function boundary(mesh)
         nzr = nzrange(conn,e)
         length(nzr) != 1 && continue
         relop = vals[nzr[1]]
-        bnd_edges[i] = (relop > 0) ? edge : flip(edge)
+        inds = indices(edges, edge)
+        bnd_edges[i] = (relop > 0) ? inds : flip(inds)
         i += 1
     end
 
     resize!(bnd_edges, i-1)
-
-    # sums = sum(abs.(conn), dims=1)
-    # i = (LinearIndices(sums))[findall(x->x<2, sums)]
-
-    # create a mesh out of these
-    # bnd = Mesh(vertices(mesh), cells(edges)[i])
     bnd = Mesh(vertices(mesh), bnd_edges)
 end
 
@@ -411,26 +414,23 @@ matrix of the mesh.
 """
 function vertextocellmap(mesh)
 
-    # cells = mesh.faces
-    C = cells(mesh)
-
-    numverts = length(vertices(mesh)) #numvertices(mesh)
-    numcells = length(C)
+    numverts = numvertices(mesh)
+    numcells = length(mesh)
     numneighbors = zeros(Int, numverts)
-    for i = 1 : numcells
-        for m in C[i]
-            numneighbors[m] += 1
+    for i in mesh
+        cell = indices(mesh, i)
+        for v in cell
+            numneighbors[v] += 1
         end
-        #numneighbors[ cells[i] ] += 1
     end
 
     npos = -1
     vertstocells = fill(npos, numverts, maximum(numneighbors))
     numneighbors = zeros(Int, numverts)
-    for i = 1 : numcells
-        cell = C[i]
-        for j = 1 : length(cell)
-            v = cell[j]
+
+    for i in mesh
+        cell = indices(mesh, i)
+        for v in cell
             k = (numneighbors[v] += 1)
             vertstocells[v,k] = i
         end
@@ -445,7 +445,8 @@ function vertextocell(mesh)
     row = Dict{Int,Tuple{Int,Int}}()
     k = 1
     for cell in mesh
-        for v in cell
+        inds = indices(mesh, cell)
+        for v in inds
             if haskey(row,v)
                 (i,n) = row[v]
                 row[v] = (i,n+1)
@@ -456,22 +457,19 @@ function vertextocell(mesh)
         end
     end
 
-    # NC = map((i,n)->n, values(row))
     NC = fill(-1, length(row))
-    # foreach(((i,n),)->(NC[i]=n), values(row))
     for (i,n) in values(row)
         NC[i] = n
     end
     @assert !any(NC .== - 1)
-    # VC = fill(-1, maximum(NC), length(row))
     VC = fill(-1, length(row), maximum(NC))
 
     fill!(NC, 0)
     for (c,cell) in enumerate(mesh)
-        for v in cell
+        inds = indices(mesh, cell)
+        for v in inds
             i, _ = row[v]
             k = NC[i] + 1
-            # VC[k,i] = c
             VC[i,k] = c
             NC[i] = k
         end
@@ -488,7 +486,6 @@ function vertextocell(mesh)
         GL[v] = i
     end
 
-    # return copy(transpose(VC)), NC, LG, GL
     return VC, NC, LG, GL
 end
 
@@ -542,8 +539,8 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     
     # sort the simplices on a SFC
     simplices = cells(sk)
-    ctrs = [sum(vertices(mesh)[c])/(dim+1) for c in simplices]
-    if length(simplices) > 0
+    ctrs = [sum(cellvertices(sk,c))/(dim+1) for c in sk]
+    if length(sk) > 0
         simplices = simplices[sort_sfc(ctrs)]
     end
 
@@ -567,7 +564,8 @@ function skeleton_fast(mesh, dim::Int)
     n = 1
     for c = 1 : nc
 
-        cell = cells(mesh)[c]
+        # cell = cells(mesh)[c]
+        cell = indices(mesh, c)
         for simplex in combinations(cell,dim+1)
             simplices[n] = sort(simplex)
             n += 1
@@ -587,32 +585,32 @@ end
 Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
 returns true are withheld.
 """
-function skeleton(pred, mesh, dim)
+# function skeleton(pred, mesh, dim)
 
-    meshdim = dimension(mesh)
-    @assert 0 <= dim <= meshdim
+#     meshdim = dimension(mesh)
+#     @assert 0 <= dim <= meshdim
 
-    nc = numcells(mesh)
-    C = SVector{dim+1,Int}
-    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
+#     nc = numcells(mesh)
+#     C = SVector{dim+1,Int}
+#     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
-    n = 1
-    for c = 1 : nc
+#     n = 1
+#     for c = 1 : nc
 
-        cell = mesh.faces[c]
-        for simplex in combinations(cell,dim+1)
-            if pred(SVector{dim+1,Int}(simplex))
-                simplices[n] = sort(simplex)
-                n += 1
-            end
-        end
-    end
+#         cell = mesh.faces[c]
+#         for simplex in combinations(cell,dim+1)
+#             if pred(mesh, SVector{dim+1,Int}(simplex))
+#                 simplices[n] = sort(simplex)
+#                 n += 1
+#             end
+#         end
+#     end
 
-    simplices = simplices[1:n-1]
-    simplices = unique(simplices)
+#     simplices = simplices[1:n-1]
+#     simplices = unique(simplices)
 
-    Mesh(mesh.vertices, simplices)
-end
+#     Mesh(mesh.vertices, simplices)
+# end
 
 
 
@@ -658,11 +656,13 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            kcell = cells(kcells)[i]
+            # kcell = cells(kcells)[i]
+            kcell = indices(kcells,i)
             for s in axes(vtom,2)
                 j = vtom[vm,s]
                 j == npos && break
-                mcell = cells(mcells)[j]
+                # mcell = cells(mcells)[j]
+                mcell = indices(mcells, j)
                 val = op(relorientation(kcell, mcell))
                 iszero(val) && continue
                 push!(Rows, j)
@@ -753,7 +753,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
     # perform a dry run to determine the number of cellpairs
     v2e, nn = vertextocellmap(mesh)
     k = 0
-    for edge in edges
+    for e in edges
+        edge = indices(edges, e)
 
         v = edge[1]; n = nn[v]; nbd1 = v2e[v,1:n]
         v = edge[2]; n = nn[v]; nbd2 = v2e[v,1:n]
@@ -771,7 +772,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
     k = 1
     Cells = cells(mesh)
-    for edge in edges
+    for e in edges
+        edge = indices(edges, e)
 
         # neighborhood of startvertex
         v = edge[1]
@@ -791,7 +793,6 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
         if n == 1 # boundary edge
 
             c = nbd[1]
-            #cell = mesh.faces[c]
             cell = Cells[c]
             s = relorientation(edge, cell)
             facepairs[1,k] = c
@@ -855,7 +856,7 @@ end
 
 Return a chart describing the supplied cell of `mesh`.
 """
-chart(mesh::Mesh, cell) = simplex(vertices(mesh,cell))
+chart(mesh::Mesh, cell) = simplex(vertices(mesh, indices(mesh,cell)))
 
 parent(mesh::AbstractMesh) = nothing
 # parent(mesh::Mesh) = nothing

@@ -1,27 +1,34 @@
 using CompScienceMeshes
 
 m = CompScienceMeshes.tetmeshsphere(1.0, 0.35)
-@show numcells(m)
+@show length(m)
 
 br = barycentric_refinement(m)
-@show numcells(br)
+@show length(br)
 
-@assert numcells(br) == 24*numcells(m)
+@assert length(br) == 24*length(m)
 
 V = 155
-sm = submesh(tet -> V in tet, br.mesh)
-@show numcells(sm)
+# sm = submesh(tet -> V in tet, br.mesh)
+sm = submesh(br.mesh) do m,p
+    inds = CompScienceMeshes.indices(m,p)
+    return V in inds
+end
+@show length(sm)
 
 bndry = boundary(sm)
-import PlotlyJS
-PlotlyJS.plot(patch(bndry))
+import Plotly
+Plotly.plot(patch(bndry))
 
 E = 100
 Edges = skeleton(m,1)
-sm = submesh(br.mesh) do tet
-    cells(Edges)[E][1] in tet && return true
-    cells(Edges)[E][2] in tet && return true
+sm = submesh(br.mesh) do m,p
+    tet = CompScienceMeshes.indices(m,p)
+    edge = CompScienceMeshes.indices(Edges,E)
+    edge[1] in tet && return true
+    edge[2] in tet && return true
     return false
 end
 
-PlotlyJS.plot(patch(boundary(sm)))
+bnd = boundary(sm)
+Plotly.plot(patch(bnd, range(0,1,length=length(bnd))))

@@ -23,7 +23,6 @@ function embedding(small::AbstractMesh, big::AbstractMesh; predicate=(a,b)->true
     ctrs_big = [cartesian(center(chart(big,v))) for v in big]
     tree_big = Octree(ctrs_big, zeros(size(ctrs_big)))
     
-    # rows = 1:length(small)
     cols = zeros(length(small))
     sgns = zeros(length(small))
     
@@ -36,9 +35,7 @@ function embedding(small::AbstractMesh, big::AbstractMesh; predicate=(a,b)->true
         found = false
         for box in boxes(tree_big, pred)
             for j in box
-                c′ = cells_big[j]
-                V′ = chart(big,c′).vertices
-                ch′ = chart(big, c′)
+                V′ = chart(big,j).vertices
                 if (norm(V[1]-V′[1]) + norm(V[2]-V′[2]) < tol) && predicate(i,j)
                     cols[i] = j
                     sgns[i] = +1

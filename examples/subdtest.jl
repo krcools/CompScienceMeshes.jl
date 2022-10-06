@@ -21,9 +21,10 @@ G = readmesh(fn)
 subdG=GSubdMesh(G)
 nelem = length(subdG.elements)
 area = 0.0
-ng = 10
+ng = 4
 gpt,wt = gauss_points(ng)
-for e = 1:nelem
+pts = []
+for e = 1:1
     C = chart(subdG,e)
     for ig = 1 : ng*ng
         gpta = gpt[ig,1]
@@ -34,8 +35,10 @@ for e = 1:nelem
         w *= (1-gpeta)/4.0
         g = neighborhood(C,[gpxi,gpeta])
         jac = jacobian(g)
-        area += jac * w
+        global area += jac * w
+        push!(pts, cartesian(g))
     end
 end
 print(" area = ")
 print(area)
+

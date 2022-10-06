@@ -16,7 +16,7 @@ import CompScienceMeshes
 include("test_relorientation.jl")
 include("test_mesh.jl")
 include("test_interior.jl")
-include("test_scomplex.jl")
+# include("test_scomplex.jl")
 include("test_flipped.jl")
 include("test_flipped_welding.jl")
 include("test_weld.jl")

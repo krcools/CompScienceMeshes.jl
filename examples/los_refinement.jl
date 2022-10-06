@@ -1,7 +1,7 @@
 using CompScienceMeshes
 
 coarse = meshsphere(1.0, 0.45)
-fine = CompScienceMeshes.lineofsight_refinement(m)
+fine = CompScienceMeshes.lineofsight_refinement(coarse)
 vtoc, nc = CompScienceMeshes.vertextocellmap(fine)
 
 colors = zeros(numcells(fine))
@@ -12,5 +12,5 @@ for i in 1:numvertices(coarse)
     end
 end
 
-import PlotlyJS
-PlotlyJS.plot(patch(fine.mesh, colors))
+import Plotly
+Plotly.plot(patch(fine.mesh, colors))

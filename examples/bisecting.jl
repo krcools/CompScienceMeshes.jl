@@ -1,8 +1,12 @@
 using CompScienceMeshes
 
-Γ = meshsphere(1.0, 0.3)
+Γ = meshsphere(radius=1.0, h=0.3)
 γ = bisecting_refinement(Γ)
 
-include(Pkg.dir("CompScienceMeshes","examples","plotlyjs_patches.jl"))
-p = patch(γ)
-PlotlyJS.plot(p)
+import Pkg
+# include(Pkg.dir("CompScienceMeshes","examples","plotlyjs_patches.jl"))
+import Plotly
+p = patch(γ; opacity=0.9)
+w0 = CompScienceMeshes.wireframe(skeleton(Γ,1); width=4.0)
+w1 = CompScienceMeshes.wireframe(skeleton(γ,1); width=1.0)
+Plotly.plot([p,w0,w1])

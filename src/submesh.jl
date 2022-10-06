@@ -10,30 +10,21 @@ the simplex is to be added to the submesh under construction.
 """
 function submesh(pred, mesh::AbstractMesh)
 
-    # kcells = similar(mesh.faces)
     kcells = cells(mesh)
-
     sub2sup = zeros(Int, 0)
-    # sup2sub = zeros(Int, length(mesh))
 
     j = 0
-    # for i in 1:length(kcells)
-    for (i,kcell) = enumerate(cells(mesh))
-
-        # kcell = mesh.faces[i]
-        # kcell = kcells[i]
-        if pred(kcell)
-            # kcells[j] = kcell
+    # for (i,kcell) = enumerate(cells(mesh))
+    for i in mesh
+        # kcell = indices(mesh, i)
+        if pred(mesh, i)
             push!(sub2sup, i)
-            # sup2sub[i] = j
             j += 1
         end
 
     end
 
     kcells = kcells[1:j]
-
-    # sub = Mesh(mesh.vertices, kcells)
     return SubMesh(mesh, sub2sup)
 end
 
@@ -44,7 +35,8 @@ Create a submesh from `mesh` comprising those elements that overlap with element
 """
 function submesh(sm::Mesh, bm::Mesh)
     overlaps = overlap_gpredicate(sm)
-    in_smallmesh = c -> overlaps(simplex(vertices(bm,c)))
+    # in_smallmesh = c -> overlaps(simplex(vertices(bm,c)))
+    in_smallmesh = (m,c) -> overlaps(chart(m,c))
     submesh(in_smallmesh, bm)
 end
 
@@ -63,7 +55,9 @@ function SubMesh(supermesh, sub2sup)
         sup2sub[j] = i
     end
 
-    Cells = cells(supermesh)[sub2sup]
+    # Cells = cells(supermesh)[sub2sup]
+    Cells = [indices(supermesh, i) for i in supermesh]
+    Cells = Cells[sub2sup]
     SubMesh(supermesh, sub2sup, sup2sub, Cells)
 end
 
@@ -82,6 +76,7 @@ vertices(m::SubMesh) = vertices(m.supermesh)
 vertices(m::SubMesh, cell) = vertices(m.supermesh, cell)
 numvertices(m::SubMesh) = numvertices(m.supermesh)
 
+indices(m::SubMesh, p) = indices(m.supermesh, m.sub2sup[p])
 cells(m::SubMesh) = m.cells #m.supermesh.faces[m.sub2sup]
 numcells(m::SubMesh) = length(m.sub2sup)
 
@@ -92,4 +87,5 @@ issubmesh(sub::SubMesh, sup::SubMesh) = (sub == sup)
 extend(sm, cell) = sm.sub2sup[cell]
 restrict(sm, cell) = sm.sup2sub[cell]
 
-chart(mesh::SubMesh, cell) = simplex(vertices(mesh,cell))
+# chart(mesh::SubMesh, cell) = simplex(vertices(mesh,cell))
+chart(mesh::SubMesh, p) = chart(mesh.supermesh, mesh.sub2sup[p])

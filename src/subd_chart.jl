@@ -14,7 +14,7 @@ function chart(Smesh::subdMesh,E)
     Svertices = Smesh.vertices
     nodes = element.RingNodes
     N = length(nodes)
-    verticecoords = Vector{SVector{3,T}}(N)
+    verticecoords = Vector{SVector{3,T}}(undef,N)
 
     for i = 1:N
         verticecoords[i] = Svertices[nodes[i]].Coords

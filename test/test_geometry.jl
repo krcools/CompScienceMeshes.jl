@@ -14,11 +14,11 @@ for T in [Float32, Float64]
     @test numcells(m) == 8
 
     # test edge detection
-    edges = skeleton(m, 1)
-    @test numcells(edges) == 16
+    m1 = skeleton(m, 1)
+    @test numcells(m1) == 16
 
     # test volume pair construction from a list of edges
-    vp = cellpairs(m,edges)
+    vp = cellpairs(m,m1)
     internal_edges = count(x->x>0, vp[2,:])
     @test internal_edges == 8
 
