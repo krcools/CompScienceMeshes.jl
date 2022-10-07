@@ -12,11 +12,34 @@ indices(br::BarycentricRefinement, p) = indices(br.mesh, p)
 numcells(br::BarycentricRefinement) = numcells(br.mesh)
 skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
 chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
-
-parent(mesh::BarycentricRefinement) = mesh.parent
-
 vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
 cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
+
+function parent(m::BarycentricRefinement, p)
+    numchildren = factorial(dimension(m)+1)
+    return mod1(p, numchildren)
+end
+
+struct BarycentricRefinementParent{U,D1,T,M,N} <: AbstractMesh{U,D1,T}
+    mesh::M
+    refinement::N
+end
+
+Base.:(==)(m1, m2::BarycentricRefinementParent) = (m1 == m2.mesh)
+Base.:(==)(m1::BarycentricRefinementParent, m2) = m1.mesh == m2
+
+BarycentricRefinementParent{U,D1,T}(mesh::M, parent::N) where {U,D1,T,M,N} = BarycentricRefinementParent{U,D1,T,M,N}(mesh, parent)
+
+parent(m::BarycentricRefinement{U,D1,T}) where {U,D1,T} = BarycentricRefinementParent{U,D1,T}(m.parent, m.mesh)
+Base.length(m::BarycentricRefinementParent) = length(m.mesh)
+vertices(m::BarycentricRefinementParent, p) = vertices(m.mesh, p)
+cells(m::BarycentricRefinementParent) = cells(m.mesh)
+
+
+function children(m::BarycentricRefinementParent, p)
+    numchildren = factorial(dimension(m)+1)
+    [(p-1)*numchildren+i for i in 1:numchildren]
+end
 
 
 """
