@@ -1,6 +1,6 @@
 name = "CompScienceMeshes"
 uuid = "3e66a162-7b8c-5da0-b8f8-124ecd2c3ae1"
-version = "0.4.1"
+version = "0.5.0"
 
 [deps]
 ClusterTrees = "5100927d-02aa-593a-b4f9-7235df19f0db"
