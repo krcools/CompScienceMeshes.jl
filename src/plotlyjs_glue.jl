@@ -43,19 +43,25 @@ function __init__()
             return s
         end
 
-        @eval function normalcones(mesh::AbstractMesh; sizeref=2)
-            normals = [normal(chart(mesh,cell)) for cell in mesh]
+        @eval function cones(mesh, arrows; sizeref=2, kwargs...)
+            # normals = [normal(chart(mesh,cell)) for cell in mesh]
             centers = [cartesian(center(chart(mesh,cell))) for cell in mesh]
             x = getindex.(centers,1)
             y = getindex.(centers,2)
             z = getindex.(centers,3)
-            u = getindex.(normals,1)
-            v = getindex.(normals,2)
-            w = getindex.(normals,3)
-            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref)
+            u = getindex.(arrows,1)
+            v = getindex.(arrows,2)
+            w = getindex.(arrows,3)
+            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref, kwargs...)
+        end
+
+        @eval function normals(mesh; kwargs...)
+            nrmls = [normal(chart(mesh,cell)) for cell in mesh]
+            return cones(mesh, nrmls; kwargs...)
         end
 
         @eval function wireframe(edges; width=1, color="rgb(0,0,0)")
+            edges = skeleton(edges,1)
             T = coordtype(edges)
             x = T[]
             y = T[]
