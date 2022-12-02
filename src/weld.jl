@@ -13,7 +13,18 @@ them exists on the 'open' boundary of the mesh.
 function weld end
 
 
-function weld(Γ₁, Γ₂; boundary=false)
+function weld(Γ)
+
+    Γ2 = deepcopy(Γ)
+    Γ3 = weld(Γ, Γ2; glueop=identity)
+
+    @assert length(Γ3) == 2*length(Γ)
+
+    n = length(Γ)
+    return Mesh(Γ3.vertices, Γ3.faces[n+1:end])
+end
+
+function weld(Γ₁, Γ₂; boundary=false, glueop=unique)
 
     # T = eltype(eltype(Γ₁.vertices))
     T = coordtype(Γ₁)
@@ -72,7 +83,7 @@ function weld(Γ₁, Γ₂; boundary=false)
         F[nc1+i] = map_ids(c, idmap)
     end
 
-    return Mesh(V,unique(F))
+    return Mesh(V,glueop(F))
 
 end
 
