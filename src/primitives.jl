@@ -226,11 +226,12 @@ end
 
 meshsphere(;radius, h) = meshsphere(radius, h)
 
-function meshsphere2(radius, h)
+function meshsphere2(;radius, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
     gmsh.model.add("sphere")
+
     gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
     gmsh.model.geo.addPoint(radius, 0.0, 0.0, h, 2)
     gmsh.model.geo.addPoint(0.0, radius, 0.0, h, 3)
@@ -268,6 +269,8 @@ function meshsphere2(radius, h)
     gmsh.model.geo.addSurfaceFilling([27], 28)
     gmsh.model.geo.addSurfaceLoop([28, 26, 16, 14, 20, 24, 22, 18], 29)
     gmsh.model.geo.addVolume([29], 30)
+    gmsh.model.geo.addPhysicalGroup(2, [28, 26, 16, 14, 20, 24, 22, 18], 1)
+    gmsh.model.geo.addPhysicalGroup(3, [30], 2)
 
     gmsh.model.geo.synchronize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
@@ -277,8 +280,8 @@ function meshsphere2(radius, h)
 
     m = read_gmsh_mesh(fno)
     rm(fno)
-
     return m
+
 end
 
 """
