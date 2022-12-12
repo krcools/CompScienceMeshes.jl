@@ -226,6 +226,61 @@ end
 
 meshsphere(;radius, h) = meshsphere(radius, h)
 
+function meshsphere2(radius, h)
+    fno = tempname() * ".msh"
+
+    gmsh.initialize()
+    gmsh.model.add("sphere")
+    gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
+    gmsh.model.geo.addPoint(radius, 0.0, 0.0, h, 2)
+    gmsh.model.geo.addPoint(0.0, radius, 0.0, h, 3)
+    gmsh.model.geo.addCircleArc(2, 1, 3, 1)
+    gmsh.model.geo.addPoint(-radius, 0.0, 0.0, h, 4)
+    gmsh.model.geo.addPoint(0.0, -radius, 0.0, h, 5)
+    gmsh.model.geo.addCircleArc(3, 1, 4, 2)
+    gmsh.model.geo.addCircleArc(4, 1, 5, 3)
+    gmsh.model.geo.addCircleArc(5, 1, 2, 4)
+    gmsh.model.geo.addPoint(0.0, 0.0, -radius, h, 6)
+    gmsh.model.geo.addPoint(0.0, 0.0, radius, h, 7)
+    gmsh.model.geo.addCircleArc(3, 1, 6, 5)
+    gmsh.model.geo.addCircleArc(6, 1, 5, 6)
+    gmsh.model.geo.addCircleArc(5, 1, 7, 7)
+    gmsh.model.geo.addCircleArc(7, 1, 3, 8)
+    gmsh.model.geo.addCircleArc(2, 1, 7, 9)
+    gmsh.model.geo.addCircleArc(7, 1, 4, 10)
+    gmsh.model.geo.addCircleArc(4, 1, 6, 11)
+    gmsh.model.geo.addCircleArc(6, 1, 2, 12)
+    gmsh.model.geo.addCurveLoop([2, 8, -10], 13)
+    gmsh.model.geo.addSurfaceFilling([13], 14)
+    gmsh.model.geo.addCurveLoop([10, 3, 7], 15)
+    gmsh.model.geo.addSurfaceFilling([15], 16)
+    gmsh.model.geo.addCurveLoop([-8, -9, 1], 17)
+    gmsh.model.geo.addSurfaceFilling([17], 18)
+    gmsh.model.geo.addCurveLoop([-11, -2, 5], 19)
+    gmsh.model.geo.addSurfaceFilling([19], 20)
+    gmsh.model.geo.addCurveLoop([-5, -12, -1], 21)
+    gmsh.model.geo.addSurfaceFilling([21], 22)
+    gmsh.model.geo.addCurveLoop([-3, 11, 6], 23)
+    gmsh.model.geo.addSurfaceFilling([23], 24)
+    gmsh.model.geo.addCurveLoop([-7, 4, 9], 25)
+    gmsh.model.geo.addSurfaceFilling([25], 26)
+    gmsh.model.geo.addCurveLoop([-4, 12, -6], 27)
+    gmsh.model.geo.addSurfaceFilling([27], 28)
+    gmsh.model.geo.addSurfaceLoop([28, 26, 16, 14, 20, 24, 22, 18], 29)
+    gmsh.model.geo.addVolume([29], 30)
+
+    gmsh.model.geo.synchronize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
+    rm(fno)
+
+    return m
+end
+
 """
 not working yet
 """
