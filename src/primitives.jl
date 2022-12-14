@@ -296,6 +296,8 @@ Create a mesh of a torus of 2 radii `innerradius` and `outterradius`
 The target edge size is `h`.
 """
 function meshtorus(innerradius, outterradius, h)
+    @assert innerradius < outterradius
+    
     fno = tempname() * ".msh"
     center = (outterradius + innerradius)/2
     radius = (outterradius - innerradius)/2
@@ -415,7 +417,7 @@ function meshtorus(innerradius, outterradius, h)
     gmsh.model.geo.synchronize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.model.mesh.generate(2)
-    # gmsh.fltk.run()
+    gmsh.fltk.run()
     gmsh.write(fno)
     gmsh.finalize()
 
