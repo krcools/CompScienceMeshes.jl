@@ -295,7 +295,7 @@ Create a mesh of a torus of 2 radii `innerradius` and `outterradius`
 
 The target edge size is `h`.
 """
-function meshtorus(;innerradius, outterradius, h)
+function meshtorus(innerradius, outterradius, h)
     fno = tempname() * ".msh"
     center = (outterradius + innerradius)/2
     radius = (outterradius - innerradius)/2
@@ -423,6 +423,8 @@ function meshtorus(;innerradius, outterradius, h)
     rm(fno)
     return m
 end
+
+meshtorus(;innerradius, outterradius, h) = meshtorus(innerradius, outterradius, h)
 
 """
 not working yet
