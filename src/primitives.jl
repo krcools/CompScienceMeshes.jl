@@ -226,7 +226,7 @@ end
 
 meshsphere(;radius, h) = meshsphere(radius, h)
 
-function meshsphere2(;radius, h)
+function meshsphere2(radius, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
@@ -275,6 +275,7 @@ function meshsphere2(;radius, h)
     gmsh.model.geo.synchronize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.model.mesh.generate(2)
+    gmsh.fltk.run()
     gmsh.write(fno)
     gmsh.finalize()
 
@@ -282,6 +283,145 @@ function meshsphere2(;radius, h)
     rm(fno)
     return m
 
+end
+
+meshsphere2(;radius, h) = meshsphere2(radius, h)
+
+"""
+    meshtorus(innerradius, outterradius, h)
+    meshtorus(;innerradius, outterradius, h)
+
+Create a mesh of a torus of 2 radii `innerradius` and `outterradius`
+
+The target edge size is `h`.
+"""
+function meshtorus(;innerradius, outterradius, h)
+    fno = tempname() * ".msh"
+    center = (outterradius + innerradius)/2
+    radius = (outterradius - innerradius)/2
+
+    gmsh.initialize()
+    gmsh.model.add("torus")
+    gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
+    gmsh.model.geo.addPoint(0.0, radius, 0.0, h, 2)
+    gmsh.model.geo.addPoint(0.0, -radius, 0.0, h, 3)
+
+    # 1st quarter
+    gmsh.model.geo.addPoint(center, 0.0, 0.0, h, 4)
+    gmsh.model.geo.addPoint(outterradius, 0.0, 0.0, h, 5)
+    gmsh.model.geo.addPoint(center, radius, 0.0, h, 6)
+    gmsh.model.geo.addPoint(innerradius, 0.0, 0.0, h, 7)
+    gmsh.model.geo.addPoint(center, -radius, 0.0, h, 8)
+    gmsh.model.geo.addCircleArc(5, 4, 6, 1)
+    gmsh.model.geo.addCircleArc(6, 4, 7, 2)
+    gmsh.model.geo.addCircleArc(7, 4, 8, 3)
+    gmsh.model.geo.addCircleArc(8, 4, 5, 4)
+
+    gmsh.model.geo.addPoint(0.0, 0.0, center, h, 9)
+    gmsh.model.geo.addPoint(0.0, 0.0, outterradius, h, 10)
+    gmsh.model.geo.addPoint(0.0, radius, center, h, 11)
+    gmsh.model.geo.addPoint(0.0, 0.0, innerradius, h, 12)
+    gmsh.model.geo.addPoint(0.0, -radius, center, h, 13)
+    gmsh.model.geo.addCircleArc(10, 9, 11, 5)
+    gmsh.model.geo.addCircleArc(11, 9, 12, 6)
+    gmsh.model.geo.addCircleArc(12, 9, 13, 7)
+    gmsh.model.geo.addCircleArc(13, 9, 10, 8)
+    
+    gmsh.model.geo.addCircleArc(5, 1, 10, 9)
+    gmsh.model.geo.addCircleArc(6, 2, 11, 10)
+    gmsh.model.geo.addCircleArc(7, 1, 12, 11)
+    gmsh.model.geo.addCircleArc(8, 3, 13, 12)
+
+    gmsh.model.geo.addCurveLoop([1, 10, -5, -9], 13)
+    gmsh.model.geo.addSurfaceFilling([13], 1)
+    gmsh.model.geo.addCurveLoop([2, 11, -6, -10], 14)
+    gmsh.model.geo.addSurfaceFilling([14], 2)
+    gmsh.model.geo.addCurveLoop([3, 12, -7, -11], 15)
+    gmsh.model.geo.addSurfaceFilling([15], 3)
+    gmsh.model.geo.addCurveLoop([4, 9, -8, -12], 16)
+    gmsh.model.geo.addSurfaceFilling([16], 4)
+
+    # 2nd quarter
+    gmsh.model.geo.addPoint(-center, 0.0, 0.0, h, 14)
+    gmsh.model.geo.addPoint(-outterradius, 0.0, 0.0, h, 15)
+    gmsh.model.geo.addPoint(-center, radius, 0.0, h, 16)
+    gmsh.model.geo.addPoint(-innerradius, 0.0, 0.0, h, 17)
+    gmsh.model.geo.addPoint(-center, -radius, 0.0, h, 18)
+    gmsh.model.geo.addCircleArc(15, 14, 16, 17)
+    gmsh.model.geo.addCircleArc(16, 14, 17, 18)
+    gmsh.model.geo.addCircleArc(17, 14, 18, 19)
+    gmsh.model.geo.addCircleArc(18, 14, 15, 20)
+
+    gmsh.model.geo.addCircleArc(10, 1, 15, 21)
+    gmsh.model.geo.addCircleArc(11, 2, 16, 22)
+    gmsh.model.geo.addCircleArc(12, 1, 17, 23)
+    gmsh.model.geo.addCircleArc(13, 3, 18, 24)
+
+    gmsh.model.geo.addCurveLoop([5, 22, -17, -21], 25)
+    gmsh.model.geo.addSurfaceFilling([25], 5)
+    gmsh.model.geo.addCurveLoop([6, 23, -18, -22], 26)
+    gmsh.model.geo.addSurfaceFilling([26], 6)
+    gmsh.model.geo.addCurveLoop([7, 24, -19, -23], 27)
+    gmsh.model.geo.addSurfaceFilling([27], 7)
+    gmsh.model.geo.addCurveLoop([8, 21, -20, -24], 28)
+    gmsh.model.geo.addSurfaceFilling([28], 8)
+
+    # 3rd quarter
+    gmsh.model.geo.addPoint(0.0, 0.0, -center, h, 19)
+    gmsh.model.geo.addPoint(0.0, 0.0, -outterradius, h, 20)
+    gmsh.model.geo.addPoint(0.0, radius, -center, h, 21)
+    gmsh.model.geo.addPoint(0.0, 0.0, -innerradius, h, 22)
+    gmsh.model.geo.addPoint(0.0, -radius, -center, h, 23)
+
+    gmsh.model.geo.addCircleArc(20, 19, 21, 29)
+    gmsh.model.geo.addCircleArc(21, 19, 22, 30)
+    gmsh.model.geo.addCircleArc(22, 19, 23, 31)
+    gmsh.model.geo.addCircleArc(23, 19, 20, 32)
+
+    gmsh.model.geo.addCircleArc(15, 1, 20, 33)
+    gmsh.model.geo.addCircleArc(16, 2, 21, 34)
+    gmsh.model.geo.addCircleArc(17, 1, 22, 35)
+    gmsh.model.geo.addCircleArc(18, 3, 23, 36)
+
+    gmsh.model.geo.addCurveLoop([17, 34, -29, -33], 37)
+    gmsh.model.geo.addSurfaceFilling([37], 9)
+    gmsh.model.geo.addCurveLoop([18, 35, -30, -34], 38)
+    gmsh.model.geo.addSurfaceFilling([38], 10)
+    gmsh.model.geo.addCurveLoop([19, 36, -31, -35], 39)
+    gmsh.model.geo.addSurfaceFilling([39], 11)
+    gmsh.model.geo.addCurveLoop([20, 33, -32, -36], 40)
+    gmsh.model.geo.addSurfaceFilling([40], 12)
+
+    # 4th quarter
+    gmsh.model.geo.addCircleArc(20, 1, 5, 41)
+    gmsh.model.geo.addCircleArc(21, 2, 6, 42)
+    gmsh.model.geo.addCircleArc(22, 1, 7, 43)
+    gmsh.model.geo.addCircleArc(23, 3, 8, 44)
+
+    gmsh.model.geo.addCurveLoop([29, 42, -1, -41], 45)
+    gmsh.model.geo.addSurfaceFilling([45], 13)
+    gmsh.model.geo.addCurveLoop([30, 43, -2, -42], 46)
+    gmsh.model.geo.addSurfaceFilling([46], 14)
+    gmsh.model.geo.addCurveLoop([31, 44, -3, -43], 47)
+    gmsh.model.geo.addSurfaceFilling([47], 15)
+    gmsh.model.geo.addCurveLoop([32, 41, -4, -44], 48)
+    gmsh.model.geo.addSurfaceFilling([48], 16)
+
+    gmsh.model.geo.addSurfaceLoop([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], 17)
+    gmsh.model.geo.addVolume([17], 1)
+    gmsh.model.geo.addPhysicalGroup(2, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], 1)
+    gmsh.model.geo.addPhysicalGroup(3, [1], 2)
+
+    gmsh.model.geo.synchronize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.model.mesh.generate(2)
+    # gmsh.fltk.run()
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = read_gmsh_mesh(fno)
+    rm(fno)
+    return m
 end
 
 """
