@@ -709,7 +709,7 @@ function meshsquaretorus4(width, height, holewidth, h)
     gmsh.model.geo.synchronize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.model.mesh.generate(2)
-    gmsh.fltk.run()
+    # gmsh.fltk.run()
     gmsh.write(fno)
     gmsh.finalize()
 
