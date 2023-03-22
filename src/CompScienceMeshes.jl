@@ -19,8 +19,9 @@ export index
 export euclidianbasis, point
 
 # default mesh creation
-export mesh, readmesh, writemesh
-export mehsgeo, meshball, meshsegment, meshrectangle, meshcircle, meshsphere, meshcuboid
+export mesh, readmesh, writemesh, meshgeo
+export meshsegment, meshrectangle, meshcircle, meshdisk, meshsphere, meshcuboid
+export tetmeshsphere, tetmeshcuboid
 export subdMesh
 # mesh interface
 export dimension, universedimension, vertextype, coordtype
