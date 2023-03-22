@@ -521,5 +521,8 @@ function meshmobius(;h)
         m.vertices[i] = x
     end
 
-    return m
+    n = length(m)
+    m2 = deepcopy(m)
+    m3 = weld(m, m2; glueop=identity)
+    return Mesh(m3.vertices, m3.faces[n+1:end])
 end

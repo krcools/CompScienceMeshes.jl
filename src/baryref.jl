@@ -164,8 +164,8 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     end
 
     # sorted_fcs = fcs
-    @show length(fcs)
-    @show length(sorted_fcs)
+    # @show length(fcs)
+    # @show length(sorted_fcs)
     @assert length(fcs) == length(sorted_fcs)
 
     refmesh = Mesh(verts,fcs)
