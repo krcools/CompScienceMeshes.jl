@@ -12,9 +12,14 @@ struct Simplex{U,D,C,N,T}
     normals::SVector{C,SVector{U,T}}
     volume::T
 end
-
+normal(t::Simplex{3,2,1,3,<:Number}) = t.normals[1]
 dimtype(splx::Simplex{U,D}) where {U,D} = Val{D}
 
+function permute_vertices(s::Simplex{3,2,1,3,<:Number},permutation::Union{Vector{3,Int},SVector{3,Int}})
+vert = vertices(s)[permutation]
+simp = simplex(vert)
+Simplex(vertics(simp),tangents(simp),s.normals,volume(simp))
+end
 
 """
     coordtype(simplex)
