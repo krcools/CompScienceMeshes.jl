@@ -80,3 +80,15 @@ to parameter `(1/(D+1), 1/(D+1), ...)` where `D` is the simplex dimension.
     uv = ones(T,D)/(D+1)
     :(neighborhood(p, $uv))
 end
+
+function permute_barycentric(perm,bary::Tuple{T,T}) where {T}
+    last_coef = 1-sum(bary)
+    total_bary = SVector{3,T}([bary[1],bary[2],last_coef])
+    return Tuple{T,T}(total_bary[perm][1:end-1])
+end
+function permute_barycentric(perm,bary::Tuple{T,T,T}) where {T}
+    last_coef = 1-sum(bary)
+    total_bary = SVector{4,T}([bary[1],bary[2],bary[3],last_coef])
+    return Tuple{T,T,T}(total_bary[perm][1:end-1])
+end
+export permute_barycentric

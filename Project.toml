@@ -13,6 +13,7 @@ FastGaussQuadrature = "442a2c76-b920-505d-bb47-c5924d526838"
 GmshTools = "82e2f556-b1bd-5f1a-9576-f93c0da5f0ee"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
