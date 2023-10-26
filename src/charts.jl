@@ -20,6 +20,7 @@ vert = SVector{3,SVector{3,T}}(s.vertices[permutation])
 simp = simplex(vert)
 Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
 end
+flip_normal(t::Simplex{3,2,1,3,<:Number}) = Simplex(t.vertices,t.tangents,-t.normals,t.volume)
 
 """
     coordtype(simplex)
