@@ -21,7 +21,11 @@ simp = simplex(vert)
 Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
 end
 flip_normal(t::Simplex{3,2,1,3,<:Number}) = Simplex(t.vertices,t.tangents,-t.normals,t.volume)
-
+function flip_normal(t::Simplex{3,2,1,3,<:Number},sign::Int)
+sign == 1 && return t
+return flip_normal(t)
+end
+export flip_normal
 """
     coordtype(simplex)
 
@@ -348,3 +352,5 @@ Returns a matrix whose columns are the tangents of the simplex `splx`.
 tangents(splx::Simplex) = hcat((splx.tangents)...)
 
 vertices(splx::Simplex) = hcat((splx.vertices)...)
+verticeslist(splx::Simplex) = splx.vertices
+export verticeslist

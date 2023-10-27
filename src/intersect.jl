@@ -36,7 +36,9 @@ The output inherits the orientation from the first operand
 """
 function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
-  [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+  nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+  signs = Int.(sign.(dot.(normal.(nonoriented_simplexes,Ref(normal(p1))))))
+  flip_normal.(nonoriented_simplexes,signs)
 end
 
 
