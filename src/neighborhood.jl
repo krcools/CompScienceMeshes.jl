@@ -26,7 +26,7 @@ function parametric(mp::MeshPointNM)
     mp.bary
 end
 
-chart(nbd::MeshPointNM) = mp.patch
+chart(nbd::MeshPointNM) = nbd.patch
 
 "Return the barycentric coordinates of `mp`"
 barycentric(mp::MeshPointNM) = SVector(mp.bary[1], mp.bary[2], 1-mp.bary[1]-mp.bary[2])
