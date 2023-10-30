@@ -34,13 +34,17 @@ end
 
 The output inherits the orientation from the first operand
 """
-function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3};tol=eps()) where {U,C}
+function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
-  nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
-  nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
-  signs = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(normal(p1)))))
-  flip_normal.(nonoriented_simplexes,signs)
+  return [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end
+function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps()) where {U,C}
+    pq = sutherlandhodgman(p1.vertices, p2.vertices)
+    nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+    nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
+    signs = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(normal(p1)))))
+    flip_normal.(nonoriented_simplexes,signs)
+  end
 
 
 function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
@@ -53,7 +57,7 @@ function intersection2(p1::Simplex, p2::Simplex) where {U,C}
     return [(i,i) for i in a]
 end
 
-function intersection2(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}; tol=eps()) where {U,C}
+function intersection2(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3}; tol=eps()) where {U,C}
     pq = sutherlandhodgman(p1.vertices, p2.vertices)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
     nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
