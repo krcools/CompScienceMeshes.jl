@@ -38,7 +38,7 @@ function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3};tol=eps()) wher
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
   nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
   nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
-  signs = Int.(sign.(dot.(normal.(nonoriented_simplexes,Ref(normal(p1))))))
+  signs = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(normal(p1)))))
   flip_normal.(nonoriented_simplexes,signs)
 end
 
