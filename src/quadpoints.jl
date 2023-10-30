@@ -80,7 +80,6 @@ this method used `quadpoints(chart, rule)` to retrieve the points and weights fo
 a certain quadrature rule over `chart`.
 """
 function quadpoints(f, charts, rules)
-    println(typeof(charts))
     pw = quadpoints(charts[1], rules[1])
     P = typeof(pw[1][1])
     W = typeof(pw[1][2])

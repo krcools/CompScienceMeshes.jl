@@ -34,9 +34,10 @@ end
 
 The output inherits the orientation from the first operand
 """
-function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
+function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3};tol=eps()) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
   nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+  nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
   signs = Int.(sign.(dot.(normal.(nonoriented_simplexes,Ref(normal(p1))))))
   flip_normal.(nonoriented_simplexes,signs)
 end
@@ -47,8 +48,21 @@ function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
   volume(p1) <= volume(p2) ? [p1] : [p2]
 end
 
+function intersection2(p1::Simplex, p2::Simplex) where {U,C}
+    a = intersection(p1,p2)
+    return [(i,i) for i in a]
+end
 
-
+function intersection2(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}; tol=eps()) where {U,C}
+    pq = sutherlandhodgman(p1.vertices, p2.vertices)
+    nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+    nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
+    signs1 = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(normal(p1)))))
+    
+    signs2 = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(normal(p2)))))
+    return [(flip_normal(s,signs1[i]),flip_normal(s,signs2[i])) for (i,s) in enumerate(nonoriented_simplexes)]
+end
+export intersection2
 """
     intersectline(a,b,p,q)
 

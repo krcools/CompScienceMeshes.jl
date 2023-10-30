@@ -30,3 +30,4 @@ function getelementVertices(chart::subd_chart{T}) where {T}
     verticecoords3[3] = verticescoords[chart.N-6]
     return verticecoords3
 end
+verticeslist(chart::subd_chart) = chart.vertices
