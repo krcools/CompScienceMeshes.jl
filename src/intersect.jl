@@ -38,7 +38,7 @@ function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
   return [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end
-function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps()) where {U,C}
+function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps()) 
     pq = sutherlandhodgman(p1.vertices, p2.vertices)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
     nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
@@ -52,12 +52,12 @@ function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
   volume(p1) <= volume(p2) ? [p1] : [p2]
 end
 
-function intersection2(p1::Simplex, p2::Simplex) where {U,C}
+function intersection2(p1::Simplex, p2::Simplex)
     a = intersection(p1,p2)
     return [(i,i) for i in a]
 end
 
-function intersection2(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3}; tol=eps()) where {U,C}
+function intersection2(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3}; tol=eps())
     pq = sutherlandhodgman(p1.vertices, p2.vertices)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
     nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
