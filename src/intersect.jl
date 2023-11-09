@@ -38,6 +38,7 @@ function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   pq = sutherlandhodgman(p1.vertices, p2.vertices)
   return [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end
+
 function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps()) 
     pq = sutherlandhodgman(p1.vertices, p2.vertices)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
@@ -52,6 +53,12 @@ function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
   volume(p1) <= volume(p2) ? [p1] : [p2]
 end
 
+"""
+    intersection2(triangleA, triangleB)
+
+returns intersection in which the first operand inhirits orientation from first argument
+and second argument inhirits orientation of second argument.
+"""
 function intersection2(p1::Simplex, p2::Simplex)
     a = intersection(p1,p2)
     return [(i,i) for i in a]
@@ -67,6 +74,7 @@ function intersection2(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3}; tol=eps())
     return [(flip_normal(s,signs1[i]),flip_normal(s,signs2[i])) for (i,s) in enumerate(nonoriented_simplexes)]
 end
 export intersection2
+
 """
     intersectline(a,b,p,q)
 

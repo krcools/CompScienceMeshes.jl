@@ -26,7 +26,19 @@ function permute_vertices(s::Simplex{3,2,1,3,T},permutation::Union{Vector{P},SVe
     simp = simplex(vert)
     Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
 end
+
+"""
+    flip_normal(simplex)
+
+Flips the normal of the simplex. Only on triangles embedded in 3D space
+"""
 flip_normal(t::Simplex{3,2,1,3,<:Number}) = Simplex(t.vertices,t.tangents,-t.normals,t.volume)
+
+"""
+    flip_normal(simplex, sign)
+
+Flips the normal of the simplex if sign is -1. Only on triangles embedded in 3D space
+"""
 function flip_normal(t::Simplex{3,2,1,3,<:Number},sign::Int)
     sign == 1 && return t
     return flip_normal(t)
@@ -360,5 +372,11 @@ Returns a matrix whose columns are the tangents of the simplex `splx`.
 tangents(splx::Simplex) = hcat((splx.tangents)...)
 
 vertices(splx::Simplex) = hcat((splx.vertices)...)
+
+"""
+    verticeslist(simplex)
+
+Returns the vertices as a list.
+"""
 verticeslist(splx::Simplex) = splx.vertices
 export verticeslist
