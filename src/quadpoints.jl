@@ -1,8 +1,8 @@
-struct WeightPointValue{W,P,V}
-  weight::W
-  point::P
-  value::V
-end
+# struct WeightPointValue{W,P,V}
+#   weight::W
+#   point::P
+#   value::V
+# end
 
 
 function quadpoints(chart::ReferenceSimplex{1,T}, rule) where {T}
@@ -80,24 +80,31 @@ this method used `quadpoints(chart, rule)` to retrieve the points and weights fo
 a certain quadrature rule over `chart`.
 """
 function quadpoints(f, charts, rules)
-
-    pw = quadpoints(charts[1], rules[1])
-    P = typeof(pw[1][1])
-    W = typeof(pw[1][2])
-    V = typeof(f(pw[1][1]))
-
-    WPV = WeightPointValue{W,P,V}
-
-    qd = Array{Vector{WPV}}(undef,length(rules), length(charts))
-    for j in eachindex(charts)
-        for i in eachindex(rules)
-            pw = quadpoints(charts[j], rules[i])
-            qd[i,j] = Vector{WPV}(undef,length(pw))
-            for k in eachindex(pw)
-                qd[i,j][k] = WeightPointValue(pw[k][2],pw[k][1],f(pw[k][1]))
-            end
-        end
+    map(Iterators.product(rules, charts)) do (rule, chart)
+        pws = quadpoints(chart, rule)
+        [(weight=w, point=p, value=f(p)) for (p,w) in pws]
     end
-
-  qd
 end
+# function quadpoints(f, charts, rules)
+
+#     pw = quadpoints(charts[1], rules[1])
+#     P = typeof(pw[1][1])
+#     W = typeof(pw[1][2])
+#     V = typeof(f(pw[1][1]))
+
+#     WPV = WeightPointValue{W,P,V}
+
+#     qd = Array{Vector{WPV}}(undef,length(rules), length(charts))
+#     for j in eachindex(charts)
+#         for i in eachindex(rules)
+#             pw = quadpoints(charts[j], rules[i])
+#             qd[i,j] = Vector{WPV}(undef,length(pw))
+#             for k in eachindex(pw)
+#                 qd[i,j][k] = WeightPointValue(pw[k][2],pw[k][1],f(pw[k][1]))
+#             end
+#         end
+#     end
+
+#   qd
+# end
+
