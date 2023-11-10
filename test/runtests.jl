@@ -36,6 +36,7 @@ include("test_sh_intersection.jl")
 include("test_isinside.jl")
 include("test_jctweld.jl")
 include("test_isinclosure.jl")
+include("test_permute_vertices.jl")
 
 include("test_trgauss.jl")
 include("test_chartquad.jl")
