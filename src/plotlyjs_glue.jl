@@ -52,12 +52,12 @@ function __init__()
             u = getindex.(arrows,1)
             v = getindex.(arrows,2)
             w = getindex.(arrows,3)
-            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref, kwargs...)
+            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref; kwargs...)
         end
 
         @eval function normals(mesh; kwargs...)
             nrmls = [normal(chart(mesh,cell)) for cell in mesh]
-            return cones(mesh, nrmls; kwargs...)
+            return CompScienceMeshes.cones(mesh, nrmls; kwargs...)
         end
 
         @eval function wireframe(edges; width=1, color="rgb(0,0,0)")
