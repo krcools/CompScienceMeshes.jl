@@ -12,10 +12,40 @@ struct Simplex{U,D,C,N,T}
     normals::SVector{C,SVector{U,T}}
     volume::T
 end
-
+normal(t::Simplex{3,2,1,3,<:Number}) = t.normals[1]
 dimtype(splx::Simplex{U,D}) where {U,D} = Val{D}
+"""
+    permute_simplex(simplex,permutation)
 
+Permutation is a Vector v which sets the v[i]-th vertex at the i-th place.
 
+Return Simplex with permuted vertices list, tangents are recalculated, normal is kept the same
+"""
+function permute_vertices(s::Simplex{3,2,1,3,T},permutation::Union{Vector{P},SVector{P}}) where {T,P}
+    vert = SVector{3,SVector{3,T}}(s.vertices[permutation])
+    simp = simplex(vert)
+    Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
+end
+
+"""
+    flip_normal(simplex)
+
+Flips the normal of the simplex. Only on triangles embedded in 3D space
+"""
+flip_normal(t::Simplex{3,2,1,3,<:Number}) = Simplex(t.vertices,t.tangents,-t.normals,t.volume)
+
+"""
+    flip_normal(simplex, sign)
+
+Flips the normal of the simplex if sign is -1. Only on triangles embedded in 3D space
+"""
+function flip_normal(t::Simplex{3,2,1,3,<:Number},sign::Int)
+    sign == 1 && return t
+    return flip_normal(t)
+    end
+export flip_normal
+
+tangents(s::Simplex{3,2,1,3,<:Number},i) = s.tangents[i]
 """
     coordtype(simplex)
 
@@ -126,7 +156,7 @@ simplex(vertices...) = simplex(SVector((vertices...,)))
     :(simplex(SVector{$D1,$P}($xp)))
 end
 
-normal(s::Simplex{3,2,1,3,T}) where {T} = normalize(cross(s[1]-s[3],s[2]-s[3]))
+# normal(s::Simplex{3,2,1,3,T}) where {T} = normalize(cross(s[1]-s[3],s[2]-s[3]))
 
 
 function _normals(tangents, ::Type{Val{1}})
@@ -342,3 +372,11 @@ Returns a matrix whose columns are the tangents of the simplex `splx`.
 tangents(splx::Simplex) = hcat((splx.tangents)...)
 
 vertices(splx::Simplex) = hcat((splx.vertices)...)
+
+"""
+    verticeslist(simplex)
+
+Returns the vertices as a list.
+"""
+verticeslist(splx::Simplex) = splx.vertices
+export verticeslist

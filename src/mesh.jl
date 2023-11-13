@@ -139,7 +139,7 @@ or vertices not appearing in any cell. In other words the following is not neces
     numvertices(mesh) == numcells(skeleton(mesh,0))
 ```
 """
-numvertices(m::Mesh) = length(m.vertices)
+numvertices(m::Mesh) = length(vertices(m))
 
 
 
@@ -148,7 +148,7 @@ numvertices(m::Mesh) = length(m.vertices)
 
 Returns the number of cells in the mesh.
 """
-numcells(m::AbstractMesh) = length(m.faces)
+numcells(m::AbstractMesh) = length(cells(m))
 
 
 
