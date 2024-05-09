@@ -39,7 +39,7 @@ function intersection(p1::Simplex{U,2,C,3}, p2::Simplex{U,2,C,3}) where {U,C}
   return [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
 end
 
-function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps()) 
+function intersection(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps())
     pq = sutherlandhodgman(p1.vertices, p2.vertices)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
     nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
@@ -53,11 +53,34 @@ function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
   volume(p1) <= volume(p2) ? [p1] : [p2]
 end
 
+function intersection_keep_clippings(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps())
+    pq, cls = sutherlandhodgman_keep_clippings(p1.vertices, p2.vertices)
+    # @show size(cls)
+    nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]
+    nonoriented_simplexes = nonoriented_simplexes[volume.(nonoriented_simplexes).>tol]
+
+    nonoriented_clippings = map(cls) do cl
+            [ simplex(cl[1], cl[i], cl[i+1]) for i in 2:length(cl)-1]
+    end
+    nonoriented_clippings = map(nonoriented_clippings) do cl
+        cl[volume.(cl) .> tol]
+    end
+
+    n1 = normal(p1)
+    signs = Int.(sign.(dot.(normal.(nonoriented_simplexes),Ref(n1))))
+    oriented_simplices = flip_normal.(nonoriented_simplexes,signs)
+    oriented_clippings = map(nonoriented_clippings) do cl
+        signs = Int.(sign.(dot.(normal.(cl), Ref(n1))))
+        flip_normal.(cl, signs)
+    end
+    return oriented_simplices, oriented_clippings
+end
+
 """
     intersection2(triangleA, triangleB)
 
-returns intersection in which the first operand inhirits orientation from first argument
-and second argument inhirits orientation of second argument.
+returns intersection in which the first operand inherits orientation from first argument
+and second argument inherits orientation of second argument.
 """
 function intersection2(p1::Simplex, p2::Simplex)
     a = intersection(p1,p2)
@@ -74,6 +97,7 @@ function intersection2(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3}; tol=eps())
     return [(flip_normal(s,signs1[i]),flip_normal(s,signs2[i])) for (i,s) in enumerate(nonoriented_simplexes)]
 end
 export intersection2
+
 
 """
     intersectline(a,b,p,q)
@@ -121,8 +145,6 @@ function leftof(p,a,b)
     ap[1]*ab[2] - ap[2]*ab[1] <= tol ? true : false
 
 end
-
-#export sutherlandhodgman2d
 
 """
     sutherlandhodgman2d(subject,clipper)
@@ -172,7 +194,56 @@ function sutherlandhodgman2d(subject,clipper)
     return clipped
 end
 
-#export sutherlandhodgman
+function sutherlandhodgman2d_keep_clippings(subject,clipper)
+
+    clipped = Vector(copy(subject))
+    clippings = Vector{typeof(clipped)}()
+
+    b = last(clipper)
+    for a in clipper
+
+        input = deepcopy(clipped)
+        resize!(clipped,0)
+        clipping = similar(clipped, 0)
+
+        if !isempty(input)
+            q = last(input)
+            for p in input
+                if leftof(p, b, a)
+                    if !leftof(q, b, a)
+                        # q is right, p is left
+                        i = intersectlines(b,a,q,p)
+                        push!(clipped, i)
+                        push!(clipping, i)
+                        push!(clipped, p)
+                    else
+                        # q is left, p is left
+                        push!(clipped, p)
+                    end
+
+                else # p is right
+                    if leftof(q, b, a)
+                        # q is left, p is right
+                        i = intersectlines(b,a,q,p)
+                        push!(clipped, i)
+
+                        push!(clipping, i)
+                        push!(clipping, p)
+                    else
+                        push!(clipping, p)
+                    end
+                end
+
+                q = p
+            end
+        end
+        push!(clippings, clipping)
+        b = a
+    end
+
+    return clipped, clippings
+end
+
 
 """
     sutherlandhodgman(subject, clipper)
@@ -181,7 +252,6 @@ Compute the intersection of two coplanar triangles, potentially
 embedded in a higher dimensional space.
 """
 function sutherlandhodgman(subject, clipper)
-
     triangle = simplex(clipper, Val{2})
     subject2d = [carttobary(triangle,p) for p in subject]
     for p in subject2d for x in p @assert !isinf(x) end end
@@ -189,5 +259,21 @@ function sutherlandhodgman(subject, clipper)
     for p in clipper2d for x in p @assert !isinf(x) end end
     clipped2d = sutherlandhodgman2d(subject2d, clipper2d)
     clipped = [barytocart(triangle,q) for q in clipped2d ]
+end
 
+"""
+    sutherlandhodgman_keep_clippings(subject, clipper)
+
+Compute both the intersection and the setminus of two convex polygons `subject` and
+`clipper`. The polygons should be supplied as vectors of points. The intersection is
+returned as a vector of points and the clippings as a vector of vectors of points. 
+"""
+function sutherlandhodgman_keep_clippings(subject, clipper)
+    triangle = simplex(clipper, Val{2})
+    subject2d = [carttobary(triangle,p) for p in subject]
+    clipper2d = [carttobary(triangle,q) for q in clipper]
+    clipped2d, clippings2d = sutherlandhodgman2d_keep_clippings(subject2d, clipper2d)
+    clipped = [barytocart(triangle,q) for q in clipped2d ]
+    clippings = [ [ barytocart(triangle,q) for q in clipping2d] for clipping2d in clippings2d ]
+    return clipped, clippings
 end

@@ -33,12 +33,13 @@ function overlap(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T}) where {T,U,C}
     t = q.tangents[1]
     t2 = dot(t,t)
     e = u - dot(u,t) / t2 * t
+    abstol = tol * sqrt(t2)
 
     # if vertex 1 of p is not in the line defined by q, they do not overlap
-    norm(e) > tol && return false
+    norm(e) > abstol && return false
 
     # if the tangents are not linearly dependent return false
-    norm(cross(p.tangents[1],q.tangents[1])) > tol && return false
+    norm(cross(p.tangents[1],q.tangents[1])) > tol*t2 && return false
 
     # we determined p and q are on the same line. Do standard collision testing
     a1 = dot(p.vertices[1]-o, t)
@@ -46,8 +47,8 @@ function overlap(p::Simplex{U,1,C,2,T}, q::Simplex{U,1,C,2,T}) where {T,U,C}
 
     a1 < b1 ? (x1 = a1; y1 = b1) : (x1 = b1; y1 = a1)
 
-    y1 <= zero(T) && return false # p to the left of q
-    t2 <= x1 && return false      # q to the left of p
+    y1 - abstol <= zero(T) && return false # p to the left of q
+    t2 <= x1 + abstol && return false      # q to the left of p
 
     return true
 end
