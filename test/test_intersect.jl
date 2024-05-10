@@ -108,3 +108,105 @@ for T in [Float32, Float64]
         @test normal(splx) ≈ point(T,0,0,-1)
     end
 end
+
+using TestItems
+@testitem "clip keep clippings" begin
+    for T in (Float32, Float64)
+        e0 = point(T,0,0)
+        e1 = point(T,1,0)
+        e2 = point(T,0,1)
+        e3 = point(T,0,0)
+        c = (e0+e1+e2)/3
+        clipped, clippings = CompScienceMeshes.sutherlandhodgman2d_keep_clippings([e0,e1,e2], [e0,e1,c])
+        @test length(clippings) == 3
+        @show clipped
+        @show clippings[1]
+        @show clippings[2]
+        @show clippings[3]
+    end
+end
+
+@testitem "sutherlandhodgman2d quadrilateral clippings" begin
+    for T in [Float32,Float64]
+        e0 = point(T,0,0)
+        e1 = point(T,1,0)
+        e2 = point(T,0,1)
+        e3 = point(T,1/3,1/3)
+        e4 = point(T,4/3,1/3)
+        e5 = point(T,1/3,4/3)
+        clipped, clippings = CompScienceMeshes.sutherlandhodgman2d_keep_clippings(
+            [e0,e1,e2],
+            [e3,e4,e5])
+        @test length(clippings) == 3
+        @test length(clippings[1]) == 4
+        @test length(clippings[2]) == 4
+        @test length(clippings[3]) == 0
+    end
+end
+
+
+@testitem "clip keep clippings 3d" begin
+    for T in (Float32, Float64)
+        e0 = point(T,0,0,1)
+        e1 = point(T,1,0,1)
+        e2 = point(T,0,1,1)
+        e3 = point(T,0,0,1)
+        c = (e0+e1+e2)/3
+        clipped, clippings = CompScienceMeshes.sutherlandhodgman_keep_clippings([e0,e1,e2], [e0,e1,c])
+        @test length(clippings) == 3
+        @show clipped
+        @show clippings[1]
+        @show clippings[2]
+        @show clippings[3]
+    end
+end
+
+@testitem "clip keep clippings simplex 3d" begin
+    # T = Float64
+    for T in (Float32, Float64)
+        e0 = point(T,0,0,1)
+        e1 = point(T,1,0,1)
+        e2 = point(T,0,1,1)
+        e3 = point(T,0,0,1)
+        c = (e0+e1+e2)/3
+        s1 = simplex(e0,e1,e2)
+        s2 = simplex(e0,e1,c)
+        clipped, clippings = CompScienceMeshes.intersection_keep_clippings(s1, s2)
+        @test length(clippings) == 3
+
+        vol_clipped = sum(volume.(clipped))
+        vol_clippings = sum([sum(volume.(cl)) for cl in clippings])
+        @test volume(s1) ≈ vol_clipped + vol_clippings
+    end
+end
+
+@testitem "clip touching triangles" begin
+    T = Float64
+    e0 = point(T,0,0,0)
+    e1 = point(T,2,0,0)
+    e2 = point(T,0,2,0)
+    e4 = point(T,1,0,0)
+    e5 = point(T,3,0,0)
+    e6 = point(T,1,-2,0)
+    s1 = simplex(e0,e1,e2)
+    s2 = simplex(e4,e6,e5)
+    clipped, clippings = CompScienceMeshes.intersection_keep_clippings(s1,s2)
+    @test sum(volume.(clippings[1])) ≈ 2
+    @test sum(volume.(clippings[2])) ≈ 0
+    @test sum(volume.(clippings[3])) ≈ 0
+end
+
+@testitem "intersection with quadrilateral clippings" begin
+    for T in [Float32,Float64]
+        e0 = point(T,0,0,0)
+        e1 = point(T,2,0,0)
+        e2 = point(T,0,2,0)
+        e4 = point(T,1,0,0)
+        e5 = point(T,3,0,0)
+        e6 = point(T,1,-2,0)
+        s1 = simplex(e0,e1,e2)
+        s2 = simplex(e6,e5,e4)
+        clipped, clippings = CompScienceMeshes.intersection_keep_clippings(s1,s2)
+        @test sum(sum(volume.(cl)) for cl in clippings) ≈ 2.0
+    end
+end

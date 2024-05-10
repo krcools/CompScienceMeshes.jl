@@ -75,10 +75,12 @@ function weld(Γ₁, Γ₂; boundary=false, glueop=unique)
     end
 
     V = [V1; V2]
-    F = [Γ₁.faces; Γ₂.faces]
+
+    F1 = [indices(Γ₁,c) for c in Γ₁]
+    F2 = [indices(Γ₂,c) for c in Γ₂]
+    F = [F1; F2]
 
     nc1 = numcells(Γ₁)
-    # for (i,c) in enumerate(Γ₂.faces)
     for (i,c) in enumerate(cells(Γ₂))
         F[nc1+i] = map_ids(c, idmap)
     end
