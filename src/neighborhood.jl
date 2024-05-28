@@ -1,12 +1,12 @@
-struct MeshPointNM{U,D,C,N,T}
-    patch::Simplex{U,D,C,N,T}
+struct MeshPointNM{T,C,D,U}
+    patch::C
     bary::SVector{D,T}
     cart::SVector{U,T}
 end
 
 
-Base.length(m::MeshPointNM) = length(m.cart)
-Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
+# Base.length(m::MeshPointNM) = length(m.cart)
+# Base.getindex(p::MeshPointNM, i::Int) = p.cart[i]
 
 """
     cartesian(neighborhood) -> point
@@ -62,12 +62,14 @@ end
 
 Create a neighborhood from a chart and a set of parameter values.
 """
-function neighborhood(p::Simplex, bary)
+function neighborhood(p::C, bary) where {C<:Simplex}
   D = dimension(p)
   T = coordtype(p)
   P = SVector{D,T}
   cart = barytocart(p, T.(bary))
-  MeshPointNM(p, P(bary), cart)
+  Q = typeof(cart)
+  U = length(cart)
+  MeshPointNM{T,C,D,U}(p, P(bary), cart)
 end
 
 """
@@ -81,3 +83,16 @@ to parameter `(1/(D+1), 1/(D+1), ...)` where `D` is the simplex dimension.
     :(neighborhood(p, $uv))
 end
 
+
+struct NeighborhoodLazy{C,P}
+    chart::C
+    params::P
+end
+
+function neighborhood_lazy(chart, u) NeighborhoodLazy(chart, u) end
+
+function cartesian(p::NeighborhoodLazy) barytocart(p.chart, p.params) end
+function parametric(p::NeighborhoodLazy) p.params end
+function tangents(p::NeighborhoodLazy,i::Int) tangents(p.chart, p.params)[:,i] end
+function tangents(p::NeighborhoodLazy) tangents(p.chart, p.params) end
+function normal(p::NeighborhoodLazy) normal(p.chart, p.params) end

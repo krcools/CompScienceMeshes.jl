@@ -16,7 +16,7 @@ splx2 = CompScienceMeshes.flip_normal(splx)
 @test normal(splx2) ≈ point(0,0,-1)
 
 for i in 1:2
-    @test CompScienceMeshes.tangents(splx2,i) ≈ CompScienceMeshes.tangents(splx,i)
+    @test splx2.tangents[i] ≈ splx.tangents[i]
 end
 
 splx3 = simplex(

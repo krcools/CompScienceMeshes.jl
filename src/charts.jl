@@ -13,6 +13,7 @@ struct Simplex{U,D,C,N,T}
     volume::T
 end
 normal(t::Simplex{3,2,1,3,<:Number}) = t.normals[1]
+normal(t::Simplex{3,2,1,3,<:Number}, u) = t.normals[1] 
 dimtype(splx::Simplex{U,D}) where {U,D} = Val{D}
 """
     permute_simplex(simplex,permutation)
@@ -45,7 +46,7 @@ function flip_normal(t::Simplex{3,2,1,3,<:Number},sign::Int)
     end
 export flip_normal
 
-tangents(s::Simplex{3,2,1,3,<:Number},i) = s.tangents[i]
+# tangents(s::Simplex{3,2,1,3,<:Number},i) = s.tangents[i]
 """
     coordtype(simplex)
 
@@ -340,36 +341,48 @@ struct ReferenceSimplex{D,T,N}
     # N: number of defining points
     # D: dimension of the simplex
     # T: type of the coordinates
-    simplex::Simplex{D,D,0,N,T}
+    # simplex::Simplex{D,D,0,N,T}
 end
 
-function ReferenceSimplex{D,T,N}() where {D,T,N}
-    P = SVector{D,T}[]
-    for i in 1:D
-        a = zeros(T,D)
-        a[i] = 1
-        p = SVector{D,T}(a)
-        push!(P,p)
-    end
+# function ReferenceSimplex{D,T,N}() where {D,T,N}
+#     P = SVector{D,T}[]
+#     for i in 1:D
+#         a = zeros(T,D)
+#         a[i] = 1
+#         p = SVector{D,T}(a)
+#         push!(P,p)
+#     end
 
-    o = zero(SVector{D,T})
-    push!(P,o)
-    ReferenceSimplex{D,T,N}(simplex(P...))
-end
+#     o = zero(SVector{D,T})
+#     push!(P,o)
+#     ReferenceSimplex{D,T,N}(simplex(P...))
+# end
 
 
-barytocart(ch::ReferenceSimplex, u) = barytocart(ch.simplex, u)
-carttobary(ch::ReferenceSimplex, p) = carttobary(ch.simplex, p)
+barytocart(ch::ReferenceSimplex, u) = u # barytocart(ch.simplex, u)
+carttobary(ch::ReferenceSimplex, p) = SVector{2}(p[1:2]) # carttobary(ch.simplex, p)
 
 domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} = ReferenceSimplex{D,T,N}()
-neighborhood(ch::ReferenceSimplex, u) = u
+neighborhood(ch::ReferenceSimplex, u) = SVector(u)
+neighborhood(ch::ReferenceSimplex, u::AbstractVector) = SVector{length(u)}(u)
 
-"""
-    tangents(splx)
+# points act as neighborhoods for the identity chart
+parametric(u) = u
+cartesian(u) = u
+jacobian(u) = one(eltype(u))
+function tangents(u::SVector{N}) where {N}
+    SMatrix{N,N}(LinearAlgebra.I)
+end
+tangents(u::SVector{N}, i::Int) where {N} = tangents(u)[:,i]
 
-Returns a matrix whose columns are the tangents of the simplex `splx`.
-"""
-tangents(splx::Simplex) = hcat((splx.tangents)...)
+
+# """
+#     tangents(splx)
+
+# Returns a matrix whose columns are the tangents of the simplex `splx`.
+# """
+# tangents(splx::Simplex) = hcat((splx.tangents)...)
+tangents(splx::Simplex, u) = hcat((splx.tangents)...)
 
 vertices(splx::Simplex) = hcat((splx.vertices)...)
 
