@@ -252,6 +252,8 @@ function barytocart(mani::Simplex, u)
     return r
 end
 
+function cartesian(ch::Simplex, u) barytocart(ch, u) end
+
 
 """
     carttobary(simplex, point) -> barycoords
@@ -384,7 +386,8 @@ tangents(u::SVector{N}, i::Int) where {N} = tangents(u)[:,i]
 # tangents(splx::Simplex) = hcat((splx.tangents)...)
 tangents(splx::Simplex, u) = hcat((splx.tangents)...)
 
-vertices(splx::Simplex) = hcat((splx.vertices)...)
+# vertices(splx::Simplex) = hcat((splx.vertices)...)
+function vertices(s::Simplex) s.vertices end
 
 """
     verticeslist(simplex)

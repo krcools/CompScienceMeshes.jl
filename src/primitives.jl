@@ -112,9 +112,14 @@ The target edge size is `delta` and the dimension of the
 The mesh is oriented such that the normal is pointing down. This is subject to change.
 """
 function meshrectangle(width::T, height::T, delta::T, udim=3; structured=true) where T
-  if !structured
+  if structured == false
 	  @assert udim==3 "Only 3D Unstructured mesh currently supported"
 	  return meshrectangle_unstructured(width, height, delta)
+  end
+
+  if structured == :quadrilateral || structured == "quadrilateral"
+    @assert udim==3 "Only 3D Unstructured mesh currently supported"
+    return meshrectangle_quadrilateral(width, height, delta)
   end
 
   PT = SVector{udim,T}
@@ -155,6 +160,42 @@ function meshrectangle(width::T, height::T, delta::T, udim=3; structured=true) w
     end
 
     Mesh(vertices, faces)
+end
+
+function meshrectangle_quadrilateral(width::T, height::T, delta::T) where {T}
+
+    nx = round(Int, ceil(width/delta));  nx = max(nx,1); dx = width/nx
+    ny = round(Int, ceil(height/delta)); ny = max(ny,1); dy = height/ny
+
+    xs = range(0, width, step=dx)
+    ys = range(0, height, step=dy)
+
+    vertices = Vector{SVector{3,T}}(undef, (nx+1)*(ny+1))
+    k = 1
+    for i in 1:nx+1
+        for j in 1:ny+1
+            vertices[k] = SVector{3,T}((i-1)*dx, (j-1)*dy, 0)
+            k += 1
+    end end
+
+    faces = Vector{SVector{4,Int}}(undef, nx*ny)
+    k = 1
+    for i in 1:nx
+        for j in 1:ny
+            faces[k] = SVector{4,Int}(
+                (i-1)*(ny+1) + j, i*(ny+1) + j, i*(ny+1) + j+1, (i-1)*(ny+1) + j+1)
+            k += 1
+    end end
+
+    return QuadMesh(vertices, faces)
+end
+
+@testitem "QuadMesh rectangle" begin
+    m = meshrectangle(2.0, 2.0, 1.0; structured=:quadrilateral)
+    @test length(m) == 4
+    ch = chart(m, first(m))
+    p = neighborhood(ch, point(0.5, 0.5))
+    @test cartesian(p) ≈ point(0.5, 0.5, 0.0)
 end
 
 function meshdisk(radius::T, delta::T, tempname=tempname()) where T<:Real

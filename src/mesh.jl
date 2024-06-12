@@ -31,7 +31,7 @@ function Mesh(vertices, faces)
     Mesh{U,D1,T}(vertices, faces, dict)
 end
 
-function indices(m::Mesh, cell)
+function indices(m::Mesh{U,D1}, cell) where {U,D1}
     return m.faces[cell]
 end
 
@@ -62,8 +62,12 @@ vertextype(m::Mesh) = eltype(m.vertices)
     celltype(mesh)
 
 Returns the type of the index tuples stored in the mesh.
+
 """
-celltype(m::Mesh) = eltype(m.faces)
+function celltype(m::Mesh{U,D1}) where {U,D1} SimplexGraph{D1} end
+function celltype(m::Mesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
+function indextype(m::Mesh{U,D1}) where {U,D1} SVector{D1,Int} end
+function indextype(m::Mesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SVector{M+1,Int} end
 
 
 
@@ -73,7 +77,7 @@ celltype(m::Mesh) = eltype(m.faces)
 Returns `eltype(vertextype(mesh))`
 """
 coordtype(m::AbstractMesh{U,D1,T}) where {U,D1,T} = T
-# coordtype(m::Mesh) = eltype(vertextype(m))
+
 
 
 
@@ -84,7 +88,7 @@ Returns the dimension of the mesh. Note that this is
 the dimension of the cells, not of the surrounding space.
 """
 dimension(m::AbstractMesh{U,D1}) where {U,D1} = D1-1
-# dimension(m::Mesh) = length(celltype(m)) - 1
+
 
 
 
@@ -94,7 +98,7 @@ dimension(m::AbstractMesh{U,D1}) where {U,D1} = D1-1
 Returns the dimension of the surrounding space. Equals
 the number of coordinates required to describe a vertex.
 """
-universedimension(m::Mesh) = length(vertextype(m))
+universedimension(m::AbstractMesh) = length(vertextype(m))
 
 
 
@@ -104,7 +108,6 @@ universedimension(m::Mesh) = length(vertextype(m))
 Returns an indexable iterable to the vertices of the mesh
 """
 vertices(m::Mesh) = m.vertices
-
 
 
 #     vertices(mesh, i)
@@ -158,21 +161,10 @@ numcells(m::AbstractMesh) = length(cells(m))
 Return an iterable collection containing the cells making up the mesh.
 """
 cells(mesh::Mesh) = mesh.faces
-# function cells(mesh) eachindex(mesh.faces) end
-
 
 Base.IteratorSize(::AbstractMesh) = Base.HasLength()
 Base.length(m::AbstractMesh) = length(cells(m))
-# Base.iterate(m::AbstractMesh, state=0) = iterate(cells(m), state)
 Base.iterate(m::AbstractMesh, state=0) = iterate(eachindex(cells(m)), state)
-
-# """
-#     cellvertices(mesh, i)
-#
-# Return an indexable collection containing the vertices of cell `i`.
-# Shorthand for `vertices(mesh, cells(mesh, i))`.
-# """
-# cellvertices(mesh,i) = vertices(mesh, cells(mesh, i))
 
 
 
@@ -360,7 +352,7 @@ function boundary(mesh)
     rows = rowvals(conn)
     vals = nonzeros(conn)
 
-    I = celltype(edges)
+    I = indextype(edges)
     bnd_edges = Vector{I}(undef, length(edges))
     i = 1
     for (e,edge) in enumerate(edges)
@@ -390,7 +382,7 @@ function interior(mesh::Mesh, edges=skeleton(mesh,1))
     @assert size(C) == (numcells(mesh), numcells(edges))
 
     nn = vec(sum(abs.(C), dims=1))
-    T = CompScienceMeshes.celltype(edges)
+    T = CompScienceMeshes.indextype(edges)
     interior_edges = Vector{T}()
     for (i,edge) in pairs(cells(edges))
         nn[i] > 1 && push!(interior_edges, edge)
@@ -534,7 +526,7 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
         return mesh
     end
 
-    sk = skeleton_fast(mesh,dim)
+    sk = skeleton_fast(mesh,Val{dim})
     sort != :spacefillingcurve && return sk
     
     # sort the simplices on a SFC
@@ -548,35 +540,56 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
 end
 
 
-function skeleton_fast(mesh, dim::Int)
+# function skeleton_fast(mesh, dim::Int)
 
-    meshdim = dimension(mesh)
-    @assert 0 <= dim <= meshdim
+#     meshdim = dimension(mesh)
+#     @assert 0 <= dim <= meshdim
 
-    if dim == meshdim
-        return mesh
-    end
+#     if dim == meshdim
+#         return mesh
+#     end
 
-    nc = numcells(mesh)
-    C = SVector{dim+1,Int}
-    simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
+#     nc = numcells(mesh)
+#     C = SVector{dim+1,Int}
+#     simplices = zeros(C, nc*binomial(meshdim+1,dim+1))
 
-    n = 1
-    for c = 1 : nc
+#     n = 1
+#     for c = 1 : nc
 
-        # cell = cells(mesh)[c]
-        cell = indices(mesh, c)
-        for simplex in combinations(cell,dim+1)
-            simplices[n] = sort(simplex)
-            n += 1
+#         # cell = cells(mesh)[c]
+#         cell = indices(mesh, c)
+#         for simplex in combinations(cell,dim+1)
+#             simplices[n] = sort(simplex)
+#             n += 1
+#         end
+#     end
+
+#     simplices = unique(simplices)
+#     Mesh(vertices(mesh), simplices)
+# end
+
+
+function skeleton_fast(mesh, dimtype::Type)
+    C = celltype(mesh)
+    I = indextype(mesh, dimtype)
+    E = celltype(mesh, dimtype)
+    faces = Vector{I}()
+    for cell in mesh
+        idcs = indices(mesh, cell)
+        for face in skeleton(C(idcs), dimtype)
+            push!(faces, face)
         end
     end
-
-    simplices = unique(simplices)
-    Mesh(vertices(mesh), simplices)
+    faces = unique!(x -> E(x), faces)
+    Mesh(vertices(mesh), faces)
 end
 
-
+function skeleton_fast(mesh, dim::Int)
+    if dimension(mesh) == dim
+        return mesh
+    end
+    skeleton_fast(mesh, Val{dim})
+end
 
 
 """
@@ -632,8 +645,11 @@ the graph version of the exterior derivative.
 """
 function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
 
-    vtok, _, lgk, glk = vertextocell(kcells)
-    vtom, _, lgm, glm = vertextocell(mcells)
+    K = celltype(kcells)
+    M = celltype(mcells)
+
+    vtok, _, lgk, _ = vertextocell(kcells)
+    vtom, _, _, glm = vertextocell(mcells)
 
     npos = -1
 
@@ -643,12 +659,6 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
     Rows = Int[]
     Cols = Int[]
     Vals = Int[]
-
-    sh = 2 * max(dimm, dimk)
-    # sizehint!(Rows, sh)
-    # sizehint!(Cols, sh)
-    # sizehint!(Vals, sh)
-
     for vk in axes(vtok,1)
         V = lgk[vk]
         haskey(glm,V) || continue
@@ -656,18 +666,16 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            # kcell = cells(kcells)[i]
-            kcell = indices(kcells,i)
+            kcell = K(indices(kcells,i))
             for s in axes(vtom,2)
                 j = vtom[vm,s]
                 j == npos && break
-                # mcell = cells(mcells)[j]
-                mcell = indices(mcells, j)
+                mcell = M(indices(mcells, j))
                 val = op(relorientation(kcell, mcell))
                 iszero(val) && continue
                 push!(Rows, j)
                 push!(Cols, i)
-                push!(Vals, op(relorientation(kcell, mcell)))
+                push!(Vals, val)
             end
         end
     end

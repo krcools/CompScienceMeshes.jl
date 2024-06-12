@@ -46,4 +46,7 @@ include("test_nbd.jl")
 include("test_mapper.jl")
 include("test_convert.jl")
 
+using TestItemRunner
+@run_package_tests
+
 end
