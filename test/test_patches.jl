@@ -2,8 +2,8 @@ using Test
 using CompScienceMeshes
 
 for T in [Float32, Float64]
-    mesh = meshrectangle(T(1.0), T(1.0), T(1.0))
-    faces = skeleton(mesh, 2)
+    local mesh = meshrectangle(T(1.0), T(1.0), T(1.0))
+    local faces = skeleton(mesh, 2)
     local verts = vertices(mesh, faces.faces[1])
     p = simplex(verts)
 

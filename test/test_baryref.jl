@@ -19,24 +19,24 @@ for T in [Float32, Float64]
 
     # test barycentric refinement of surface mesh
     local m = meshrectangle(T(1.0), T(1.0), T(0.25), 3)
-    f = barycentric_refinement(m)
+    local f = barycentric_refinement(m)
 
 
     @test CompScienceMeshes.refines(f,m)
     @test numcells(f) == 6*numcells(m)
 
     local m1 = skeleton(m,1)
-    f1 = skeleton(f,1)
+    local f1 = skeleton(f,1)
     @test numcells(f1) == 2*numcells(m1) + 6*numcells(m)
 
-    m0 = skeleton(m,0)
+    local m0 = skeleton(m,0)
     @test numvertices(f) == numcells(m0) + numcells(m1) + numcells(m)
 
     ## test bisecting referinment of surfacic meshes
-    b = bisecting_refinement(m)
+    local b = bisecting_refinement(m)
     @test numcells(b) == 4*numcells(m)
 
-    b1 = skeleton(b,1)
+    local b1 = skeleton(b,1)
     @test numcells(b1) == 2*numcells(m1) + 3*numcells(m)
     @test numvertices(b) == numcells(m0) + numcells(m1)
 end

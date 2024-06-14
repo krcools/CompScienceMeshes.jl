@@ -15,6 +15,11 @@ chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
 vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
 cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
 
+function celltype(m::BarycentricRefinement{U,D1}) where {U,D1} SimplexGraph{D1} end
+function celltype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
+function indextype(m::BarycentricRefinement{U,D1}) where {U,D1} SVector{D1,Int} end
+function indextype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SVector{M+1,Int} end
+
 function parent(m::BarycentricRefinement, p)
     numchildren = factorial(dimension(m)+1)
     return mod1(p, numchildren)
@@ -130,7 +135,7 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
 
     # add six faces in each coarse face
     nf = 6NF
-    fcs = zeros(celltype(mesh), nf)
+    fcs = zeros(indextype(mesh), nf)
     C = cells(faces)
     for F in 1 : numcells(faces)
         c = NV + NE + F
@@ -155,7 +160,7 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     fine = Mesh(verts, fcs)
     D = connectivity(Nodes, fine)
     rows, vals = rowvals(D), nonzeros(D)
-    sorted_fcs = Vector{celltype(mesh)}()
+    sorted_fcs = Vector{indextype(mesh)}()
     for (i,Node) in enumerate(cells(Nodes))
         for k in nzrange(D,i)
             j = rows[k]
@@ -215,7 +220,7 @@ function barycentric_refinement(mesh::Mesh{U,4}) where U
     # add 24 tetrs in each coarse tetr
     nt = 24NT
     idx = 1
-    fcs = zeros(celltype(mesh), nt)
+    fcs = zeros(indextype(mesh), nt)
     for T in 1 : numcells(tetrs)
         c = NV + NE + NF + T # index of the tetr centroid
 
@@ -331,7 +336,7 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     # add four faces in each coarse face
     nf = 4NF
-    fcs = zeros(celltype(mesh), nf)
+    fcs = zeros(indextype(mesh), nf)
 
     for F in 1 : numcells(faces)
 
@@ -459,7 +464,7 @@ function lineofsight_refinement(mesh::Mesh{U,3}) where U
 
     # add six faces in each coarse face
     nf = 6NF
-    fcs = zeros(celltype(mesh), nf)
+    fcs = zeros(indextype(mesh), nf)
     for F in 1 : numcells(faces)
         c = NV + NE + F
 

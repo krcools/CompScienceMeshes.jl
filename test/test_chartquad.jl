@@ -24,7 +24,7 @@ for T in [Float32, Float64]
     p2 = point(T, 2.0, 0.0, 0.0)
     seg = simplex(p1,p2)
 
-    wpvs = quadpoints(x->T(x[1]^2), [seg], (20,))
+    wpvs = quadpoints(x->T(cartesian(x)[1]^2), [seg], (20,))
     global r = T(0.0)
     for wpv in wpvs[1,1]
         w = wpv.weight

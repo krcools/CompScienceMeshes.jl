@@ -7,6 +7,8 @@ using SparseArrays
 using StaticArrays
 using Compat
 using Requires
+using TestItems
+import Permutations
 
 import DataStructures
 
@@ -86,6 +88,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 
 include("defaults.jl")
 include("utils.jl")
+include("utils/localgraphs.jl")
 include("utils/sfc_sort.jl")
 include("utils/circumctr.jl")
 # include("combinatorics.jl")
@@ -101,12 +104,14 @@ include("scomplex.jl")
 include("meshes/flippedmesh.jl")
 include("meshes/embedding.jl")
 include("meshes/twosided.jl")
+include("meshes/quadrilateralmesh.jl")
 include("subdMesh.jl")
 
 
 # simplices and related algorithms
 include("rectangle.jl")
 include("charts.jl")
+include("charts/quadrilateral.jl")
 include("subd_chart.jl")
 include("sphere.jl")
 include("overlap.jl")

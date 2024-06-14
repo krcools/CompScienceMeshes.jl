@@ -53,7 +53,7 @@ function intersection(p1::Simplex{U,3,C,4}, p2::Simplex{U,3,C,4}) where {U,C}
   volume(p1) <= volume(p2) ? [p1] : [p2]
 end
 
-function intersection_keep_clippings(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=eps())
+function intersection_keep_clippings(p1::Simplex{3,2,1,3}, p2::Simplex{3,2,1,3};tol=1e3 * eps(coordtype(p1)))
     pq, cls = sutherlandhodgman_keep_clippings(p1.vertices, p2.vertices)
     # @show size(cls)
     nonoriented_simplexes = [ simplex(pq[1], pq[i], pq[i+1]) for i in 2:length(pq)-1 ]

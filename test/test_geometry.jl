@@ -130,7 +130,11 @@ for T in [Float32, Float64]
                 row = rows[k]
                 val = vals[k]
                 val == 0 && continue
-                @test e1_cells[row] == E1_cells[col]
+                if val == 1
+                    @test e1_cells[row] == E1_cells[col]
+                else
+                    @test e1_cells[row] == reverse(E1_cells[col])
+                end
             end
         end
     end

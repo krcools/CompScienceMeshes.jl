@@ -58,7 +58,8 @@ Compute whether two triangles in 3D space overlap
 """
 function overlap(p::Simplex{3,2,1,3,T}, q::Simplex{3,2,1,3,T}) where T
 
-  tol = sqrt(eps(T))
+    #   tol = sqrt(eps(T))
+    tol = 1e3 * eps(T)
 
   # Are the patches in the same plane?
   u1 = q.tangents[1]
