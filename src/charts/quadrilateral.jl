@@ -91,6 +91,13 @@ struct RefQuadrilateral{T} end
 domain(quad::Quadrilateral{P}) where {P} = RefQuadrilateral{eltype(P)}()
 neighborhood(quad::RefQuadrilateral, u) = SVector(u)
 neighborhood(ch::RefQuadrilateral, u::AbstractVector) = SVector{length(u)}(u)
+function vertices(ch::RefQuadrilateral{T}) where {T}
+    SVector(
+        point(T,0,0),
+        point(T,1,0),
+        point(T,1,1),
+        point(T,0,1))
+end
 
 function faces(ch::RefQuadrilateral)
     p1 = point(0,0,0)
@@ -135,7 +142,7 @@ end
 
 function permute_vertices(q::Quadrilateral, I)
     verts = vertices(q)[I]
-    return Quadrilateral(verts...)
+    return Quadrilateral(verts[1], verts[2], verts[3], verts[4])
 end
 
 function center(q::Quadrilateral)

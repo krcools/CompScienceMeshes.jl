@@ -12,7 +12,7 @@ end
 
 function quadpoints(chart::ReferenceSimplex{2,T}, rule) where {T}
     u, w = trgauss(rule)
-    [(neighborhood(chart, T.(u[:,i])), T.(w[i])) for i in eachindex(w)]
+    [(neighborhood(chart, SVector{2,T}(u[:,i])), T.(w[i])) for i in eachindex(w)]
 end
 
 function quadpoints(chart::ReferenceSimplex{3,T}, rule) where {T}

@@ -200,8 +200,17 @@ function _normals(tangents::SVector{2,SVector{3,T}}, ::Type{Val{1}}) where {T}
     SVector{1,P}(n/l), 0.5*l
 end
 
+function _normals(tangents::SVector{2,SVector{2,T}}, ::Type{Val{0}}) where {T}
 
+    t = tangents[1]
+    s = tangents[2]
+    v = (t[1]*s[2] - t[2]*s[1])/2
+    # n[3] = tangents[1] × tangents[2]
+    # l = norm(n)
 
+    P = SVector{2,T}
+    SVector{0,P}(), v
+end
 
 function _normals(tangents, ::Type{Val{C}}) where C
     PT = eltype(tangents)
@@ -367,6 +376,17 @@ carttobary(ch::ReferenceSimplex, p) = SVector{2}(p[1:2]) # carttobary(ch.simplex
 domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} = ReferenceSimplex{D,T,N}()
 neighborhood(ch::ReferenceSimplex, u) = SVector(u)
 neighborhood(ch::ReferenceSimplex, u::AbstractVector) = SVector{length(u)}(u)
+function vertices(ch::ReferenceSimplex{2,T}) where {T}
+    SVector(
+        point(T,1,0),
+        point(T,0,1),
+        point(T,0,0))
+end
+
+function permute_vertices(ch::ReferenceSimplex, I)
+    V = vertices(ch)
+    return simplex(SVector(V[I[1]], V[I[2]], V[I[3]]))
+end
 
 # points act as neighborhoods for the identity chart
 parametric(u) = u
