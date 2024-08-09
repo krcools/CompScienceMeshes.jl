@@ -9,7 +9,7 @@ for T in [Float32, Float64]
     local p2 = T.([1.0, 0.0])
     local p3 = T.([0.0, 1.0])
 
-    N = length(CompScienceMeshes.triangleGaussW)
+    N = length(CompScienceMeshes.trianglequadGaussW)
     J = zeros(N)
     for _n in 1 : N
         u, w = trgauss(_n)
