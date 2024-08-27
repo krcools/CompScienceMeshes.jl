@@ -99,6 +99,11 @@ function vertices(ch::RefQuadrilateral{T}) where {T}
         point(T,0,1))
 end
 
+function permute_vertices(ch::RefQuadrilateral, I)
+    V = vertices(ch)
+    return Quadrilateral(V[I[1]], V[I[2]], V[I[3]], V[I[4]])
+end
+
 function faces(ch::RefQuadrilateral)
     p1 = point(0,0,0)
     p2 = point(1,0,0)

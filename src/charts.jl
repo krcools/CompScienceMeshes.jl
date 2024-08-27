@@ -369,6 +369,14 @@ end
 #     ReferenceSimplex{D,T,N}(simplex(P...))
 # end
 
+function faces(c::ReferenceSimplex{2})
+    p = vertices(c)
+    return SVector(
+        simplex(p[2], p[3]),
+        simplex(p[3], p[1]),
+        simplex(p[1], p[2]))
+end
+
 
 barytocart(ch::ReferenceSimplex, u) = u # barytocart(ch.simplex, u)
 carttobary(ch::ReferenceSimplex, p) = SVector{2}(p[1:2]) # carttobary(ch.simplex, p)
