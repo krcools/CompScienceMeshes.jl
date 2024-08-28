@@ -3,58 +3,58 @@
 # Rules for the Triangle.” International Journal for Numerical Methods 
 # in Engineering 21, no. 6 (1985): 1129–48. https://doi.org/10.1002/nme.1620210612.
 
-const trianglequadDunavant1a = @SVector [
+const trianglequadDunavant1a =  [
     0.333333333333333,
 ]
 
-const trianglequadDunavant1b = @SVector [
+const trianglequadDunavant1b =  [
     0.333333333333333,
 ]
 
-const trianglequadDunavant1w = @SVector [
+const trianglequadDunavant1w =  [
     1.000000000000000,
 ]
 
-const trianglequadDunavant3a = @SVector [
+const trianglequadDunavant3a =  [
     0.666666666666667,
     0.166666666666667,
     0.166666666666667,
 ]
 
-const trianglequadDunavant3b = @SVector [
+const trianglequadDunavant3b =  [
     0.166666666666667,
     0.166666666666667,
     0.666666666666667,
 ]
 
-const trianglequadDunavant3w = @SVector [
+const trianglequadDunavant3w =  [
     0.333333333333333,
     0.333333333333333,
     0.333333333333333,
 ]
 
-const trianglequadDunavant4a = @SVector [
+const trianglequadDunavant4a =  [
     0.333333333333333,
     0.600000000000000,
     0.200000000000000,
     0.200000000000000,
 ]
 
-const trianglequadDunavant4b = @SVector [
+const trianglequadDunavant4b =  [
     0.333333333333333,
     0.200000000000000,
     0.200000000000000,
     0.600000000000000,
 ]
 
-const trianglequadDunavant4w = @SVector [
+const trianglequadDunavant4w =  [
     -0.562500000000000,
     0.520833333333333,
     0.520833333333333,
     0.520833333333333,
 ]
 
-const trianglequadDunavant6a = @SVector [
+const trianglequadDunavant6a =  [
     0.108103018168070,
     0.445948490915965,
     0.445948490915965,
@@ -63,7 +63,7 @@ const trianglequadDunavant6a = @SVector [
     0.091576213509771,
 ]
 
-const trianglequadDunavant6b = @SVector [
+const trianglequadDunavant6b =  [
     0.445948490915965,
     0.445948490915965,
     0.108103018168070,
@@ -72,7 +72,7 @@ const trianglequadDunavant6b = @SVector [
     0.816847572980459,
 ]
 
-const trianglequadDunavant6w = @SVector [
+const trianglequadDunavant6w =  [
     0.223381589678011,
     0.223381589678011,
     0.223381589678011,
@@ -81,7 +81,7 @@ const trianglequadDunavant6w = @SVector [
     0.109951743655322,
 ]
 
-const trianglequadDunavant7a = @SVector [
+const trianglequadDunavant7a =  [
     0.333333333333333,
     0.059715871789770,
     0.470142064105115,
@@ -91,7 +91,7 @@ const trianglequadDunavant7a = @SVector [
     0.101286507323456,
 ]
 
-const trianglequadDunavant7b = @SVector [
+const trianglequadDunavant7b =  [
     0.333333333333333,
     0.470142064105115,
     0.470142064105115,
@@ -101,7 +101,7 @@ const trianglequadDunavant7b = @SVector [
     0.797426985353087,
 ]
 
-const trianglequadDunavant7w = @SVector [
+const trianglequadDunavant7w =  [
     0.225000000000000,
     0.132394152788506,
     0.132394152788506,
@@ -111,7 +111,7 @@ const trianglequadDunavant7w = @SVector [
     0.125939180544827,
 ]
 
-const trianglequadDunavant12a = @SVector [
+const trianglequadDunavant12a =  [
     0.501426509658179,
     0.249286745170910,
     0.249286745170910,
@@ -126,7 +126,7 @@ const trianglequadDunavant12a = @SVector [
     0.053145049844817,
 ]
 
-const trianglequadDunavant12b = @SVector [
+const trianglequadDunavant12b =  [
     0.249286745170910,
     0.249286745170910,
     0.501426509658179,
@@ -141,7 +141,7 @@ const trianglequadDunavant12b = @SVector [
     0.636502499121399,
 ]
 
-const trianglequadDunavant12w = @SVector [
+const trianglequadDunavant12w =  [
     0.116786275726379,
     0.116786275726379,
     0.116786275726379,
@@ -156,7 +156,7 @@ const trianglequadDunavant12w = @SVector [
     0.082851075618374,
 ]
 
-const trianglequadDunavant13a = @SVector [
+const trianglequadDunavant13a =  [
     0.333333333333333,
     0.479308067841920,
     0.260345966079040,
@@ -172,7 +172,7 @@ const trianglequadDunavant13a = @SVector [
     0.048690315425316,
 ]
 
-const trianglequadDunavant13b = @SVector [
+const trianglequadDunavant13b =  [
     0.333333333333333,
     0.260345966079040,
     0.260345966079040,
@@ -188,7 +188,7 @@ const trianglequadDunavant13b = @SVector [
     0.638444188569810,
 ]
 
-const trianglequadDunavant13w = @SVector [
+const trianglequadDunavant13w =  [
     -0.149570044467682,
     0.175615257433208,
     0.175615257433208,
@@ -204,7 +204,7 @@ const trianglequadDunavant13w = @SVector [
     0.077113760890257,
 ]
 
-const trianglequadDunavant16a = @SVector [
+const trianglequadDunavant16a =  [
     0.333333333333333,
     0.081414823414554,
     0.459292588292723,
@@ -223,7 +223,7 @@ const trianglequadDunavant16a = @SVector [
     0.008394777409958,
 ]
 
-const trianglequadDunavant16b = @SVector [
+const trianglequadDunavant16b =  [
     0.333333333333333,
     0.459292588292723,
     0.459292588292723,
@@ -242,7 +242,7 @@ const trianglequadDunavant16b = @SVector [
     0.728492392955404,
 ]
 
-const trianglequadDunavant16w = @SVector [
+const trianglequadDunavant16w =  [
     0.144315607677787,
     0.095091634267285,
     0.095091634267285,
@@ -261,7 +261,7 @@ const trianglequadDunavant16w = @SVector [
     0.027230314174435,
 ]
 
-const trianglequadDunavant19a = @SVector [
+const trianglequadDunavant19a =  [
     0.333333333333333,
     0.020634961602525,
     0.489682519198738,
@@ -283,7 +283,7 @@ const trianglequadDunavant19a = @SVector [
     0.036838412054736,
 ]
 
-const trianglequadDunavant19b = @SVector [
+const trianglequadDunavant19b =  [
     0.333333333333333,
     0.489682519198738,
     0.489682519198738,
@@ -305,7 +305,7 @@ const trianglequadDunavant19b = @SVector [
     0.741198598784498,
 ]
 
-const trianglequadDunavant19w = @SVector [
+const trianglequadDunavant19w =  [
     0.097135796282799,
     0.031334700227139,
     0.031334700227139,
@@ -327,7 +327,7 @@ const trianglequadDunavant19w = @SVector [
     0.043283539377289,
 ]
 
-const trianglequadDunavant25a = @SVector [
+const trianglequadDunavant25a =  [
     0.333333333333333,
     0.028844733232685,
     0.485577633383657,
@@ -355,7 +355,7 @@ const trianglequadDunavant25a = @SVector [
     0.009540815400299,
 ]
 
-const trianglequadDunavant25b = @SVector [
+const trianglequadDunavant25b =  [
     0.333333333333333,
     0.485577633383657,
     0.485577633383657,
@@ -383,7 +383,7 @@ const trianglequadDunavant25b = @SVector [
     0.923655933587500,
 ]
 
-const trianglequadDunavant25w = @SVector [
+const trianglequadDunavant25w =  [
     0.090817990382754,
     0.036725957756467,
     0.036725957756467,
@@ -411,7 +411,7 @@ const trianglequadDunavant25w = @SVector [
     0.009421666963733,
 ]
 
-const trianglequadDunavant27a = @SVector [
+const trianglequadDunavant27a =  [
     -0.069222096541517,
     0.534611048270758,
     0.534611048270758,
@@ -441,7 +441,7 @@ const trianglequadDunavant27a = @SVector [
     0.021022016536166,
 ]
 
-const trianglequadDunavant27b = @SVector [
+const trianglequadDunavant27b =  [
     0.534611048270758,
     0.534611048270758,
     -0.069222096541517,
@@ -471,7 +471,7 @@ const trianglequadDunavant27b = @SVector [
     0.807489003159792,
 ]
 
-const trianglequadDunavant27w = @SVector [
+const trianglequadDunavant27w =  [
     0.000927006328961,
     0.000927006328961,
     0.000927006328961,
@@ -501,7 +501,7 @@ const trianglequadDunavant27w = @SVector [
     0.020707659639141,
 ]
 
-const trianglequadDunavant33a = @SVector [
+const trianglequadDunavant33a =  [
     0.023565220452390,
     0.488217389773805,
     0.488217389773805,
@@ -537,7 +537,7 @@ const trianglequadDunavant33a = @SVector [
     0.025734050548330,
 ]
 
-const trianglequadDunavant33b = @SVector [
+const trianglequadDunavant33b =  [
     0.488217389773805,
     0.488217389773805,
     0.023565220452390,
@@ -573,7 +573,7 @@ const trianglequadDunavant33b = @SVector [
     0.858014033544073,
 ]
 
-const trianglequadDunavant33w = @SVector [
+const trianglequadDunavant33w =  [
     0.025731066440455,
     0.025731066440455,
     0.025731066440455,
@@ -609,7 +609,7 @@ const trianglequadDunavant33w = @SVector [
     0.017316231108659,
 ]
 
-const trianglequadDunavant37a = @SVector [
+const trianglequadDunavant37a =  [
     0.333333333333333,
     0.009903630120591,
     0.495048184939705,
@@ -649,7 +649,7 @@ const trianglequadDunavant37a = @SVector [
     0.022233076674090,
 ]
 
-const trianglequadDunavant37b = @SVector [
+const trianglequadDunavant37b =  [
     0.333333333333333,
     0.495048184939705,
     0.495048184939705,
@@ -689,7 +689,7 @@ const trianglequadDunavant37b = @SVector [
     0.851409537834241,
 ]
 
-const trianglequadDunavant37w = @SVector [
+const trianglequadDunavant37w =  [
     0.052520923400802,
     0.011280145209330,
     0.011280145209330,
@@ -729,7 +729,7 @@ const trianglequadDunavant37w = @SVector [
     0.015521786839045,
 ]
 
-const trianglequadDunavant42a = @SVector [
+const trianglequadDunavant42a =  [
     0.022072179275643,
     0.488963910362179,
     0.488963910362179,
@@ -774,7 +774,7 @@ const trianglequadDunavant42a = @SVector [
     0.001268330932872,
 ]
 
-const trianglequadDunavant42b = @SVector [
+const trianglequadDunavant42b =  [
     0.488963910362179,
     0.488963910362179,
     0.022072179275643,
@@ -819,7 +819,7 @@ const trianglequadDunavant42b = @SVector [
     0.879757171370171,
 ]
 
-const trianglequadDunavant42w = @SVector [
+const trianglequadDunavant42w =  [
     0.021883581369429,
     0.021883581369429,
     0.021883581369429,
@@ -864,7 +864,7 @@ const trianglequadDunavant42w = @SVector [
     0.005010228838501,
 ]
 
-const trianglequadDunavant48a = @SVector [
+const trianglequadDunavant48a =  [
     -0.013945833716486,
     0.506972916858243,
     0.506972916858243,
@@ -915,7 +915,7 @@ const trianglequadDunavant48a = @SVector [
     0.012459809331199,
 ]
 
-const trianglequadDunavant48b = @SVector [
+const trianglequadDunavant48b =  [
     0.506972916858243,
     0.506972916858243,
     -0.013945833716486,
@@ -966,7 +966,7 @@ const trianglequadDunavant48b = @SVector [
     0.883964574092416,
 ]
 
-const trianglequadDunavant48w = @SVector [
+const trianglequadDunavant48w =  [
     0.001916875642849,
     0.001916875642849,
     0.001916875642849,
@@ -1017,7 +1017,7 @@ const trianglequadDunavant48w = @SVector [
     0.007673942631049,
 ]
 
-const trianglequadDunavant52a = @SVector [
+const trianglequadDunavant52a =  [
     0.333333333333333,
     0.005238916103123,
     0.497380541948438,
@@ -1072,7 +1072,7 @@ const trianglequadDunavant52a = @SVector [
     0.014317320230681,
 ]
 
-const trianglequadDunavant52b = @SVector [
+const trianglequadDunavant52b =  [
     0.333333333333333,
     0.497380541948438,
     0.497380541948438,
@@ -1127,7 +1127,7 @@ const trianglequadDunavant52b = @SVector [
     0.900399064086661,
 ]
 
-const trianglequadDunavant52w = @SVector [
+const trianglequadDunavant52w =  [
     0.046875697427642,
     0.006405878578585,
     0.006405878578585,
@@ -1182,7 +1182,7 @@ const trianglequadDunavant52w = @SVector [
     0.006850054546542,
 ]
 
-const trianglequadDunavant61a = @SVector [
+const trianglequadDunavant61a =  [
     0.333333333333333,
     0.005658918886452,
     0.497170540556774,
@@ -1246,7 +1246,7 @@ const trianglequadDunavant61a = @SVector [
     0.014663182224828,
 ]
 
-const trianglequadDunavant61b = @SVector [
+const trianglequadDunavant61b =  [
     0.333333333333333,
     0.497170540556774,
     0.497170540556774,
@@ -1310,7 +1310,7 @@ const trianglequadDunavant61b = @SVector [
     0.904625504095608,
 ]
 
-const trianglequadDunavant61w = @SVector [
+const trianglequadDunavant61w =  [
     0.033437199290803,
     0.005093415440507,
     0.005093415440507,
@@ -1374,7 +1374,7 @@ const trianglequadDunavant61w = @SVector [
     0.006665632004165,
 ]
 
-const trianglequadDunavant70a = @SVector [
+const trianglequadDunavant70a =  [
     0.333333333333333,
     0.013310382738157,
     0.493344808630921,
@@ -1447,7 +1447,7 @@ const trianglequadDunavant70a = @SVector [
     -0.035222015287949,
 ]
 
-const trianglequadDunavant70b = @SVector [
+const trianglequadDunavant70b =  [
     0.333333333333333,
     0.493344808630921,
     0.493344808630921,
@@ -1520,7 +1520,7 @@ const trianglequadDunavant70b = @SVector [
     1.014347260005363,
 ]
 
-const trianglequadDunavant70w = @SVector [
+const trianglequadDunavant70w =  [
     0.030809939937647,
     0.009072436679404,
     0.009072436679404,
@@ -1593,7 +1593,7 @@ const trianglequadDunavant70w = @SVector [
     0.000046187660794,
 ]
 
-const trianglequadDunavant73a = @SVector [
+const trianglequadDunavant73a =  [
     0.333333333333333,
     0.020780025853987,
     0.489609987073006,
@@ -1669,7 +1669,7 @@ const trianglequadDunavant73a = @SVector [
     0.010161119296278,
 ]
 
-const trianglequadDunavant73b = @SVector [
+const trianglequadDunavant73b =  [
     0.333333333333333,
     0.489609987073006,
     0.489609987073006,
@@ -1745,7 +1745,7 @@ const trianglequadDunavant73b = @SVector [
     0.924344252620784,
 ]
 
-const trianglequadDunavant73w = @SVector [
+const trianglequadDunavant73w =  [
     0.032906331388919,
     0.010330731891272,
     0.010330731891272,
@@ -1821,7 +1821,7 @@ const trianglequadDunavant73w = @SVector [
     0.003799928855302,
 ]
 
-const trianglequadDunavant79a = @SVector [
+const trianglequadDunavant79a =  [
     0.333333333333333,
     -0.001900928704400,
     0.500950464352200,
@@ -1903,7 +1903,7 @@ const trianglequadDunavant79a = @SVector [
     0.010547719294141,
 ]
 
-const trianglequadDunavant79b = @SVector [
+const trianglequadDunavant79b =  [
     0.333333333333333,
     0.500950464352200,
     0.500950464352200,
@@ -1985,7 +1985,7 @@ const trianglequadDunavant79b = @SVector [
     0.929756171556853,
 ]
 
-const trianglequadDunavant79w = @SVector [
+const trianglequadDunavant79w =  [
     0.033057055541624,
     0.000867019185663,
     0.000867019185663,
@@ -2067,7 +2067,7 @@ const trianglequadDunavant79w = @SVector [
     0.003573909385950,
 ]
 
-const trianglequadDunavantA = @SVector [
+const trianglequadDunavantA =  [
     trianglequadDunavant1a,
     trianglequadDunavant3a,
     trianglequadDunavant4a,
@@ -2090,7 +2090,7 @@ const trianglequadDunavantA = @SVector [
     trianglequadDunavant79a
 ]
 
-const trianglequadDunavantB = @SVector [
+const trianglequadDunavantB =  [
     trianglequadDunavant1b,
     trianglequadDunavant3b,
     trianglequadDunavant4b,
@@ -2113,7 +2113,7 @@ const trianglequadDunavantB = @SVector [
     trianglequadDunavant79b
 ]
 
-const trianglequadDunavantW = @SVector [
+const trianglequadDunavantW =  [
     trianglequadDunavant1w,
     trianglequadDunavant3w,
     trianglequadDunavant4w,

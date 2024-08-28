@@ -5,75 +5,75 @@
 
 # TODO: Add reference to higher order cubature rules
 
-const trianglequadGauss1a = @SVector [
+const trianglequadGauss1a =  [
   0.333333333333333,
 ]
 
-const trianglequadGauss1b = @SVector [
+const trianglequadGauss1b =  [
   0.333333333333333,
 ]
 
-const trianglequadGauss1c = @SVector [
+const trianglequadGauss1c =  [
   0.333333333333333,
 ]
 
-const trianglequadGauss1w = @SVector [
+const trianglequadGauss1w =  [
   1.0,
 ]
 
-const trianglequadGauss3a = @SVector [
+const trianglequadGauss3a =  [
   0.666666666666667,
   0.166666666666667,
   0.166666666666667,
 ]
 
-const trianglequadGauss3b = @SVector [
+const trianglequadGauss3b =  [
   0.166666666666667,
   0.666666666666667,
   0.166666666666667,
 ]
 
-const trianglequadGauss3c = @SVector [
+const trianglequadGauss3c =  [
   0.166666666666667,
   0.166666666666667,
   0.666666666666667,
 ]
 
-const trianglequadGauss3w = @SVector [
+const trianglequadGauss3w =  [
   0.333333333333333,
   0.333333333333333,
   0.333333333333333,
 ]
 
-const trianglequadGauss4a = @SVector [
+const trianglequadGauss4a =  [
   0.333333333333333,
   0.6,
   0.2,
   0.2,
 ]
 
-const trianglequadGauss4b = @SVector [
+const trianglequadGauss4b =  [
   0.333333333333333,
   0.2,
   0.6,
   0.2,
 ]
 
-const trianglequadGauss4c = @SVector [
+const trianglequadGauss4c =  [
   0.333333333333333,
   0.2,
   0.2,
   0.6,
 ]
 
-const trianglequadGauss4w = @SVector [
+const trianglequadGauss4w =  [
   -0.562500000000000,
   0.520833333333333,
   0.520833333333333,
   0.520833333333333,
 ]
 
-const trianglequadGauss6a = @SVector [
+const trianglequadGauss6a =  [
   0.816847572980459,
   0.091576213509771,
   0.091576213509771,
@@ -82,7 +82,7 @@ const trianglequadGauss6a = @SVector [
   0.445948490915965,
 ]
 
-const trianglequadGauss6b = @SVector [
+const trianglequadGauss6b =  [
   0.091576213509771,
   0.816847572980459,
   0.091576213509771,
@@ -91,7 +91,7 @@ const trianglequadGauss6b = @SVector [
   0.445948490915965,
 ]
 
-const trianglequadGauss6c = @SVector [
+const trianglequadGauss6c =  [
   0.091576213509771,
   0.091576213509771,
   0.816847572980459,
@@ -100,7 +100,7 @@ const trianglequadGauss6c = @SVector [
   0.108103018168070,
 ]
 
-const trianglequadGauss6w = @SVector [
+const trianglequadGauss6w =  [
   0.109951743655322,
   0.109951743655322,
   0.109951743655322,
@@ -109,7 +109,7 @@ const trianglequadGauss6w = @SVector [
   0.223381589678011,
 ]
 
-const trianglequadGauss7a = @SVector [
+const trianglequadGauss7a =  [
   0.333333333333333,
   0.797426985353087,
   0.101286507323456,
@@ -119,7 +119,7 @@ const trianglequadGauss7a = @SVector [
   0.470142064105115,
 ]
 
-const trianglequadGauss7b = @SVector [
+const trianglequadGauss7b =  [
   0.333333333333333,
   0.101286507323456,
   0.797426985353087,
@@ -129,7 +129,7 @@ const trianglequadGauss7b = @SVector [
   0.470142064105115,
 ]
 
-const trianglequadGauss7c = @SVector [
+const trianglequadGauss7c =  [
   0.333333333333333,
   0.101286507323456,
   0.101286507323456,
@@ -139,7 +139,7 @@ const trianglequadGauss7c = @SVector [
   0.059715871789770,
 ]
 
-const trianglequadGauss7w = @SVector [
+const trianglequadGauss7w =  [
   0.225000000000000,
   0.125939180544827,
   0.125939180544827,
@@ -149,7 +149,7 @@ const trianglequadGauss7w = @SVector [
   0.132394152788506,
 ]
 
-const trianglequadGauss12a = @SVector [
+const trianglequadGauss12a =  [
   0.873821971016996,
   0.063089014491502,
   0.063089014491502,
@@ -164,7 +164,7 @@ const trianglequadGauss12a = @SVector [
   0.053145049844816,
 ]
 
-const trianglequadGauss12b = @SVector [
+const trianglequadGauss12b =  [
   0.063089014491502,
   0.873821971016996,
   0.063089014491502,
@@ -179,7 +179,7 @@ const trianglequadGauss12b = @SVector [
   0.310352451033785,
 ]
 
-const trianglequadGauss12c = @SVector [
+const trianglequadGauss12c =  [
   0.063089014491502,
   0.063089014491502,
   0.873821971016996,
@@ -194,7 +194,7 @@ const trianglequadGauss12c = @SVector [
   0.636502499121399,
 ]
 
-const trianglequadGauss12w = @SVector [
+const trianglequadGauss12w =  [
   0.050844906370207,
   0.050844906370207,
   0.050844906370207,
@@ -209,7 +209,7 @@ const trianglequadGauss12w = @SVector [
   0.082851075618374,
 ]
 
-const trianglequadGauss13a = @SVector [
+const trianglequadGauss13a =  [
   0.333333333333333,
   0.479308067841923,
   0.260345966079038,
@@ -225,7 +225,7 @@ const trianglequadGauss13a = @SVector [
   0.0486903154253160,
 ]
 
-const trianglequadGauss13b = @SVector [
+const trianglequadGauss13b =  [
   0.333333333333333,
   0.260345966079038,
   0.479308067841923,
@@ -241,7 +241,7 @@ const trianglequadGauss13b = @SVector [
   0.312865496004875,
 ]
 
-const trianglequadGauss13c = @SVector [
+const trianglequadGauss13c =  [
   0.333333333333333,
   0.260345966079038,
   0.260345966079038,
@@ -257,7 +257,7 @@ const trianglequadGauss13c = @SVector [
   0.638444188569809,
 ]
 
-const trianglequadGauss13w = @SVector [
+const trianglequadGauss13w =  [
   -0.149570044467670,
   0.175615257433204,
   0.175615257433204,
@@ -273,7 +273,7 @@ const trianglequadGauss13w = @SVector [
   0.077113760890257,
 ]
 
-const trianglequadGauss36a = @SVector [
+const trianglequadGauss36a =  [
   0.0242935351590,
   0.0265193427722,
   0.9492126023551,
@@ -312,7 +312,7 @@ const trianglequadGauss36a = @SVector [
   0.2305424298836
 ]
 
-const trianglequadGauss36b = @SVector [
+const trianglequadGauss36b =  [
   0.9493059293846,
   0.0242695130640,
   0.0265067966437,
@@ -351,7 +351,7 @@ const trianglequadGauss36b = @SVector [
   0.3456013949376
 ]
 
-const trianglequadGauss36w = (@SVector [
+const trianglequadGauss36w = ( [
   0.0166240998757,
   0.0166811699778,
   0.0166830569067,
@@ -390,7 +390,7 @@ const trianglequadGauss36w = (@SVector [
   0.1035854367193
 ]) ./ 2
 
-const trianglequadGauss78a = @SVector [
+const trianglequadGauss78a =  [
   0.0089411337112,
   0.9792622629807,
   0.0105475382112,
@@ -471,7 +471,7 @@ const trianglequadGauss78a = @SVector [
   0.3729077987144
 ]
 
-const trianglequadGauss78b = @SVector [
+const trianglequadGauss78b =  [
   0.0086983293702,
   0.0102644133744,
   0.9785514202515,
@@ -552,7 +552,7 @@ const trianglequadGauss78b = @SVector [
   0.3753750277549
 ]
 
-const trianglequadGauss78w = (@SVector [
+const trianglequadGauss78w = ( [
   0.0021744545399,
   0.0028987135265,
   0.0030846029337,
@@ -633,7 +633,7 @@ const trianglequadGauss78w = (@SVector [
   0.0637206605672
 ]) ./ 2
 
-const trianglequadGauss105a = @SVector [
+const trianglequadGauss105a =  [
   0.0087809303836,
   0.9903675314220,
   0.0027029276450,
@@ -741,7 +741,7 @@ const trianglequadGauss105a = @SVector [
   0.4098894602340
 ]
 
-const trianglequadGauss105b = @SVector [
+const trianglequadGauss105b =  [
   0.9903676436772,
   0.0087809216232,
   0.0335914404439,
@@ -849,7 +849,7 @@ const trianglequadGauss105b = @SVector [
   0.4098894317792,
 ]
 
-const trianglequadGauss105w = (@SVector [
+const trianglequadGauss105w = ( [
   0.0006438298261,
   0.0006438413076,
   0.0010134735710,
@@ -957,7 +957,7 @@ const trianglequadGauss105w = (@SVector [
   0.0398766879831
 ]) ./ 2
 
-const trianglequadGauss120a = @SVector [
+const trianglequadGauss120a =  [
   0.0082881595033,
   0.4618422030241,
   0.0071066441239,
@@ -1080,7 +1080,7 @@ const trianglequadGauss120a = @SVector [
   0.3361523347440
 ]
 
-const trianglequadGauss120b = @SVector [
+const trianglequadGauss120b =  [
   0.9848202768869,
   0.5381577969759,
   0.0080842361390,
@@ -1203,7 +1203,7 @@ const trianglequadGauss120b = @SVector [
   0.2778500044356
 ]
 
-const trianglequadGauss120w = (@SVector [
+const trianglequadGauss120w = ( [
   0.0014873417859,
   0.0014889035262,
   0.0015005944380,
@@ -1326,7 +1326,7 @@ const trianglequadGauss120w = (@SVector [
   0.0371924811018
 ]) ./ 2
 
-const trianglequadGauss400a = @SVector [
+const trianglequadGauss400a =  [
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
@@ -1408,7 +1408,7 @@ const trianglequadGauss400a = @SVector [
   9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01,
   9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01 ]
 
-const trianglequadGauss400b = @SVector [
+const trianglequadGauss400b =  [
   3.4238963701627881e-03, 1.7952145528977594e-02, 4.3732017769028415e-02, 8.0165141146159247e-02, 1.2639828298375833e-01,
   1.8134795437803311e-01, 2.4372624180423841e-01, 3.1207107651919747e-01, 3.8478052619624081e-01, 4.6015035032944468e-01,
   5.3641394926310271e-01, 6.1178377339630663e-01, 6.8449322307334992e-01, 7.5283805778830903e-01, 8.1521634521451436e-01,
@@ -1490,7 +1490,7 @@ const trianglequadGauss400b = @SVector [
   1.8493113036459207e-03, 2.1091521745159178e-03, 2.3598212843598133e-03, 2.5954431871045409e-03, 2.8104951487431724e-03,
   2.9999366212862710e-03, 3.1593274647212558e-03, 3.2849323021439448e-03, 3.3738095753870568e-03, 3.4238963701627881e-03 ]
 
-const trianglequadGauss400w = (@SVector [
+const trianglequadGauss400w = ( [
   3.0918731028920757e-04, 7.1269681990617786e-04, 1.1001132168084852e-03, 1.4617975077641802e-03, 1.7892294090025515e-03,
   2.0747266161171671e-03, 2.3115952886863795e-03, 2.4942827316709218e-03, 2.6185066288951639e-03, 2.6813551585055523e-03,
   2.6813551585055523e-03, 2.6185066288951639e-03, 2.4942827316709218e-03, 2.3115952886863795e-03, 2.0747266161171671e-03,
@@ -1572,7 +1572,7 @@ const trianglequadGauss400w = (@SVector [
   9.2440929444984856e-06, 9.0274198017032943e-06, 8.5991523085940462e-06, 7.9693291024496169e-06, 7.1527136615879260e-06,
   6.1684491528038026e-06, 5.0396128931087845e-06, 3.7926899737209111e-06, 2.4570544575427101e-06, 1.0659372088425298e-06 ]) ./ 2
 
-const trianglequadGauss900a = @SVector [
+const trianglequadGauss900a =  [
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
@@ -1754,7 +1754,7 @@ const trianglequadGauss900a = @SVector [
   9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01,
   9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01 ]
 
-const trianglequadGauss900b = @SVector [
+const trianglequadGauss900b =  [
   1.5508453523766334e-03, 8.1532545513458305e-03, 1.9958019337560785e-02, 3.6842661103375078e-02, 5.8628525212516977e-02,
   8.5084754640270099e-02, 1.1593093317123887e-01, 1.5084009454090175e-01, 1.8944219814142918e-01, 2.3132805481318516e-01,
   2.7605366563067762e-01, 3.2314492896492530e-01, 3.7210266635129818e-01, 4.2240791404863498e-01, 4.7352742426565486e-01,
@@ -1936,7 +1936,7 @@ const trianglequadGauss900b = @SVector [
   1.1933868468703306e-03, 1.2585475987258832e-03, 1.3185999002349133e-03, 1.3729071863272115e-03, 1.4208937943295222e-03,
   1.4620510712185931e-03, 1.4959427806874798e-03, 1.5222097843898060e-03, 1.5405741538946657e-03, 1.5508453523766334e-03 ]
 
-const trianglequadGauss900w = (@SVector [
+const trianglequadGauss900w = ( [
   6.3393472058975955e-05, 1.4691582105612550e-04, 2.2900583486229500e-04, 3.0867923073618977e-04, 3.8508275109363019e-04,
   4.5740496279664960e-04, 5.2487882297804151e-04, 5.8678895194472442e-04, 6.4247903025549066e-04, 6.9135870330888595e-04,
   7.3290982143010656e-04, 7.6669192547512504e-04, 7.9234691283714938e-04, 8.0960283204461417e-04, 8.1827676484210919e-04,
@@ -2118,7 +2118,7 @@ const trianglequadGauss900w = (@SVector [
   1.0755289849393060e-06, 9.9948813249661188e-07, 9.1285250744394168e-07, 8.1654050927813780e-07, 7.1157315730367923e-07,
   5.9906334934258464e-07, 4.8020435429046972e-07, 3.5625849784750484e-07, 2.2855317093104202e-07, 9.8619596931444806e-08 ]) ./ 2
 
-const trianglequadGaussA = @SVector [
+const trianglequadGaussA =  [
   trianglequadGauss1a,
   trianglequadGauss3a,
   trianglequadGauss4a,
@@ -2134,7 +2134,7 @@ const trianglequadGaussA = @SVector [
   trianglequadGauss900a
 ]
 
-const trianglequadGaussB = @SVector [
+const trianglequadGaussB =  [
   trianglequadGauss1b,
   trianglequadGauss3b,
   trianglequadGauss4b,
@@ -2150,7 +2150,7 @@ const trianglequadGaussB = @SVector [
   trianglequadGauss900b
 ]
 
-const trianglequadGaussW = @SVector [
+const trianglequadGaussW =  [
   trianglequadGauss1w,
   trianglequadGauss3w,
   trianglequadGauss4w,

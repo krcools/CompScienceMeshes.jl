@@ -27,9 +27,19 @@ function trgauss(n)
 end
 
 function trgauss(trqd::TriangleQuadDunavant)
+    # n = trqd.order
+    # @assert 1 <= n <= length(trianglequadDunavantA)
+    # u = copy(transpose([trianglequadDunavantA[n] trianglequadDunavantB[n]]))
+    # w = trianglequadDunavantW[n]
+    # return u, w/2
+
     n = trqd.order
     @assert 1 <= n <= length(trianglequadDunavantA)
-    u = copy(transpose([trianglequadDunavantA[n] trianglequadDunavantB[n]]))
+    A = trianglequadDunavantA[n]
+    B = trianglequadDunavantB[n]
+    T = eltype(A)
+    AB = [A, B]
+    u = T[AB[i][j] for i in (1,2), j in 1:length(A)]
     w = trianglequadDunavantW[n]
     return u, w/2
 end
@@ -37,7 +47,11 @@ end
 function trgauss(trqd::TriangleQuadLegacy)
     n = trqd.order
     @assert 1 <= n <= length(trianglequadGaussA)
-    u = copy(transpose([trianglequadGaussA[n] trianglequadGaussB[n]]))
+    A = trianglequadGaussA[n]
+    B = trianglequadGaussB[n]
+    T = eltype(A)
+    AB = [A, B]
+    u = T[AB[i][j] for i in (1,2), j in 1:length(A)]
     w = trianglequadGaussW[n]
     return u, w/2
 end
