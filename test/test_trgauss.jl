@@ -1,6 +1,7 @@
-using CompScienceMeshes
-using Test
+# using CompScienceMeshes
+# using Test
 
+@testitem "accuracy" begin
 ignd(x,y) = x^2 * cos(x*y)
 for T in [Float32, Float64]
     Iref = 0.082739596439277
@@ -25,4 +26,5 @@ for T in [Float32, Float64]
     for _q in 1 : N
         @test abs(J[_q]-Iref)/abs(Iref) <=  E[_q]*2.0
     end
+end
 end

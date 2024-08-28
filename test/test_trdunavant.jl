@@ -37,6 +37,8 @@ functions = [
 ]
 =#
 
+@testitem "accuracy" begin
+using StaticArrays
 ignd(x, y, order::Int) = (x^order + y^order + x^(ceil(order/2)) * y^(floor(order/2)))
 
 N = length(CompScienceMeshes.trianglequadDunavantW)
@@ -88,4 +90,5 @@ for T in @SVector [Float32, Float64]
         #@show abs(J[_q]-ana[_q])/abs(ana[_q])
         @test abs(J[_q]-ana[_q])/abs(ana[_q]) <= tol*eps(T)
     end
+end
 end

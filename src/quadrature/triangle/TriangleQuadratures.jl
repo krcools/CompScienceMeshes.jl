@@ -3,7 +3,7 @@ include("TriangleGauss.jl")
 
 export trgauss
 export TriangleQuadDunavant
-export TriangleQuadGauss
+export TriangleQuadLegacy
 
 abstract type TriangleQuadrature end
 
@@ -11,7 +11,7 @@ struct TriangleQuadDunavant{I} <: TriangleQuadrature
     order::I
 end
 
-struct TriangleQuadGauss{I} <: TriangleQuadrature
+struct TriangleQuadLegacy{I} <: TriangleQuadrature
     order::I
 end
 
@@ -23,7 +23,7 @@ with Q the number of quadrature points and a Vector w of size (Q,) containing
 the quadrature weights.
 """
 function trgauss(n)
-    return trgauss(TriangleQuadGauss(n))
+    return trgauss(TriangleQuadLegacy(n))
 end
 
 function trgauss(trqd::TriangleQuadDunavant)
@@ -34,7 +34,7 @@ function trgauss(trqd::TriangleQuadDunavant)
     return u, w/2
 end
 
-function trgauss(trqd::TriangleQuadGauss)
+function trgauss(trqd::TriangleQuadLegacy)
     n = trqd.order
     @assert 1 <= n <= length(trianglequadGaussA)
     u = copy(transpose([trianglequadGaussA[n] trianglequadGaussB[n]]))
