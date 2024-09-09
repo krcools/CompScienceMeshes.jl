@@ -95,7 +95,7 @@ include("utils/circumctr.jl")
 
 # quadrature rules for segements, triangles, and squares
 include("quadrature/SegmentGauss.jl")
-include("quadrature/TriangleGauss.jl")
+include("quadrature/triangle/TriangleQuadratures.jl")
 include("quadrature/SquareGauss.jl")
 
 # mesh component

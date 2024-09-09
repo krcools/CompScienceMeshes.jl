@@ -1,75 +1,79 @@
-export triangleGaussA, triangleGaussB, triangleGaussW
-export trgauss
+# First seven cubature rules based on the paper
+# Dunavant, D. A. “High Degree Efficient Symmetrical Gaussian Quadrature 
+# Rules for the Triangle.” International Journal for Numerical Methods 
+# in Engineering 21, no. 6 (1985): 1129–48. https://doi.org/10.1002/nme.1620210612.
 
-const Trianglegauss1a = [
+# TODO: Add reference to higher order cubature rules
+
+const trianglequadGauss1a =  [
   0.333333333333333,
 ]
 
-const Trianglegauss1b = [
+const trianglequadGauss1b =  [
   0.333333333333333,
 ]
 
-const Trianglegauss1c = [
+const trianglequadGauss1c =  [
   0.333333333333333,
 ]
 
-const Trianglegauss1w = [
+const trianglequadGauss1w =  [
   1.0,
 ]
 
-const Trianglegauss3a = [
+const trianglequadGauss3a =  [
   0.666666666666667,
   0.166666666666667,
   0.166666666666667,
 ]
 
-const Trianglegauss3b = [
+const trianglequadGauss3b =  [
   0.166666666666667,
   0.666666666666667,
   0.166666666666667,
 ]
 
-const Trianglegauss3c = [
+const trianglequadGauss3c =  [
   0.166666666666667,
   0.166666666666667,
   0.666666666666667,
 ]
 
-const Trianglegauss3w = [
+const trianglequadGauss3w =  [
   0.333333333333333,
   0.333333333333333,
   0.333333333333333,
 ]
 
-const Trianglegauss4a = [
+const trianglequadGauss4a =  [
   0.333333333333333,
   0.6,
   0.2,
   0.2,
 ]
 
-const Trianglegauss4b = [
+const trianglequadGauss4b =  [
   0.333333333333333,
   0.2,
   0.6,
   0.2,
 ]
 
-const Trianglegauss4c = [
+const trianglequadGauss4c =  [
   0.333333333333333,
   0.2,
   0.2,
   0.6,
 ]
 
-const Trianglegauss4w = [
+const trianglequadGauss4w =  [
   -0.562500000000000,
   0.520833333333333,
   0.520833333333333,
   0.520833333333333,
 ]
 
-const Trianglegauss6a = [
+const trianglequadGauss6a =  [
   0.816847572980459,
   0.091576213509771,
   0.091576213509771,
@@ -78,7 +82,7 @@ const Trianglegauss6a = [
   0.445948490915965,
 ]
 
-const Trianglegauss6b = [
+const trianglequadGauss6b =  [
   0.091576213509771,
   0.816847572980459,
   0.091576213509771,
@@ -87,7 +91,7 @@ const Trianglegauss6b = [
   0.445948490915965,
 ]
 
-const Trianglegauss6c = [
+const trianglequadGauss6c =  [
   0.091576213509771,
   0.091576213509771,
   0.816847572980459,
@@ -96,7 +100,7 @@ const Trianglegauss6c = [
   0.108103018168070,
 ]
 
-const Trianglegauss6w = [
+const trianglequadGauss6w =  [
   0.109951743655322,
   0.109951743655322,
   0.109951743655322,
@@ -105,7 +109,7 @@ const Trianglegauss6w = [
   0.223381589678011,
 ]
 
-const Trianglegauss7a = [
+const trianglequadGauss7a =  [
   0.333333333333333,
   0.797426985353087,
   0.101286507323456,
@@ -115,7 +119,7 @@ const Trianglegauss7a = [
   0.470142064105115,
 ]
 
-const Trianglegauss7b = [
+const trianglequadGauss7b =  [
   0.333333333333333,
   0.101286507323456,
   0.797426985353087,
@@ -125,7 +129,7 @@ const Trianglegauss7b = [
   0.470142064105115,
 ]
 
-const Trianglegauss7c = [
+const trianglequadGauss7c =  [
   0.333333333333333,
   0.101286507323456,
   0.101286507323456,
@@ -135,7 +139,7 @@ const Trianglegauss7c = [
   0.059715871789770,
 ]
 
-const Trianglegauss7w = [
+const trianglequadGauss7w =  [
   0.225000000000000,
   0.125939180544827,
   0.125939180544827,
@@ -145,7 +149,7 @@ const Trianglegauss7w = [
   0.132394152788506,
 ]
 
-const Trianglegauss12a = [
+const trianglequadGauss12a =  [
   0.873821971016996,
   0.063089014491502,
   0.063089014491502,
@@ -160,7 +164,7 @@ const Trianglegauss12a = [
   0.053145049844816,
 ]
 
-const Trianglegauss12b = [
+const trianglequadGauss12b =  [
   0.063089014491502,
   0.873821971016996,
   0.063089014491502,
@@ -175,7 +179,7 @@ const Trianglegauss12b = [
   0.310352451033785,
 ]
 
-const Trianglegauss12c = [
+const trianglequadGauss12c =  [
   0.063089014491502,
   0.063089014491502,
   0.873821971016996,
@@ -190,7 +194,7 @@ const Trianglegauss12c = [
   0.636502499121399,
 ]
 
-const Trianglegauss12w = [
+const trianglequadGauss12w =  [
   0.050844906370207,
   0.050844906370207,
   0.050844906370207,
@@ -205,7 +209,7 @@ const Trianglegauss12w = [
   0.082851075618374,
 ]
 
-const Trianglegauss13a = [
+const trianglequadGauss13a =  [
   0.333333333333333,
   0.479308067841923,
   0.260345966079038,
@@ -221,7 +225,7 @@ const Trianglegauss13a = [
   0.0486903154253160,
 ]
 
-const Trianglegauss13b = [
+const trianglequadGauss13b =  [
   0.333333333333333,
   0.260345966079038,
   0.479308067841923,
@@ -237,7 +241,7 @@ const Trianglegauss13b = [
   0.312865496004875,
 ]
 
-const Trianglegauss13c = [
+const trianglequadGauss13c =  [
   0.333333333333333,
   0.260345966079038,
   0.260345966079038,
@@ -253,7 +257,7 @@ const Trianglegauss13c = [
   0.638444188569809,
 ]
 
-const Trianglegauss13w = [
+const trianglequadGauss13w =  [
   -0.149570044467670,
   0.175615257433204,
   0.175615257433204,
@@ -269,7 +273,7 @@ const Trianglegauss13w = [
   0.077113760890257,
 ]
 
-const Trianglegauss36a = [
+const trianglequadGauss36a =  [
   0.0242935351590,
   0.0265193427722,
   0.9492126023551,
@@ -308,7 +312,7 @@ const Trianglegauss36a = [
   0.2305424298836
 ]
 
-const Trianglegauss36b = [
+const trianglequadGauss36b =  [
   0.9493059293846,
   0.0242695130640,
   0.0265067966437,
@@ -347,7 +351,7 @@ const Trianglegauss36b = [
   0.3456013949376
 ]
 
-const Trianglegauss36w = [
+const trianglequadGauss36w = ( [
   0.0166240998757,
   0.0166811699778,
   0.0166830569067,
@@ -384,9 +388,9 @@ const Trianglegauss36w = [
   0.1025573374896,
   0.1033159661413,
   0.1035854367193
-] / 2
+]) ./ 2
 
-const Trianglegauss78a = [
+const trianglequadGauss78a =  [
   0.0089411337112,
   0.9792622629807,
   0.0105475382112,
@@ -467,7 +471,7 @@ const Trianglegauss78a = [
   0.3729077987144
 ]
 
-const Trianglegauss78b = [
+const trianglequadGauss78b =  [
   0.0086983293702,
   0.0102644133744,
   0.9785514202515,
@@ -548,7 +552,7 @@ const Trianglegauss78b = [
   0.3753750277549
 ]
 
-const Trianglegauss78w = [
+const trianglequadGauss78w = ( [
   0.0021744545399,
   0.0028987135265,
   0.0030846029337,
@@ -627,9 +631,9 @@ const Trianglegauss78w = [
   0.0634133183449,
   0.0635311861108,
   0.0637206605672
-] / 2
+]) ./ 2
 
-const Trianglegauss105a = [
+const trianglequadGauss105a =  [
   0.0087809303836,
   0.9903675314220,
   0.0027029276450,
@@ -737,7 +741,7 @@ const Trianglegauss105a = [
   0.4098894602340
 ]
 
-const Trianglegauss105b = [
+const trianglequadGauss105b =  [
   0.9903676436772,
   0.0087809216232,
   0.0335914404439,
@@ -845,7 +849,7 @@ const Trianglegauss105b = [
   0.4098894317792,
 ]
 
-const Trianglegauss105w = [
+const trianglequadGauss105w = ( [
   0.0006438298261,
   0.0006438413076,
   0.0010134735710,
@@ -951,9 +955,9 @@ const Trianglegauss105w = [
   0.0392705643548,
   0.0392705802517,
   0.0398766879831
-] / 2
+]) ./ 2
 
-const Trianglegauss120a = [
+const trianglequadGauss120a =  [
   0.0082881595033,
   0.4618422030241,
   0.0071066441239,
@@ -1076,7 +1080,7 @@ const Trianglegauss120a = [
   0.3361523347440
 ]
 
-const Trianglegauss120b = [
+const trianglequadGauss120b =  [
   0.9848202768869,
   0.5381577969759,
   0.0080842361390,
@@ -1199,7 +1203,7 @@ const Trianglegauss120b = [
   0.2778500044356
 ]
 
-const Trianglegauss120w = [
+const trianglequadGauss120w = ( [
   0.0014873417859,
   0.0014889035262,
   0.0015005944380,
@@ -1320,9 +1324,9 @@ const Trianglegauss120w = [
   0.0364656225016,
   0.0365172708706,
   0.0371924811018
-] / 2
+]) ./ 2
 
-const Trianglegauss400a = [
+const trianglequadGauss400a =  [
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
   3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03, 3.4357004074525577e-03,
@@ -1404,7 +1408,7 @@ const Trianglegauss400a = [
   9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01,
   9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01, 9.9656429959254744e-01 ]
 
-const Trianglegauss400b = [
+const trianglequadGauss400b =  [
   3.4238963701627881e-03, 1.7952145528977594e-02, 4.3732017769028415e-02, 8.0165141146159247e-02, 1.2639828298375833e-01,
   1.8134795437803311e-01, 2.4372624180423841e-01, 3.1207107651919747e-01, 3.8478052619624081e-01, 4.6015035032944468e-01,
   5.3641394926310271e-01, 6.1178377339630663e-01, 6.8449322307334992e-01, 7.5283805778830903e-01, 8.1521634521451436e-01,
@@ -1486,7 +1490,7 @@ const Trianglegauss400b = [
   1.8493113036459207e-03, 2.1091521745159178e-03, 2.3598212843598133e-03, 2.5954431871045409e-03, 2.8104951487431724e-03,
   2.9999366212862710e-03, 3.1593274647212558e-03, 3.2849323021439448e-03, 3.3738095753870568e-03, 3.4238963701627881e-03 ]
 
-const Trianglegauss400w = [
+const trianglequadGauss400w = ( [
   3.0918731028920757e-04, 7.1269681990617786e-04, 1.1001132168084852e-03, 1.4617975077641802e-03, 1.7892294090025515e-03,
   2.0747266161171671e-03, 2.3115952886863795e-03, 2.4942827316709218e-03, 2.6185066288951639e-03, 2.6813551585055523e-03,
   2.6813551585055523e-03, 2.6185066288951639e-03, 2.4942827316709218e-03, 2.3115952886863795e-03, 2.0747266161171671e-03,
@@ -1566,9 +1570,9 @@ const Trianglegauss400w = [
   1.0659372088425298e-06, 2.4570544575427101e-06, 3.7926899737209111e-06, 5.0396128931087845e-06, 6.1684491528038026e-06,
   7.1527136615879260e-06, 7.9693291024496169e-06, 8.5991523085940462e-06, 9.0274198017032943e-06, 9.2440929444984856e-06,
   9.2440929444984856e-06, 9.0274198017032943e-06, 8.5991523085940462e-06, 7.9693291024496169e-06, 7.1527136615879260e-06,
-  6.1684491528038026e-06, 5.0396128931087845e-06, 3.7926899737209111e-06, 2.4570544575427101e-06, 1.0659372088425298e-06 ] / 2
+  6.1684491528038026e-06, 5.0396128931087845e-06, 3.7926899737209111e-06, 2.4570544575427101e-06, 1.0659372088425298e-06 ]) ./ 2
 
-const Trianglegauss900a = [
+const trianglequadGauss900a =  [
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
   1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03, 1.5532579626752474e-03,
@@ -1750,7 +1754,7 @@ const Trianglegauss900a = [
   9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01,
   9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01, 9.9844674203732475e-01 ]
 
-const Trianglegauss900b = [
+const trianglequadGauss900b =  [
   1.5508453523766334e-03, 8.1532545513458305e-03, 1.9958019337560785e-02, 3.6842661103375078e-02, 5.8628525212516977e-02,
   8.5084754640270099e-02, 1.1593093317123887e-01, 1.5084009454090175e-01, 1.8944219814142918e-01, 2.3132805481318516e-01,
   2.7605366563067762e-01, 3.2314492896492530e-01, 3.7210266635129818e-01, 4.2240791404863498e-01, 4.7352742426565486e-01,
@@ -1932,7 +1936,7 @@ const Trianglegauss900b = [
   1.1933868468703306e-03, 1.2585475987258832e-03, 1.3185999002349133e-03, 1.3729071863272115e-03, 1.4208937943295222e-03,
   1.4620510712185931e-03, 1.4959427806874798e-03, 1.5222097843898060e-03, 1.5405741538946657e-03, 1.5508453523766334e-03 ]
 
-const Trianglegauss900w = [
+const trianglequadGauss900w = ( [
   6.3393472058975955e-05, 1.4691582105612550e-04, 2.2900583486229500e-04, 3.0867923073618977e-04, 3.8508275109363019e-04,
   4.5740496279664960e-04, 5.2487882297804151e-04, 5.8678895194472442e-04, 6.4247903025549066e-04, 6.9135870330888595e-04,
   7.3290982143010656e-04, 7.6669192547512504e-04, 7.9234691283714938e-04, 8.0960283204461417e-04, 8.1827676484210919e-04,
@@ -2112,66 +2116,52 @@ const Trianglegauss900w = [
   1.1401689926257982e-06, 1.1927229445739803e-06, 1.2326337497523175e-06, 1.2594783402385204e-06, 1.2729721547988522e-06,
   1.2729721547988522e-06, 1.2594783402385204e-06, 1.2326337497523175e-06, 1.1927229445739803e-06, 1.1401689926257982e-06,
   1.0755289849393060e-06, 9.9948813249661188e-07, 9.1285250744394168e-07, 8.1654050927813780e-07, 7.1157315730367923e-07,
-  5.9906334934258464e-07, 4.8020435429046972e-07, 3.5625849784750484e-07, 2.2855317093104202e-07, 9.8619596931444806e-08 ] / 2
+  5.9906334934258464e-07, 4.8020435429046972e-07, 3.5625849784750484e-07, 2.2855317093104202e-07, 9.8619596931444806e-08 ]) ./ 2
 
-const triangleGaussA = Vector{Float64}[
-  Trianglegauss1a,
-  Trianglegauss3a,
-  Trianglegauss4a,
-  Trianglegauss6a,
-  Trianglegauss7a,
-  Trianglegauss12a,
-  Trianglegauss13a,
-  Trianglegauss36a,
-  Trianglegauss78a,
-  Trianglegauss105a,
-  Trianglegauss120a,
-  Trianglegauss400a,
-  Trianglegauss900a
+const trianglequadGaussA =  [
+  trianglequadGauss1a,
+  trianglequadGauss3a,
+  trianglequadGauss4a,
+  trianglequadGauss6a,
+  trianglequadGauss7a,
+  trianglequadGauss12a,
+  trianglequadGauss13a,
+  trianglequadGauss36a,
+  trianglequadGauss78a,
+  trianglequadGauss105a,
+  trianglequadGauss120a,
+  trianglequadGauss400a,
+  trianglequadGauss900a
 ]
 
-const triangleGaussB = Vector{Float64}[
-  Trianglegauss1b,
-  Trianglegauss3b,
-  Trianglegauss4b,
-  Trianglegauss6b,
-  Trianglegauss7b,
-  Trianglegauss12b,
-  Trianglegauss13b,
-  Trianglegauss36b,
-  Trianglegauss78b,
-  Trianglegauss105b,
-  Trianglegauss120b,
-  Trianglegauss400b,
-  Trianglegauss900b
+const trianglequadGaussB =  [
+  trianglequadGauss1b,
+  trianglequadGauss3b,
+  trianglequadGauss4b,
+  trianglequadGauss6b,
+  trianglequadGauss7b,
+  trianglequadGauss12b,
+  trianglequadGauss13b,
+  trianglequadGauss36b,
+  trianglequadGauss78b,
+  trianglequadGauss105b,
+  trianglequadGauss120b,
+  trianglequadGauss400b,
+  trianglequadGauss900b
 ]
 
-const triangleGaussW = Vector{Float64}[
-  Trianglegauss1w,
-  Trianglegauss3w,
-  Trianglegauss4w,
-  Trianglegauss6w,
-  Trianglegauss7w,
-  Trianglegauss12w,
-  Trianglegauss13w,
-  Trianglegauss36w,
-  Trianglegauss78w,
-  Trianglegauss105w,
-  Trianglegauss120w,
-  Trianglegauss400w,
-  Trianglegauss900w
+const trianglequadGaussW =  [
+  trianglequadGauss1w,
+  trianglequadGauss3w,
+  trianglequadGauss4w,
+  trianglequadGauss6w,
+  trianglequadGauss7w,
+  trianglequadGauss12w,
+  trianglequadGauss13w,
+  trianglequadGauss36w,
+  trianglequadGauss78w,
+  trianglequadGauss105w,
+  trianglequadGauss120w,
+  trianglequadGauss400w,
+  trianglequadGauss900w
 ]
-
-"""
-    trgauss(n) -> (u,w)
-
-Returns the n-th triangle quadrature rule. Returns a Matrix u of size (Q,2)
-with Q the number of quadrature points and a Vector w of size (Q,) containing
-the quadrature weights.
-"""
-function trgauss(n)
-    @assert 1 <= n <= length(triangleGaussA)
-    u = copy(transpose([triangleGaussA[n] triangleGaussB[n]]))
-    w = triangleGaussW[n]
-    return u, w/2
-end
