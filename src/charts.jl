@@ -145,7 +145,7 @@ of vertices supplied minus one.
     end
 end
 
-simplex(vertices...) = simplex(SVector((vertices...,)))
+simplex(vertices::SVector{N,T}...) where {N,T<:Number} = simplex(SVector((vertices...,)))
 
 @generated function simplex(vertices, ::Type{Val{D}}) where D
     P = eltype(vertices)
@@ -320,7 +320,7 @@ function edges(s::Simplex{3,2})
         simplex(s.vertices[1], s.vertices[2])]
 end
 
-function faces(c)
+function faces(c::Simplex{3,2})
     @SVector[
         simplex(c[2], c[3]),
         simplex(c[3], c[1]),
@@ -335,6 +335,10 @@ function faces(c::CompScienceMeshes.Simplex{3,3,0,4,T}) where {T}
         simplex(c[1],c[4],c[2]),
         simplex(c[1],c[2],c[3])
     ]
+end
+
+function faces(ch::Simplex{3,2}, ::Type{Val{0}})
+    simplex.(ch.vertices)
 end
 
 
@@ -377,13 +381,26 @@ function faces(c::ReferenceSimplex{2})
         simplex(p[1], p[2]))
 end
 
+function faces(ch::ReferenceSimplex{2}, ::Type{Val{0}})
+    simplex.(vertices(ch))
+end
 
 barytocart(ch::ReferenceSimplex, u) = u # barytocart(ch.simplex, u)
 carttobary(ch::ReferenceSimplex, p) = SVector{2}(p[1:2]) # carttobary(ch.simplex, p)
 
-domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} = ReferenceSimplex{D,T,N}()
+function domain(ch::Simplex{U,D,C,N,T}) where {U,D,C,T,N} ReferenceSimplex{D,T,N}() end
+function domain(ch::ReferenceSimplex) ch end
+
 neighborhood(ch::ReferenceSimplex, u) = SVector(u)
 neighborhood(ch::ReferenceSimplex, u::AbstractVector) = SVector{length(u)}(u)
+
+function vertices(ch::ReferenceSimplex{1,T}) where {T}
+    SVector(
+        point(T,1),
+        point(T,0),
+    )
+end
+
 function vertices(ch::ReferenceSimplex{2,T}) where {T}
     SVector(
         point(T,1,0),

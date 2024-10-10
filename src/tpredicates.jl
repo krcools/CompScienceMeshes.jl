@@ -8,6 +8,22 @@ function in(mesh::CompScienceMeshes.AbstractMesh)
     return f
 end
 
+function setminus(m1::AbstractMesh, m2::AbstractMesh)
+    m = submesh(!in(m2), m1)
+end
+
+@testitem "setminus" begin
+    m1 = meshrectangle(1.0, 1.0, 0.5, 3)
+    m2 = submesh(m1) do m,c
+        ch = chart(m,c)
+        x = cartesian(center(ch))
+        x[1] < 0.5
+    end
+    m3 = setminus(m1,m2)
+    @test length(m2) == 4
+    @test length(m3) == 4
+end
+
 """
 Creates a predicate that can be used to check wheter an edge is interior to
 a surface (true) or on its boundary (false). This predicate is based on combinatorics.
