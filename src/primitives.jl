@@ -248,73 +248,134 @@ Plane Surface(1) = {1};
 end
 
 
+# """
+#     meshsphere(radius, delta)
+#     meshsphere(;radius, h)
+
+# Create a mesh of a sphere of radius `radius` by parsing a .geo script
+#     incorporating these parameters into the GMSH mesher.
+
+# The target edge size is `delta`.
+# """
+# function meshsphere(radius, delta; tempname=tempname())
+#     s = """
+# lc = $delta;
+
+# Point(1)={0,0,0,lc};
+# Point(2)={$radius,0,0,lc};
+# Point(3)={0,$radius,0,lc};
+# Point(4)={-$radius,0,0,lc};
+# Point(5)={0,-$radius,0,lc};
+# Point(6)={0,0,$radius,lc};
+# Point(7)={0,0,-$radius,lc};
+
+# Circle(1)={2,1,3};
+# Circle(2)={3,1,4};
+# Circle(3)={4,1,5};
+# Circle(4)={5,1,2};
+# Circle(5)={6,1,3};
+# Circle(6)={3,1,7};
+# Circle(7)={7,1,5};
+# Circle(8)={5,1,6};
+
+# Line Loop(1)={-1,-6,-7,-4};
+# Line Loop(2)={1,-5,-8,4};
+# Line Loop(3)={-2,-3,7,6};
+# Line Loop(4)={2,3,8,5};
+
+# Ruled Surface(1)={1} In Sphere{1};
+# Ruled Surface(2)={2} In Sphere{1};
+# Ruled Surface(3)={3} In Sphere{1};
+# Ruled Surface(4)={4} In Sphere{1};
+# """
+
+#     fn = tempname
+#     io = open(fn, "w")
+#     try
+#         print(io, s)
+#     finally
+#         close(io)
+#     end
+#     fno = tempname * ".msh"
+
+#     gmsh.initialize()
+#     gmsh.option.setNumber("Mesh.MshFileVersion",2)
+#     gmsh.open(fn)
+#     gmsh.model.mesh.generate(2)
+#     gmsh.write(fno)
+#     gmsh.finalize()
+
+#     m = read_gmsh_mesh(fno)
+
+#     rm(fno)
+#     rm(fn)
+
+#     return m
+
+# end
+
+
 """
-    meshsphere(radius, delta)
-    meshsphere(;radius, h)
+    meshsphere(radius, h)
 
-Create a mesh of a sphere of radius `radius` by parsing a .geo script
-    incorporating these parameters into the GMSH mesher.
+Create a mesh of a sphere of radius `radius` centered at 0.
 
-The target edge size is `delta`.
+The target edge size is `h`.
 """
-function meshsphere(radius, delta; tempname=tempname())
-    s = """
-lc = $delta;
-
-Point(1)={0,0,0,lc};
-Point(2)={$radius,0,0,lc};
-Point(3)={0,$radius,0,lc};
-Point(4)={-$radius,0,0,lc};
-Point(5)={0,-$radius,0,lc};
-Point(6)={0,0,$radius,lc};
-Point(7)={0,0,-$radius,lc};
-
-Circle(1)={2,1,3};
-Circle(2)={3,1,4};
-Circle(3)={4,1,5};
-Circle(4)={5,1,2};
-Circle(5)={6,1,3};
-Circle(6)={3,1,7};
-Circle(7)={7,1,5};
-Circle(8)={5,1,6};
-
-Line Loop(1)={-1,-6,-7,-4};
-Line Loop(2)={1,-5,-8,4};
-Line Loop(3)={-2,-3,7,6};
-Line Loop(4)={2,3,8,5};
-
-Ruled Surface(1)={1} In Sphere{1};
-Ruled Surface(2)={2} In Sphere{1};
-Ruled Surface(3)={3} In Sphere{1};
-Ruled Surface(4)={4} In Sphere{1};
-"""
-
-    fn = tempname
-    io = open(fn, "w")
-    try
-        print(io, s)
-    finally
-        close(io)
-    end
-    fno = tempname * ".msh"
+function meshsphere(radius, h)
+    fno = tempname() * ".msh"
 
     gmsh.initialize()
+    gmsh.model.add("sphere")
+    gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
+    gmsh.model.geo.addPoint(radius, 0.0, 0.0, h, 2)
+    gmsh.model.geo.addPoint(0.0, radius, 0.0, h, 3)
+    gmsh.model.geo.addPoint(-radius, 0.0, 0.0, h, 4)
+    gmsh.model.geo.addPoint(0.0, -radius, 0.0, h, 5)
+    gmsh.model.geo.addPoint(0.0, 0.0, -radius, h, 6)
+    gmsh.model.geo.addPoint(0.0, 0.0, radius, h, 7)
+
+    gmsh.model.geo.addCircleArc(2, 1, 3, 1)
+    gmsh.model.geo.addCircleArc(3, 1, 4, 2)
+    gmsh.model.geo.addCircleArc(4, 1, 5, 3)
+    gmsh.model.geo.addCircleArc(5, 1, 2, 4)
+    gmsh.model.geo.addCircleArc(3, 1, 6, 5)
+    gmsh.model.geo.addCircleArc(6, 1, 5, 6)
+    gmsh.model.geo.addCircleArc(5, 1, 7, 7)
+    gmsh.model.geo.addCircleArc(7, 1, 3, 8)
+    gmsh.model.geo.addCircleArc(2, 1, 7, 9)
+    gmsh.model.geo.addCircleArc(7, 1, 4, 10)
+    gmsh.model.geo.addCircleArc(4, 1, 6, 11)
+    gmsh.model.geo.addCircleArc(6, 1, 2, 12)
+
+    gmsh.model.geo.addCurveLoop([2, 8, -10], 13)
+    gmsh.model.geo.addSurfaceFilling([13], 14)
+    gmsh.model.geo.addCurveLoop([10, 3, 7], 15)
+    gmsh.model.geo.addSurfaceFilling([15], 16)
+    gmsh.model.geo.addCurveLoop([-8, -9, 1], 17)
+    gmsh.model.geo.addSurfaceFilling([17], 18)
+    gmsh.model.geo.addCurveLoop([-11, -2, 5], 19)
+    gmsh.model.geo.addSurfaceFilling([19], 20)
+    gmsh.model.geo.addCurveLoop([-5, -12, -1], 21)
+    gmsh.model.geo.addSurfaceFilling([21], 22)
+    gmsh.model.geo.addCurveLoop([-3, 11, 6], 23)
+    gmsh.model.geo.addSurfaceFilling([23], 24)
+    gmsh.model.geo.addCurveLoop([-7, 4, 9], 25)
+    gmsh.model.geo.addSurfaceFilling([25], 26)
+    gmsh.model.geo.addCurveLoop([-4, 12, -6], 27)
+    gmsh.model.geo.addSurfaceFilling([27], 28)
+
+    gmsh.model.geo.synchronize()
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
-    gmsh.open(fn)
     gmsh.model.mesh.generate(2)
+    # gmsh.fltk.run()
     gmsh.write(fno)
     gmsh.finalize()
 
-    m = read_gmsh_mesh(fno)
-
+    m = CompScienceMeshes.read_gmsh_mesh(fno)
     rm(fno)
-    rm(fn)
-
     return m
-
 end
-
-meshsphere(;radius, h) = meshsphere(radius, h)
 
 """
 not working yet
@@ -1343,6 +1404,95 @@ function meshstarpyramid(majorradius, minorradius, nbofpoints, height, h)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.model.mesh.generate(2)
     # gmsh.fltk.run()
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    m = CompScienceMeshes.read_gmsh_mesh(fno)
+    rm(fno)
+    return m
+end
+
+
+
+"""
+    meshopenbook(angle, nbofpages, h)
+
+Create a mesh of 3D open-book polyhedra characterized by the opening angle `angle`, and the number of pages `nbofpages` ≥ 2. The polyhedron lies between the planes  z = 0 and z = −1.
+The definition of this geometry is in: Chandler-Wilde, S. N. and Spence, E. A. Numerische Mathematik , Vol. 150, No. 2, p. 299-371, 2022. 
+
+The target edge size is `h`.
+"""
+function meshopenbook(angle, nbofpages, h)
+    @assert nbofpages ≥ 2
+    
+    fno = tempname() * ".msh"
+    gmsh.initialize()
+    gmsh.model.add("openbook")
+
+    # parameters
+    θn = angle/(2*nbofpages - 1)
+    η = angle^2/(4*π*(2*nbofpages - 1))
+    r1 = cos(θn/2 + η)/cos(θn/2)
+    r2 = sin(η)/sin(θn/2)
+
+    # top plate (z = 0)
+    gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
+
+    for i in 1:nbofpages
+        gmsh.model.geo.addPoint(cos((2*i-2)*θn), sin((2*i-2)*θn), 0.0, h, 9*i+1)
+        gmsh.model.geo.addLine(1, 9*i+1, 9*i+1)
+
+        gmsh.model.geo.addPoint(cos((2*i-1)*θn), sin((2*i-1)*θn), 0.0, h, 9*i+2)
+        gmsh.model.geo.addLine(9*i+1, 9*i+2, 9*i+2)
+
+        gmsh.model.geo.addLine(9*i+2, 1, 9*i+3)
+        gmsh.model.geo.addCurveLoop([9*i+1, 9*i+2, 9*i+3], 9*i+1)
+        gmsh.model.geo.addPlaneSurface([9*i+1], 9*i+1)
+    end
+
+    # bottom plate (z = -1) and sides
+    gmsh.model.geo.addPoint(0.0, 0.0, -1.0, h, 2)
+    gmsh.model.geo.addLine(2, 1, 9)
+
+    base_curve_loop = Vector{Int}()
+    for i in 1:nbofpages
+        if i == 1
+            gmsh.model.geo.addPoint(r1, 0.0, -1.0, h, 9*i+4)
+            gmsh.model.geo.addLine(2, 9*i+4, 9*i+4)
+        else
+            gmsh.model.geo.addPoint(cos((2*i-2)*θn - η), sin((2*i-2)*θn - η), -1.0, h, 9*i+4)
+            gmsh.model.geo.addLine(9*i-3, 9*i+4, 9*i+4)            
+        end
+        gmsh.model.geo.addLine(9*i+4, 9*i+1, 9*i+7)
+        gmsh.model.geo.addCurveLoop([-(9*i), 9*i+4, 9*i+7, -(9*i+1)], 9*i+2)
+        gmsh.model.geo.addPlaneSurface([9*i+2], 9*i+2)
+
+        gmsh.model.geo.addPoint(cos((2*i-1)*θn + η), sin((2*i-1)*θn + η), -1.0, h, 9*i+5)
+        gmsh.model.geo.addLine(9*i+4, 9*i+5, 9*i+5)
+        gmsh.model.geo.addLine(9*i+5, 9*i+2, 9*i+8)
+        gmsh.model.geo.addCurveLoop([-(9*i+7), 9*i+5, 9*i+8, -(9*i+2)], 9*i+3)
+        gmsh.model.geo.addPlaneSurface([9*i+3], 9*i+3)
+
+        if i == nbofpages
+            gmsh.model.geo.addLine(9*i+5, 2, 9*i+6)
+            gmsh.model.geo.addCurveLoop([-(9*i+8), 9*i+6, 9, -(9*i+3)], 9*i+4)
+        else
+            gmsh.model.geo.addPoint(r2*cos((2*i-0.5)*θn), r2*sin((2*i-0.5)*θn), -1.0, h, 9*i+6)
+            gmsh.model.geo.addLine(9*i+5, 9*i+6, 9*i+6)
+            gmsh.model.geo.addLine(9*i+6, 1, 9*i+9)
+            gmsh.model.geo.addCurveLoop([-(9*i+8), 9*i+6, 9*i+9, -(9*i+3)], 9*i+4)
+        end
+        gmsh.model.geo.addPlaneSurface([9*i+4], 9*i+4)
+
+        append!(base_curve_loop, [-(9*i+4), -(9*i+5), -(9*i+6)])
+    end
+
+    gmsh.model.geo.addCurveLoop(base_curve_loop, 1)
+    gmsh.model.geo.addPlaneSurface([1], 1)
+
+    gmsh.model.geo.synchronize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.model.mesh.generate(2)
     gmsh.write(fno)
     gmsh.finalize()
 
