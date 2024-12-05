@@ -43,6 +43,14 @@ function __init__()
             return s
         end
 
+        @eval function patch(a::Vector{<:Simplex}; kwargs...)
+            vertices = reduce(vcat, [v.vertices for v in a])
+            faces = collect(SVector(3*(i-1)+1, 3*(i-1)+2, 3*(i-1)+3) for i in 1:length(a))
+            # faces = reduce(vcat, SVector(3*(i-1)+1, 3*(i-1)+2, 3*(i-1)+3) for i in 1:length(a))
+            mesh = Mesh(vertices, faces)
+            return patch(mesh; kwargs...)
+        end
+
         @eval function cones(mesh, arrows; sizeref=2, kwargs...)
             # normals = [normal(chart(mesh,cell)) for cell in mesh]
             centers = [cartesian(center(chart(mesh,cell))) for cell in mesh]
