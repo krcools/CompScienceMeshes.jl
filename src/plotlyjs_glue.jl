@@ -88,5 +88,24 @@ function __init__()
                 )
             )
         end
+
+        @eval function wireframe(simplices::Vector{S}; width=1, color="rgb(0,0,0)") where {S<:CompScienceMeshes.Simplex}
+            T = coordtype(simplices[1])
+            x = T[]
+            y = T[]
+            z = T[]
+            for s in simplices
+                v1, v2, v3 = s.vertices
+                append!(x, [v1[1],v2[1],v3[1],v1[1]])
+                append!(y, [v1[2],v2[2],v3[2],v1[2]])
+                append!(z, [v1[3],v2[3],v3[3],v1[3]])
+            end
+            return PlotlyJS.scatter3d(x=x,y=y,z=z,mode="lines",
+                line=PlotlyJS.attr(
+                    color=color,
+                    width=width
+                )
+            )
+        end
     end
 end
