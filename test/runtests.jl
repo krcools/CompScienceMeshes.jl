@@ -47,7 +47,12 @@ include("test_nbd.jl")
 include("test_mapper.jl")
 include("test_convert.jl")
 
+include("primitives/surfacemeshes/test_cuboid.jl")
+include("primitives/surfacemeshes/test_icosphere.jl")
+include("primitives/surfacemeshes/test_rectangle.jl")
+include("primitives/surfacemeshes/test_sphere.jl")
+include("primitives/volumemeshes/test_cuboid.jl")
+
 using TestItemRunner
 @run_package_tests
-
 end
