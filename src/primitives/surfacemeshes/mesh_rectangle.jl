@@ -45,10 +45,14 @@ of the rectangle, if true
 Also see gmsh function - gmshrectangle.
 """
 function meshrectangle(len::F, breadth::F, edge_length::F, udim = 3; 
-    boundary_only = false, generator = :compsciencemeshes) where F
-    if generator == :gmsh
+    boundary_only = false, generator = :compsciencemeshes, element=:triangle) where F
+    if generator == :gmsh && element == :triangle
+        @assert udim==3 
         msh = gmshrectangle(len, breadth, edge_length)
-    elseif generator == :compsciencemeshes
+    elseif generator == :compsciencemeshes && element == :quadrilateral
+        @assert udim==3
+        msh =  meshrectangle_quadrilateral(len, breadth, edge_length)
+    elseif generator == :compsciencemeshes && element == :triangle
         @info "Generating a structured mesh: The dimensions of the rectangle are 
             approximated by multiples of edge length.
             For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
@@ -172,3 +176,40 @@ function gmshrectangle(width, height, delta; tempname=tempname())
     return m
 
 end
+
+function meshrectangle_quadrilateral(width::T, height::T, delta::T) where {T}
+
+    nx = round(Int, ceil(width/delta));  nx = max(nx,1); dx = width/nx
+    ny = round(Int, ceil(height/delta)); ny = max(ny,1); dy = height/ny
+
+    xs = range(0, width, step=dx)
+    ys = range(0, height, step=dy)
+
+    vertices = Vector{SVector{3,T}}(undef, (nx+1)*(ny+1))
+    k = 1
+    for i in 1:nx+1
+        for j in 1:ny+1
+            vertices[k] = SVector{3,T}((i-1)*dx, (j-1)*dy, 0)
+            k += 1
+    end end
+
+    faces = Vector{SVector{4,Int}}(undef, nx*ny)
+    k = 1
+    for i in 1:nx
+        for j in 1:ny
+            faces[k] = SVector{4,Int}(
+                (i-1)*(ny+1) + j, i*(ny+1) + j, i*(ny+1) + j+1, (i-1)*(ny+1) + j+1)
+            k += 1
+    end end
+
+    return QuadMesh(vertices, faces)
+end
+
+@testitem "QuadMesh rectangle" begin
+    m = meshrectangle(2.0, 2.0, 1.0; element=:quadrilateral)
+    @test length(m) == 4
+    ch = chart(m, first(m))
+    p = neighborhood(ch, point(0.5, 0.5))
+    @test cartesian(p) ≈ point(0.5, 0.5, 0.0)
+end
+

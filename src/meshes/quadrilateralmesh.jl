@@ -56,7 +56,7 @@ end
 end
 
 @testitem "QuadMesh: skeleton" begin
-    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; structured=:quadrilateral)
+    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; element=:quadrilateral)
     @test length(m) == 4
 
     e = CompScienceMeshes.skeleton_fast(m,Val{1})
@@ -64,13 +64,13 @@ end
 end
 
 @testitem "QuadMesh: boundary" begin
-    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; structured=:quadrilateral)
+    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; element=:quadrilateral)
     b = CompScienceMeshes.boundary(m)
     @test length(b) == 8
 end
 
 @testitem "QuadMesh: connectivity" begin
-    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; structured=:quadrilateral)
+    m = CompScienceMeshes.meshrectangle(2.0, 2.0, 1.0; element=:quadrilateral)
     e = CompScienceMeshes.skeleton(m, 1)
     c = CompScienceMeshes.connectivity(e, m, identity)
     @test size(c) == (4,12)
