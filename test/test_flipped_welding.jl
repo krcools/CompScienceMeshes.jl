@@ -1,9 +1,9 @@
 using CompScienceMeshes
 using Test
 
-m1 = meshrectangle(1.0, 0.5, 0.1, 3)
+m1 = meshrectangle(1.0, 0.5, 0.1)
 m1 = CompScienceMeshes.translate(m1, [0.0, 0.5, 0.0])
-m2 = meshrectangle(1.0, 0.5, 0.1, 3)
+m2 = meshrectangle(1.0, 0.5, 0.1)
 
 nc1 = numcells(m1)
 nc2 = numcells(m2)
