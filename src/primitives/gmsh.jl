@@ -17,7 +17,7 @@ function meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs..
         str = replace(str, pat => sub)
     end
 
-    println(str)
+    # println(str)
     # return
     
     temp_geo = tempname
