@@ -98,11 +98,11 @@ for T in [Float32, Float64]
 
     #Test mesh cuboid parts
     deltaT = T(1/1)
-    box = meshcuboid(T(1.0),T(1.0),T(1.0),deltaT)
-    top = meshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="TopPlate")
-    sides = meshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="SidePlates")
-    bot = meshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="BottomPlate")
-    obox = meshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="OpenBox")
+    box = gmshcuboid(T(1.0),T(1.0),T(1.0),deltaT)
+    top = gmshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="TopPlate")
+    sides = gmshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="SidePlates")
+    bot = gmshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="BottomPlate")
+    obox = gmshcuboid(T(1.0),T(1.0),T(1.0),deltaT,physical="OpenBox")
 
     @test numcells(boundary(box)) == 0
     @test numcells(boundary(top)) == numcells(boundary(bot))  == 4
