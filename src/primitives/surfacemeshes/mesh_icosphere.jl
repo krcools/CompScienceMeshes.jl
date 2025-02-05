@@ -19,11 +19,11 @@ Using subdivision frequency, possible number of vertices grows with nu as
 For example, nu = 3, divides each triangle of the polygon of icosahedron to
 
                     .
-                   / \
+                   / \\
                   .---.
-                 /\\ / \
+                 /\\ / \\
                 .---.---.
-               /\\ /\\ / \
+               /\\ /\\ / \\
               .---.---.---.
 
 kwargs:
