@@ -1,5 +1,5 @@
 using StaticArrays
-using Delaunay
+# using Delaunay
 using GmshTools
 
 """
@@ -28,6 +28,7 @@ Also see function - gmshsphere.
 function meshsphere(radius::F, h::F; 
     delaunay =:(2D), generator=:compsciencemeshes) where F
     if generator == :compsciencemeshes
+        error("delaunay generator disabled waiting fix on Linux...")
         msh = mesh_sphere(radius, h; delaunay)
     elseif generator == :gmsh
         msh = gmshsphere(radius, h)
