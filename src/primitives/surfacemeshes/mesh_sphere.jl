@@ -26,7 +26,7 @@ has precedence over delaunay.
 Also see function - gmshsphere.
 """
 function meshsphere(radius::F, h::F; 
-    delaunay =:(2D), generator=:compsciencemeshes) where F
+    delaunay =:(2D), generator=:gmsh) where F
     if generator == :compsciencemeshes
         error("delaunay generator disabled waiting fix on Linux...")
         msh = mesh_sphere(radius, h; delaunay)
