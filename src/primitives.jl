@@ -550,6 +550,98 @@ Volume(1)={1};
 
 end
 
+function meshcuboidedgerefined(width::T, height::T, length::T, deltac::T, deltae::T;physical="ClosedBox", tempname=tempname()) where T
+    s =
+"""
+lc = $deltac;
+le = $deltae;
+
+Point(1)={0,0,0,le};
+Point(2)={0,0,$length,le};
+Point(3)={$width,0,$length,lc};
+Point(4)={$width,0,0,lc};
+Point(5)={0,$height,0,lc};
+Point(6)={0,$height,$length,lc};
+Point(7)={$width,$height,$length,lc};
+Point(8)={$width,$height,0,lc};
+Point(9)={0,$length/8,$length/8,lc};
+Point(10)={0,$length*7/8,$length/8,lc};
+Point(11)={0,$length/8,$length*7/8,lc};
+Point(12)={0,$length*7/8,$length*7/8,lc};
+Point(13)={0,$length*1/2,$length*1/2,lc};
+
+Line(1)={1,2};
+Line(2)={2,3};
+Line(3)={3,4};
+Line(4)={4,1};
+Line(5)={5,6};
+Line(6)={6,7};
+Line(7)={7,8};
+Line(8)={8,5};
+Line(9)={1,5};
+Line(10)={2,6};
+Line(11)={3,7};
+Line(12)={4,8};
+Line(13)={1,13};
+Line(14)={2,13};
+Line(15)={5,13};
+
+Line Loop(1)={-1,-2,-3,-4};
+Line Loop(2)={1,-9,-5,10};
+Line Loop(3)={2,-10,-6,11};
+Line Loop(4)={3,-11,-7,12};
+Line Loop(5)={4,-12,-8,9};
+Line Loop(6)={5,6,7,8};
+Line Loop(7)={1,14,-13};
+
+Plane Surface(1)={1};
+Plane Surface(2)={2};
+Plane Surface(3)={3};
+Plane Surface(4)={4};
+Plane Surface(5)={5};
+Plane Surface(6)={6};
+Plane Surface(7)={7};
+
+//classify parts of geometry
+Physical Surface("TopPlate") = {3};
+Physical Surface("BottomPlate") = {5};
+Physical Surface("SidePlates") = {1,2,4,6};
+Physical Surface("OpenBox") = {1,2,4,5,6};
+Physical Surface("ClosedBox") = {1,2,3,4,5,6};
+
+Surface Loop(1)={1,2,3,4,5,6,7};
+Volume(1)={1};
+
+"""
+
+    fn = tempname
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
+    # feed the file to gmsh
+    fno = tempname * ".msh"
+
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    # m = read_gmsh_mesh(fno)
+    m = read_gmsh_mesh(fno,physical=physical,T=T)
+
+    rm(fno)
+    rm(fn)
+
+    return m
+
+end
+
 function tetmeshcuboid(width, height, length, delta)
     s =
 """
@@ -1349,4 +1441,222 @@ function meshstarpyramid(majorradius, minorradius, nbofpoints, height, h)
     m = CompScienceMeshes.read_gmsh_mesh(fno)
     rm(fno)
     return m
+end
+
+
+"""
+    meshpentaprism(width, height, length, delta)
+
+Creates a mesh for a pentaprism of edge `width` and height (along
+    the z-axis) `height` by parsing a .geo script
+    incorporating these parameters into the GMSH mesher.
+
+The target edge size is `delta`.
+physical => in {"TopPlate", "BottomPlate", "SidePlates", "OpenBox"} extracts and
+returns only the specified part of the cuboid
+
+"""
+function meshpentaprism(edge::T, height::T, delta::T;physical="ClosedBox", tempname=tempname()) where T
+a=cosd(72)
+b=sind(72)
+c=cosd(36)
+x0, x1, x2, x3, x4 = edge*[0, 1, 1+a, 0.5, -a]
+y0, y1, y2, y3, y4 = edge*[0, 0, b, 2*c, b]
+    s =
+"""
+lc = $delta;
+
+Point(1)={$x0,$y0,0,lc};
+Point(2)={$x1,$y1,0,lc};
+Point(3)={$x2,$y2,0,lc};
+Point(4)={$x3,$y3,0,lc};
+Point(5)={$x4,$y4,0,lc};
+Point(6)={$x0,$y0,$height,lc};
+Point(7)={$x1,$y1,$height,lc};
+Point(8)={$x2,$y2,$height,lc};
+Point(9)={$x3,$y3,$height,lc};
+Point(10)={$x4,$y4,$height,lc};
+
+Line(1)={1,2};
+Line(2)={2,3};
+Line(3)={3,4};
+Line(4)={4,5};
+Line(5)={5,1};
+Line(6)={6,7};
+Line(7)={7,8};
+Line(8)={8,9};
+Line(9)={9,10};
+Line(10)={10,6};
+Line(11)={1,6};
+Line(12)={2,7};
+Line(13)={3,8};
+Line(14)={4,9};
+Line(15)={5,10};
+
+Line Loop(1)={1,2,3,4,5};
+Line Loop(2)={-6,-7,-8,-9,-10};
+Line Loop(3)={-1,-12,6,11};
+Line Loop(4)={-2,-13,7,12};
+Line Loop(5)={-3,-14,8,13};
+Line Loop(6)={-4,-15,9,14};
+Line Loop(7)={-5,-11,10,15};
+
+Plane Surface(1)={1};
+Plane Surface(2)={2};
+Plane Surface(3)={3};
+Plane Surface(4)={4};
+Plane Surface(5)={5};
+Plane Surface(6)={6};
+Plane Surface(7)={7};
+
+//classify parts of geometry
+Physical Surface("TopPlate") = {1};
+Physical Surface("BottomPlate") = {2};
+Physical Surface("SidePlates") = {3,4,5,6,7};
+Physical Surface("ClosedBox") = {1,2,3,4,5,6,7};
+
+Surface Loop(1)={1,2,3,4,5,6,7};
+Volume(1)={1};
+
+"""
+
+    fn = tempname
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
+    # feed the file to gmsh
+    fno = tempname * ".msh"
+
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    # m = read_gmsh_mesh(fno)
+    m = read_gmsh_mesh(fno,physical=physical,T=T)
+
+    rm(fno)
+    rm(fn)
+
+    return m
+
+end
+
+
+"""
+    meshpentaprism(width, height, length, delta)
+
+Creates a mesh for a pentaprism of edge `width` and height (along
+    the z-axis) `height` by parsing a .geo script
+    incorporating these parameters into the GMSH mesher.
+
+The target edge size is `delta`.
+physical => in {"TopPlate", "BottomPlate", "SidePlates", "OpenBox"} extracts and
+returns only the specified part of the cuboid
+
+"""
+function meshhexaprism(edge::T, height::T, delta::T;physical="ClosedBox", tempname=tempname()) where T
+a=cosd(60)
+b=sind(60)
+x0, x1, x2, x3, x4, x5 = edge*[0, 1, 1+a, 1, 0, -a]
+y0, y1, y2, y3, y4, y5 = edge*[0, 0, b, 2*b, 2*b, b]
+    s =
+"""
+lc = $delta;
+
+Point(1)={$x0,$y0,0,lc};
+Point(2)={$x1,$y1,0,lc};
+Point(3)={$x2,$y2,0,lc};
+Point(4)={$x3,$y3,0,lc};
+Point(5)={$x4,$y4,0,lc};
+Point(6)={$x5,$y5,0,lc};
+Point(7)={$x0,$y0,$height,lc};
+Point(8)={$x1,$y1,$height,lc};
+Point(9)={$x2,$y2,$height,lc};
+Point(10)={$x3,$y3,$height,lc};
+Point(11)={$x4,$y4,$height,lc};
+Point(12)={$x5,$y5,$height,lc};
+
+Line(1)={1,2};
+Line(2)={2,3};
+Line(3)={3,4};
+Line(4)={4,5};
+Line(5)={5,6};
+Line(6)={6,1};
+
+Line(7)={7,8};
+Line(8)={8,9};
+Line(9)={9,10};
+Line(10)={10,11};
+Line(11)={11,12};
+Line(12)={12,7};
+
+Line(13)={1,7};
+Line(14)={2,8};
+Line(15)={3,9};
+Line(16)={4,10};
+Line(17)={5,11};
+Line(18)={6,12};
+
+Line Loop(1)={1,2,3,4,5,6};
+Line Loop(2)={-7,-8,-9,-10,-11,-12};
+Line Loop(3)={-1,-14,7,13};
+Line Loop(4)={-2,-15,8,14};
+Line Loop(5)={-3,-16,9,15};
+Line Loop(6)={-4,-17,10,16};
+Line Loop(7)={-5,-18,11,17};
+Line Loop(8)={-6,-13,12,18};
+
+Plane Surface(1)={1};
+Plane Surface(2)={2};
+Plane Surface(3)={3};
+Plane Surface(4)={4};
+Plane Surface(5)={5};
+Plane Surface(6)={6};
+Plane Surface(7)={7};
+Plane Surface(8)={8};
+
+//classify parts of geometry
+Physical Surface("TopPlate") = {1};
+Physical Surface("BottomPlate") = {2};
+Physical Surface("SidePlates") = {3,4,5,6,7,8};
+Physical Surface("ClosedBox") = {1,2,3,4,5,6,7,8};
+
+Surface Loop(1)={1,2,3,4,5,6,7,8};
+Volume(1)={1};
+
+"""
+
+    fn = tempname
+    io = open(fn, "w")
+    try
+        print(io, s)
+    finally
+        close(io)
+    end
+
+    # feed the file to gmsh
+    fno = tempname * ".msh"
+
+    gmsh.initialize()
+    gmsh.option.setNumber("Mesh.MshFileVersion",2)
+    gmsh.open(fn)
+    gmsh.model.mesh.generate(2)
+    gmsh.write(fno)
+    gmsh.finalize()
+
+    # m = read_gmsh_mesh(fno)
+    m = read_gmsh_mesh(fno,physical=physical,T=T)
+
+    rm(fno)
+    rm(fn)
+
+    return m
+
 end
