@@ -213,3 +213,31 @@ end
     @test cartesian(p) ≈ point(0.5, 0.5, 0.0)
 end
 
+function meshrectangle_unit_tri_2graded(h::T, udim) where {T}
+    ds = h^2 / 2
+    s = range(0, 1/2-ds/2, step=ds)
+    xleft = 0.5 * (1 .- sqrt.(1 .- 4*s.^2))
+    xright = 0.5 * (1 .+ sqrt.(1 .- 4*s.^2))
+    x = [xleft; [1/2]; reverse(xright)]
+    y = x
+
+    @show xleft
+    @show xright
+
+    I = SVector{3,Int}
+
+    vertices = [point(T,xi,yj,0) for xi in x for yj in y]
+    faces = Vector{I}()
+    for i in 1:length(x)-1
+        for j in 1:length(y)-1
+            push!(faces, I(i + (j-1)*length(x), i + 1 + (j-1)*length(x), i + 1 + j*length(x)))
+            push!(faces, I(i + (j-1)*length(x), i + 1 + j*length(x), i + j*length(x)))
+        end
+    end
+
+    return Mesh(vertices, faces)
+end
+
+@testitem "unit rectangle" begin
+    m = CompScienceMeshes.meshrectangle_unit_tri_2graded(0.2, 3)
+end
