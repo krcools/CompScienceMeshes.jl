@@ -241,3 +241,71 @@ end
 @testitem "unit rectangle" begin
     m = CompScienceMeshes.meshrectangle_unit_tri_2graded(0.2, 3)
 end
+
+function meshrectangle_unit_tri_2graded2(N::T, udim) where {T}
+    s = range(0, N-1, step=1)
+    xleft = 0.5*(-1.0 .+ (s/N).^2)
+    xright = 0.5*(1.0 .- (s/N).^2)
+    x = [xleft; [0.0]; reverse(xright)] .+ 0.5
+    y = x
+    U = eltype(x)
+
+    #return xleft .+ 0.5
+
+    @show x
+
+    I = SVector{3,Int}
+
+    vertices = [point(U,xi,yj,0) for xi in x for yj in y]
+    faces = Vector{I}()
+    for i in 1:length(x)-1
+        for j in 1:length(y)-1
+            push!(faces, I(i + (j-1)*length(x), i + 1 + (j-1)*length(x), i + 1 + j*length(x)))
+            push!(faces, I(i + (j-1)*length(x), i + 1 + j*length(x), i + j*length(x)))
+        end
+    end
+
+    return Mesh(vertices, faces)
+end
+
+function meshrectangle_tri_2graded(l::T, b::T, N, udim) where {T}
+    s = range(0, N-1, step=1)
+    xleft = 0.5*(-1.0 .+ (s/N).^2)
+    xright = 0.5*(1.0 .- (s/N).^2)
+    x = [xleft*l; [0.0]; reverse(xright)*l] .+ 0.5*l
+    y = [xleft*b; [0.0]; reverse(xright)*b] .+ 0.5*b
+    U = eltype(x)
+
+    #return xleft .+ 0.5
+
+    @show x
+
+    I = SVector{3,Int}
+
+    vertices = [point(U,xi,yj,0) for xi in x for yj in y]
+    faces = Vector{I}()
+    for i in 1:length(x)-1
+        for j in 1:length(y)-1
+            push!(faces, I(i + (j-1)*length(x), i + 1 + (j-1)*length(x), i + 1 + j*length(x)))
+            push!(faces, I(i + (j-1)*length(x), i + 1 + j*length(x), i + j*length(x)))
+        end
+    end
+
+    return Mesh(vertices, faces)
+end
+
+function meshcuboid_tri_2graded(l::T, b::T, w::T, N::U) where {T,U}
+    m = CompScienceMeshes.meshrectangle_tri_2graded(l, b, N, 3)
+    m′ = CompScienceMeshes.fliporientation(CompScienceMeshes.translate(m,[0,0,w]))
+    mb = CompScienceMeshes.meshrectangle_tri_2graded(l, w, N, 3)
+    m1 = CompScienceMeshes.fliporientation(CompScienceMeshes.rotate(mb,[pi/2,0,0]))
+    m1′ = CompScienceMeshes.fliporientation(CompScienceMeshes.translate(m1,[0,b,0]))
+    mb = CompScienceMeshes.meshrectangle_tri_2graded(w, b, N, 3)
+    m2 = CompScienceMeshes.fliporientation(CompScienceMeshes.rotate(mb,[0,-pi/2,0]))
+    m2′ = CompScienceMeshes.fliporientation(CompScienceMeshes.translate(m2,[l,0,0]))
+
+    Γ = CompScienceMeshes.weld(m, m′, m1, m1′, m2, m2′)
+
+    @assert CompScienceMeshes.isoriented(Γ)
+    return Γ
+end
