@@ -38,6 +38,10 @@ function meshsphere(radius::F, h::F;
     return msh
 end
 
+function meshsphere(;radius, h, delaunay=:(2D), generator=:gmsh)
+    meshsphere(radius, h; delaunay=delaunay, generator=generator)
+end
+
 # Function to generate a uniform spherical mesh
 function mesh_sphere(radius::F, len::F; delaunay =:(2D)) where F
     if delaunay ==:(3D)
