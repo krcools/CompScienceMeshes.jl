@@ -82,8 +82,8 @@ function mesh_rectangle(a::F, b::F, h::F, udim) where F
     nodes = zeros(SVector{udim, F}, (m + 1)*(n + 1))
     faces = Vector{SVector{3, Int64}}(undef, 2*m*n)
     
-    for ix in range(0, n - 1)
-        for iy in range(1, m)
+    for ix in 0 : n - 1
+        for iy in 1 : m
             if udim == 3
                 node = SVector((ix)*h, (iy - 1)*h, F(0))
             else
@@ -114,7 +114,7 @@ function mesh_rectangle(a::F, b::F, h::F, udim) where F
         
     end
     # for ix = n
-    for iy in range(0, m)
+    for iy in 0 : m
         if udim == 3
             nodes[n*(m + 1) + iy + 1] = SVector(n*h, (iy*h), F(0))
         else 
