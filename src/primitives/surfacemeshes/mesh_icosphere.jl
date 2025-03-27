@@ -46,7 +46,7 @@ function meshicosphere(nu::Int = 1, r::F = 1.0, nr_verts = nothing) where F
 
     if nu > 1
         vertices, faces = subdivide_mesh(vertices, faces, nu)
-        for i in range(1, length(vertices))
+        for i in 1 : length(vertices)
             vertices[i] = r.*vertices[i]./sqrt.(sum(x->x.^2, vertices[i]))
         end
     end 
@@ -86,7 +86,7 @@ into, in a icosahedron.
 function subdivide_mesh(vertices, faces, nu)
     edges = []
     #edges collects edges AB, AC, BC for all faces
-    for i in range(1, length(faces))
+    for i in 1 : length(faces)
        append!(edges, [
             sort([faces[i][1], faces[i][2]]), 
             sort([faces[i][2], faces[i][3]]), 
@@ -114,10 +114,10 @@ function subdivide_mesh(vertices, faces, nu)
 
     edge_indices = Dict()
     #assigning keys to the edges
-    for i in range(1, V)
+    for i in 1 : V
         edge_indices[i] = Dict()
     end
-    for i in range(1, E)
+    for i in 1 : E
         edge_indices[edges[i][1]][edges[i][2]] = i - 1
         edge_indices[edges[i][2]][edges[i][1]] = -i + 1
     end
@@ -130,11 +130,11 @@ function subdivide_mesh(vertices, faces, nu)
         append!(reordered_template, [ordering[template[i]]])
     end
     #w gives the weights of the weights of the vertices along the edge
-    w = collect(range(1, nu - 1)./nu)
-    for e in range(1, E) #e is the number of edge, 
+    w = collect((1 : nu - 1)./nu)
+    for e in 1 : E #e is the number of edge, 
         #(e - 1) would count the number of counted edges
         edge = edges[e]
-        for k in range(1, nu - 1)  #k gives the number of subvertices on the edge
+        for k in 1 : nu - 1  #k gives the number of subvertices on the edge
             subvertices[V + (e - 1)*(nu - 1) + k] = (
                 w[end - k + 1]*vertices[edge[1]] 
                 + w[k]*vertices[edge[2]]
@@ -142,11 +142,11 @@ function subdivide_mesh(vertices, faces, nu)
         end
     end
 
-    r = collect(range(1, nu - 1))
-    for f in range(1, F)
+    r = collect(1 : nu - 1)
+    for f in 1 : F
         T = collect(range(Int(floor(
             (f - 1)*(nu - 1)*(nu - 2)/2)) + E*(nu - 1) + V + 1, 
-            Int(floor((f)*(nu - 1)*(nu - 2)/2)) + E*(nu - 1) + V)
+            Int(floor((f)*(nu - 1)*(nu - 2)/2)) + E*(nu - 1) + V, step=1)
             )
         eAB = edge_indices[faces[f][1]][faces[f][2]]
         eAC = edge_indices[faces[f][1]][faces[f][3]]
@@ -185,10 +185,10 @@ end
 
 function faces_template(nu)
     faces = Vector{Int}[]
-    for i in range(1, nu)
+    for i in 1 : nu
         vertex = Int(floor(i*(i - 1)/2))
         skip = i
-        for j in range(1, i - 1)
+        for j in 1 : i - 1
             append!(faces, [
                 [j + vertex, j + vertex + skip, j + vertex + skip + 1]
                 ])
@@ -205,13 +205,12 @@ function faces_template(nu)
 end
 
 function vertex_ordering(nu)
-    left = [j for j in range(4, nu + 2)]
-    right = [j for j in range(nu + 3, 2*nu + 1)]
-    bottom = [j for j in range(2*nu + 2, 3*nu)]
-    inside = [j for j in range(3*nu + 1, 
-        Int(floor((nu + 1)*(nu + 2)/2)))]
+    left = [j for j in 4 : nu + 2]
+    right = [j for j in nu + 3 : 2*nu + 1]
+    bottom = [j for j in 2*nu + 2 : 3*nu]
+    inside = [j for j in 3*nu + 1 : Int(floor((nu + 1)*(nu + 2)/2))]
     o = [1] #topmost corner
-    for i in range(1, nu - 1)
+    for i in 1 : nu - 1
         append!(o, left[i])
         append!(o, inside[
             Int(floor((i - 1)*(i - 2)/2)) + 1 : Int(floor((i - 1)*i/2))
@@ -230,9 +229,9 @@ function inside_points(vAB, vAC)
     if l == 1
         skip
     else
-        for i in range(1, length(vAB) - 1)
-            w = collect(range(1, i)./(i + 1))     
-            for k in range(1, i)
+        for i in 1 : length(vAB) - 1
+            w = collect((1 : i)./(i + 1))     
+            for k in 1 : i
                 append!(v, [
                     SVector(w[end - k + 1].*vAB[i + 1][:] + w[k].*vAC[i + 1][:])
                     ])
