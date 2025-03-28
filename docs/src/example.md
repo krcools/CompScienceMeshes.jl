@@ -13,7 +13,7 @@ hole = meshrectangle(1/3, 1/3, h, 3)
 translate!(hole, point(1/3, 1/3, 0))
 
 pred = overlap_gpredicate(hole)
-all_faces = submesh(c->!pred(chart(rect,c)), rect)
+all_faces = submesh((m,c)->!pred(chart(rect,c)), rect)
 nothing # hide
 ```
 
