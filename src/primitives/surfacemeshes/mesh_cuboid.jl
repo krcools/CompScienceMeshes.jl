@@ -75,6 +75,30 @@ function meshcuboid(len::F, breadth::F, width::F, edge_len::F;
     return msh
 end
 
+@testitem "orientation" begin
+    using LinearAlgebra
+
+    m1 = meshcuboid(1.0, 1.0, 1.0, 0.25; generator=:compsciencemeshes)
+    m2 = meshcuboid(1.0, 1.0, 1.0, 0.25; generator=:gmsh)
+
+    p1 = center(chart(m1, first(m1)))
+    p2 = center(chart(m2, first(m2)))
+
+    n1 = normal(p1)
+    n2 = normal(p2)
+
+    x0 = point(0.5, 0.5, 0.5)
+    x1 = cartesian(p1)
+    x2 = cartesian(p2)
+
+    @show x1, n1
+    @show x2, n2
+
+    @test dot(x1-x0, n1) > 0
+    @test dot(x2-x0, n2) > 0
+end
+
+
 #code for meshing a cuboid regularly
 """
     mesh_cuboid(a::F, b::F, c::F, h::F)
@@ -481,7 +505,8 @@ function mesh_cuboid(a::F, b::F, c::F, h::F) where F
                 end
             end
         end
-    return Mesh(nodes, faces)
+    Γ = Mesh(nodes, faces)
+    return flipmesh!(Γ)
 end
 
 """
