@@ -3,7 +3,8 @@ export normalcones
 export wireframe
 
 function __init__()
-    @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" begin
+    # @require PlotlyJS="f0f68f2c-4968-5e81-91da-67840de0976a" begin
+    @require PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5" begin
 
         @eval function patch(Γ::CompScienceMeshes.AbstractMesh, fcr=nothing;
             caxis=nothing, showscale=true, color="red", kwargs...)
@@ -21,7 +22,7 @@ function __init__()
                     m, M = caxis
                 end
         
-                s = PlotlyJS.mesh3d(;
+                s = PlotlyBase.mesh3d(;
                     x=x, y=y, z=z,
                     i=i, j=j, k=k,    
                     intensitymode="cell",
@@ -33,7 +34,7 @@ function __init__()
                     kwargs...
                 )
             else
-                s = PlotlyJS.mesh3d(;
+                s = PlotlyBase.mesh3d(;
                     x=x, y=y, z=z,
                     i=i, j=j, k=k,
                     color=color,
@@ -60,7 +61,7 @@ function __init__()
             u = getindex.(arrows,1)
             v = getindex.(arrows,2)
             w = getindex.(arrows,3)
-            PlotlyJS.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref; kwargs...)
+            PlotlyBase.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref; kwargs...)
         end
 
         @eval function normals(mesh; kwargs...)
@@ -81,8 +82,8 @@ function __init__()
                 append!(y, [v1[2],v2[2],NaN])
                 append!(z, [v1[3],v2[3],NaN])
             end
-            return PlotlyJS.scatter3d(x=x,y=y,z=z,mode="lines",
-                line=PlotlyJS.attr(
+            return PlotlyBase.scatter3d(x=x,y=y,z=z,mode="lines",
+                line=PlotlyBase.attr(
                     color=color,
                     width=width
                 )
