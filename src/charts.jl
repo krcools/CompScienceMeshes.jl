@@ -182,7 +182,7 @@ function _normals(tangents, ::Type{Val{1}})
     end
 
     n *= (-1)^D / norm(n)
-    normals = SVector{1,PT}([PT(n)])
+    normals = SVector{1,PT}(PT(n))
 
     metric = T[dot(tangents[i], tangents[j]) for i in 1:D, j in 1:D]
     volume = sqrt(abs(det(metric))) /  factorial(D)
@@ -298,20 +298,6 @@ function edges(s::Simplex{3,3})
     return Edges
 end
 
-# function edges(s::Simplex{3,3})
-#     C = [SVector{2}(c) for c in combinations(@SVector[1,2,3,4],2)]
-#     T = eltype(eltype(s.vertices))
-#     P = Simplex{3,1,2,2,T}
-#     Edges = Vector{P}(undef, length(C))
-#     for c in C
-#         q = relorientation(c, @SVector[1,2,3,4])
-#         Q = abs(q)
-#         Edges[Q] = q > 0 ?
-#             simplex(s.vertices[c[1]], s.vertices[c[2]]) :
-#             simplex(s.vertices[c[2]], s.vertices[c[1]])
-#     end
-#     return Edges
-# end
 
 function edges(s::Simplex{3,2})
     return [
@@ -339,6 +325,36 @@ end
 
 function faces(ch::Simplex{3,2}, ::Type{Val{0}})
     simplex.(ch.vertices)
+end
+
+function subcharts(c::Simplex{U,2}, ::Type{Val{1}}) where {U}
+    T = coordtype(c)
+    d = (
+        point(T, 1, 0),
+        point(T, 0, 1),
+        point(T, 0, 0),
+    )
+    tp = (
+        (simplex(c[2], c[3]), simplex(d[2], d[3])),
+        (simplex(c[3], c[1]), simplex(d[3], d[1])),
+        (simplex(c[1], c[2]), simplex(d[1], d[2])),
+    )
+    return tp
+end
+
+@testitem "subcharts" begin
+
+    ch = simplex(
+        point(2,0,-1),
+        point(0,3,-1),
+        point(0,0,-1))
+
+    fc = CompScienceMeshes.subcharts(ch, Val{1})
+    @test length(fc) == 3
+    @test volume(fc[1][1]) ≈ 3
+    @test volume(fc[2][1]) ≈ 2
+    @test volume(fc[3][1]) ≈ sqrt(13)
+
 end
 
 
