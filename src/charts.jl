@@ -165,6 +165,7 @@ function _normals(tangents, ::Type{Val{1}})
     D  = length(tangents)
     T  = eltype(PT)
 
+
     n = zeros(T,D+1)
     b = Array{T}(undef,D,D)
 
@@ -190,6 +191,18 @@ function _normals(tangents, ::Type{Val{1}})
     return normals, volume
 
 end
+
+function _normals(tangents::SVector{1,SVector{2,T}}, ::Type{Val{1}}) where {T}
+
+    n = SVector{2,T}(-tangents[1][2], tangents[1][1])
+    l = norm(n)
+    # n = tangents[1] × tangents[2]
+    # l = norm(n)
+
+    P = SVector{2,T}
+    SVector{1,P}(n/l), l
+end
+
 
 function _normals(tangents::SVector{2,SVector{3,T}}, ::Type{Val{1}}) where {T}
 
