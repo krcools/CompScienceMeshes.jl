@@ -61,6 +61,7 @@ function tetmeshsphere(radius,delta; tempname=tempname())
 
     fno = tempname * ".msh"
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
     gmsh.model.mesh.generate(3)
@@ -96,6 +97,7 @@ function meshball(;radius, h, tempname=tempname())
 
     temp_msh = tempname * ".msh"
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
     gmsh.model.mesh.generate(3)

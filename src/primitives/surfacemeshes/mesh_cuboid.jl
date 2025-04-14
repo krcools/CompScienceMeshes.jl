@@ -65,9 +65,9 @@ function meshcuboid(len::F, breadth::F, width::F, edge_len::F;
     if generator == :gmsh
         msh = gmshcuboid(len, breadth, width, edge_len)
     elseif  generator == :compsciencemeshes
-        @info "Generating a structured mesh: The dimensions of the cuboid are 
-            approximated by multiples of edge length.
-            For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
+        # @info "Generating a structured mesh: The dimensions of the cuboid are 
+        #     approximated by multiples of edge length.
+        #     For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
         msh = mesh_cuboid(len, width, width, edge_len)
     else
         @error "generators are gmsh and compsciencemeshes only"
@@ -105,8 +105,15 @@ end
 
 returns an areal structured mesh of a cuboid.
 
-    """
-function mesh_cuboid(a::F, b::F, c::F, h::F) where F
+"""
+@generated function mesh_cuboid(a, b, c, h)
+    @info "Generating a structured mesh: The dimensions of the cuboid are 
+            approximated by multiples of edge length. For exact dimensions and
+            unstructured grids, use kwarg - generator = :gmsh"
+    return :(mesh_cuboid_impl(a, b, c, h))
+end
+
+function mesh_cuboid_impl(a::F, b::F, c::F, h::F) where F
     # if  isapprox(a%h, F(0)) && isapprox(b%h, F(0) && isapprox(c%h, F(0)))
         n = Int(round(a/h))  # number of elements along a
         m = Int(round(b/h))  # number of elements along b
@@ -586,6 +593,7 @@ Volume(1)={1};
     fno = tempname * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
     gmsh.model.mesh.generate(2)
@@ -616,6 +624,7 @@ function meshcuboid1hole(width, height, holewidth, h)
     
     fno = tempname() * ".msh"
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("squaretorus")
 
     # bottom plate
@@ -725,6 +734,7 @@ function meshcuboid4holes(width, height, holewidth, h)
     
     fno = tempname() * ".msh"
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("squaretorus4holes")
 
     # bottom plate

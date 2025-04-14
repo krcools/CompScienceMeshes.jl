@@ -9,6 +9,7 @@ function meshcone(radius, height, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("cone")
     gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
     gmsh.model.geo.addPoint(0.0, 0.0, radius, h, 2)

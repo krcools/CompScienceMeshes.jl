@@ -28,12 +28,12 @@ function read_gmsh3d_mesh(io; physical=nothing, T=Float64)
         thisLine = io |> readline |> strip
         s = split(thisLine)
         NP = parse(Int,s[1])
-        println("Mesh file defined $(NP) physical entities:")
+        print("Mesh file defined $(NP) physical entities: ")
         for i in 1:NP
             thisLine = io |> readline |> strip
             s = split(thisLine)
             entity_name = s[3]
-            @show entity_name
+            # @show entity_name
             if entity_name == "\"$(physical)\""
                 entity_tag = parse(Int, s[2])
                 println("Target entity \"$(physical)\" is $i out of $(NP).")

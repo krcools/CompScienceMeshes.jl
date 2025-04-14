@@ -9,6 +9,7 @@ function meshsqpyramid(width, height, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("sqpyramid")
     gmsh.model.geo.addPoint(0.0, 0.0, height, h, 1)
     gmsh.model.geo.addPoint(width/2, -width/2, 0.0, h, 2)
@@ -62,6 +63,7 @@ function meshstarpyramid(majorradius, minorradius, nbofpoints, height, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("starpyramid")
 
     gmsh.model.geo.addPoint(0.0, 0.0, height, h, 0)

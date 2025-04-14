@@ -22,6 +22,7 @@ function meshcylinder(;radius, height, h, tempname=tempname())
 
     temp_msh = tempname * ".msh"
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
     gmsh.model.mesh.generate(3)

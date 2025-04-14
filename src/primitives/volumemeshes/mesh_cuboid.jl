@@ -22,9 +22,9 @@ Also see the gmsh function - tetgmshcuboid.
 function tetmeshcuboid(len::F, breadth::F, width::F, edge_len::F; 
     generator = :compsciencemeshes) where F
     if generator == :compsciencemeshes
-        @info "Generating a structured mesh: The dimensions of the cuboid are 
-            approximated by multiples of edge length.
-            For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
+        # @info "Generating a structured mesh: The dimensions of the cuboid are 
+        #     approximated by multiples of edge length.
+        #     For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
         msh = tetmesh_cuboid(len, breadth, width, edge_len)
     elseif generator == :gmsh
         msh = tetgmshcuboid(len, breadth, width, edge_len)
@@ -34,7 +34,14 @@ function tetmeshcuboid(len::F, breadth::F, width::F, edge_len::F;
     return msh
 end
 
-function tetmesh_cuboid(a::F, b::F, c::F, h::F) where F
+@generated function tetmesh_cuboid(a, b, c, h)
+    @info "Generating a structured mesh: The dimensions of the cuboid are 
+            approximated by multiples of edge length. For exact dimensions and
+            unstructured grids, use kwarg - generator = :gmsh"
+    return :(tetmesh_cuboid_impl(a, b, c, h))
+end
+
+function tetmesh_cuboid_impl(a::F, b::F, c::F, h::F) where F
     n = Int(round(a/h)) #number of elements along x
     m = Int(round(b/h)) #number of elements along y
     p = Int(round(c/h)) #number of elements along z
@@ -233,6 +240,7 @@ Physical Volume(1) = {1};
     fno = tempname * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
     gmsh.model.mesh.generate(3)

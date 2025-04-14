@@ -11,6 +11,7 @@ function meshtorus(majorradius, minorradius, h)
     fno = tempname() * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.model.add("torus")
     gmsh.model.geo.addPoint(0.0, 0.0, 0.0, h, 1)
     gmsh.model.geo.addPoint(0.0, 0.0, minorradius, h, 2)

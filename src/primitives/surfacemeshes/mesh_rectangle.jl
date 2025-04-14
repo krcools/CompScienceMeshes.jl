@@ -53,9 +53,9 @@ function meshrectangle(len::F, breadth::F, edge_length::F, udim = 3;
         @assert udim==3
         msh =  meshrectangle_quadrilateral(len, breadth, edge_length)
     elseif generator == :compsciencemeshes && element == :triangle
-        @info "Generating a structured mesh: The dimensions of the rectangle are 
-            approximated by multiples of edge length.
-            For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
+        # @info "Generating a structured mesh: The dimensions of the rectangle are 
+        #     approximated by multiples of edge length.
+        #     For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
         msh = mesh_rectangle(len, breadth, edge_length, udim)
     else 
         @error "generators are gmsh and compsciencemeshes only"
@@ -73,7 +73,15 @@ end
     The mesh function is pre-allocated with its vectors of nodes and faces. It is a 
     structured mesh.
 """
-function mesh_rectangle(a::F, b::F, h::F, udim) where F
+@generated function mesh_rectangle(a, b, h, udim)
+    @info "Generating a structured mesh: The dimensions of the cuboid are 
+            approximated by multiples of edge length. For exact dimensions and
+            unstructured grids, use kwarg - generator = :gmsh"
+    return :(mesh_rectangle_impl(a, b, h, udim))
+end
+
+
+function mesh_rectangle_impl(a::F, b::F, h::F, udim) where F
     @assert udim == 2 || udim == 3 "Universal dimension can only be 2 or 3"
     #structured mesh:  isapprox(a%h, F(0)) && isapprox(b%h, F(0))
     n = Int(round(a/h))  # number of elements along a
@@ -162,6 +170,7 @@ function gmshrectangle(width, height, delta; tempname=tempname())
     fno = tempname * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
     gmsh.model.mesh.generate(2)

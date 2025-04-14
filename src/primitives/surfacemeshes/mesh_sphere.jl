@@ -274,6 +274,7 @@ Ruled Surface(4)={4} In Sphere{1};
     fno = tempname * ".msh"
 
     gmsh.initialize()
+    gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
     gmsh.model.mesh.generate(2)

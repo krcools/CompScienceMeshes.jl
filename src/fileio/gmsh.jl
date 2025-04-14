@@ -28,12 +28,12 @@ function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true, T=Float64)
         thisLine = io |> readline |> strip
         s = split(thisLine)
         NP = parse(Int,s[1])
-        println("Mesh file defined $(NP) physical entities:")
+        print("Mesh file defined $(NP) physical entities: ")
         for i in 1:NP
             thisLine = io |> readline |> strip
             s = split(thisLine)
             entity_name = s[3]
-            @show entity_name
+            # @show entity_name
             if entity_name == "\"$(physical)\""
                 entity_tag = parse(Int, s[2])
                 println("Target entity \"$(physical)\" is $i out of $(NP).")
@@ -85,11 +85,11 @@ function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true, T=Float64)
     end
     resize!(f,i)
 
-    @show length(v)
-    @show length(f)
+    # @show length(v)
+    # @show length(f)
     
     if sort
-        @info "sorting..."
+        # @info "sorting..."
         f = sort_sfc(v,f)
     end
     # Q = Pt{3,Float64}
