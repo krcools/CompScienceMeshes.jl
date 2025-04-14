@@ -107,9 +107,9 @@ returns an areal structured mesh of a cuboid.
 
 """
 @generated function mesh_cuboid(a, b, c, h)
-    @info "Generating a structured mesh: The dimensions of the cuboid are 
+    Core.println("Generating a structured mesh: The dimensions of the cuboid are 
             approximated by multiples of edge length. For exact dimensions and
-            unstructured grids, use kwarg - generator = :gmsh"
+            unstructured grids, use kwarg - generator = :gmsh")
     return :(mesh_cuboid_impl(a, b, c, h))
 end
 

@@ -74,9 +74,9 @@ end
     structured mesh.
 """
 @generated function mesh_rectangle(a, b, h, udim)
-    @info "Generating a structured mesh: The dimensions of the cuboid are 
+    Core.println("Generating a structured mesh: The dimensions of the cuboid are 
             approximated by multiples of edge length. For exact dimensions and
-            unstructured grids, use kwarg - generator = :gmsh"
+            unstructured grids, use kwarg - generator = :gmsh")
     return :(mesh_rectangle_impl(a, b, h, udim))
 end
 
