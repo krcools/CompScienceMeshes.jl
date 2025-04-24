@@ -437,6 +437,11 @@ function vertices(ch::ReferenceSimplex{2,T}) where {T}
         point(T,0,0))
 end
 
+function permute_vertices(ch::ReferenceSimplex{1}, I)
+    V = vertices(ch)
+    return simplex(SVector(V[I[1]], V[I[2]]))
+end
+
 function permute_vertices(ch::ReferenceSimplex, I)
     V = vertices(ch)
     return simplex(SVector(V[I[1]], V[I[2]], V[I[3]]))
