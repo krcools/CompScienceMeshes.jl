@@ -13,6 +13,10 @@ function embedding(small::AbstractMesh, big::AbstractMesh; predicate=(a,b)->true
     @assert dimension(small) == 1
     @assert dimension(big)   == 1
 
+    if length(big) == 0 || length(small) == 0
+        return sparse(Int[], Int[], Float64[], length(small), length(big))
+    end
+
     @assert length(big) > 0
     @assert length(small) > 0
 
@@ -52,9 +56,17 @@ function embedding(small::AbstractMesh, big::AbstractMesh; predicate=(a,b)->true
         end
     end
 
-    @assert !any(cols .== 0) "Unmapped cells exist"
-    @assert !any(sgns .== 0)
-    sparse(1:length(small), cols, sgns, length(small), length(big))
+    # @assert !any(cols .== 0) "Unmapped cells exist"
+    # @assert !any(sgns .== 0)
+
+    I = findall(sgns .!= 0)
+    rows = I
+    cols = cols[I]
+    sgns = sgns[I]
+    # rows = range(1, length(small))[]
+
+    # sparse(1:length(small), cols, sgns, length(small), length(big))
+    return sparse(rows, cols, sgns, length(small), length(big))
 end
 
 
