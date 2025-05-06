@@ -437,6 +437,14 @@ function vertices(ch::ReferenceSimplex{2,T}) where {T}
         point(T,0,0))
 end
 
+function vertices(ch::ReferenceSimplex{3,T}) where {T}
+    SVector(
+        point(T,1,0,0),
+        point(T,0,1,0),
+        point(T,0,0,1),
+        point(T,0,0,0))
+end
+
 function permute_vertices(ch::ReferenceSimplex{1}, I)
     V = vertices(ch)
     return simplex(SVector(V[I[1]], V[I[2]]))
@@ -445,6 +453,11 @@ end
 function permute_vertices(ch::ReferenceSimplex, I)
     V = vertices(ch)
     return simplex(SVector(V[I[1]], V[I[2]], V[I[3]]))
+end
+
+function permute_vertices(ch::ReferenceSimplex{3}, I)
+    V = vertices(ch)
+    return simplex(SVector(V[I[1]], V[I[2]], V[I[3]], V[I[4]]))
 end
 
 # points act as neighborhoods for the identity chart
