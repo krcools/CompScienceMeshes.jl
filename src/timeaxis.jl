@@ -179,7 +179,7 @@ function minmaxdist(τ, σ)
     τ_edges = (simplex(τ[1], τ[2]), simplex(τ[2], τ[3]), simplex(τ[3], τ[1]))
     σ_edges = (simplex(σ[1], σ[2]), simplex(σ[2], σ[3]), simplex(σ[3], σ[1]))
 
-    # Compute the rings for each vertex of τ with respect to σ
+    # Compute the geometric parameter for each vertex of τ with respect the edge of σ, and viceversa
     geo_τ_σ = ntuple(i -> ntuple(j -> edgevertexinteraction(τ_vertices[i], σ_edges[j][1], σ_edges[j][2]), 3), 3)
     geo_σ_τ = ntuple(i -> ntuple(j -> edgevertexinteraction(σ_vertices[i], τ_edges[j][1], τ_edges[j][2]), 3), 3)
 
