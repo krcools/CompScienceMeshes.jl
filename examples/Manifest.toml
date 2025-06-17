@@ -2,7 +2,7 @@
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "627bf0481ee223d8a2e4cf95a8afa3578023defb"
+project_hash = "010caa245d6b158562dea884672c66622c86ad43"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -97,9 +97,7 @@ version = "1.0.3"
 
 [[deps.CompScienceMeshes]]
 deps = ["ClusterTrees", "CollisionDetection", "Combinatorics", "Compat", "DataStructures", "DelimitedFiles", "FastGaussQuadrature", "GmshTools", "LinearAlgebra", "Permutations", "Requires", "SparseArrays", "StaticArrays", "TestItems"]
-git-tree-sha1 = "af95e82389975131971826d2245c40f477454dee"
-repo-rev = "master"
-repo-url = "https://github.com/krcools/CompScienceMeshes.jl.git"
+git-tree-sha1 = "e3ad06369d6ef4187e827fe894f569884181022d"
 uuid = "3e66a162-7b8c-5da0-b8f8-124ecd2c3ae1"
 version = "0.9.4"
 

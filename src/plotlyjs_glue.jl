@@ -129,5 +129,26 @@ function __init__()
                 )
             )
         end
+
+        @eval function PlotlyBase.scatter3d(edges::CompScienceMeshes.AbstractMesh{3,2}; kwargs...)
+            T = CompScienceMeshes.coordtype(edges)
+            x = T[]
+            y = T[]
+            z = T[]
+            for edge in edges
+                chrt = CompScienceMeshes.chart(edges, edge)
+                v1, v2 = chrt.vertices
+                append!(x, [v1[1],v2[1],NaN])
+                append!(y, [v1[2],v2[2],NaN])
+                append!(z, [v1[3],v2[3],NaN])
+            end
+            return PlotlyBase.scatter3d(x=x, y=y, z=z, mode="lines"; kwargs...)
+        end
+
+        @eval function PlotlyBase.scatter3d(surf::CompScienceMeshes.AbstractMesh{3,3}; kwargs...)
+            PlotlyBase.scatter3d(CompScienceMeshes.skeleton(surf, 1); kwargs...)
+        end
+
+
     end
 end
