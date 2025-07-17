@@ -1,7 +1,7 @@
 using Test
 using CompScienceMeshes
 
-tt = tetmeshcuboid(1.0, 1.0, 1.0, 0.5);
+tt = tetmeshcuboid(1.0, 0.9, 1.1, 0.3);
 t = tetmeshcuboid(1.0, 1.0, 1.0, 0.5, generator = :gmsh);
 
 #Case: The function has a return
