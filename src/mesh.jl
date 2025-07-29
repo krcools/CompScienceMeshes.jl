@@ -914,7 +914,47 @@ function Base.union(m1::AbstractMesh, ms::Vararg{AbstractMesh})
     return union(m1, union(ms...))
 end
 
+function Base.union(meshes::Vector{<:CompScienceMeshes.AbstractMesh}, ::Type{Val{:submeshes}})
 
+    @assert all(dimension(meshes[1]) .== dimension.(meshes[2:end]))
+    # @assert all(vertices(meshes[1]) .== vertices.(meshes[2:end]))
+
+    verts = vertices(meshes[1])
+    Cells = vcat((cells(m) for m in meshes)...)
+
+    supermesh = Mesh(verts, Cells)
+
+    I = length.(meshes)
+    C = cumsum(I)
+    # @show C
+    pushfirst!(C, 0)
+    submeshes = map(1:length(meshes)) do i
+        sub2sup = collect(C[i]+1 : C[i+1])
+        # @show i sub2sup
+        SubMesh(supermesh, sub2sup)
+    end
+
+    return supermesh, submeshes
+end
+
+@testitem "union with submeshes" begin
+    m1 = meshrectangle(1.0, 1.0, 1.0, 3)
+    m2 = m1
+
+    m, s = union([m1,m2], Val{:submeshes})
+    @test length(m) == 4
+
+    for i in 1:2
+        ch1 = chart(s[i], 1)
+        ch2 = chart(m, CompScienceMeshes.extend(s[i], 1))
+
+        ct1 = cartesian(center(ch1))
+        ct2 = cartesian(center(ch2))
+
+        @test CompScienceMeshes.parent(s[i]) == m
+        @test ct1 ≈ ct2
+    end
+end
 
 function breadthfirst(op, mesh, root)
 

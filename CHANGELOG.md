@@ -1,5 +1,9 @@
 # Changelog
 
+- New method for union that returns the input meshes as submeshes of the union mesh.
+- `parent` back-edge for submeshes.
+- embedding implemented for surface meshes.
+
 ## Version 0.9.1
 
 - `meshcuboid` returns outward oriented meshes for both the `gmsh` and `compsiencemeshes` generators.

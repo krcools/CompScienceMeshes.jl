@@ -67,11 +67,12 @@ function SubMesh(supermesh, sub2sup)
     SubMesh(supermesh, sub2sup, sup2sub, Cells)
 end
 
-vertextype(m::SubMesh) = vertextype(m.supermesh)
-celltype(m::SubMesh) = celltype(m.supermesh)
-coordtype(m::SubMesh) = coordtype(m.supermesh)
-dimension(m::SubMesh) = dimension(m.supermesh)
-universedimension(m::SubMesh) = universedimension(m.supermesh)
+function vertextype(m::SubMesh) vertextype(m.supermesh) end
+function celltype(m::SubMesh) celltype(m.supermesh) end
+function coordtype(m::SubMesh) coordtype(m.supermesh) end 
+function dimension(m::SubMesh) dimension(m.supermesh) end
+function universedimension(m::SubMesh) universedimension(m.supermesh) end
+function parent(m::SubMesh) m.supermesh end
 
 vertexarray(m::SubMesh) = vertexarray(m.supermesh)
 function cellarray(m::SubMesh)
