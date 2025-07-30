@@ -1,5 +1,7 @@
 # Changelog
 
+## Version 0.10
+
 - New method for union that returns the input meshes as submeshes of the union mesh.
 - `parent` back-edge for submeshes.
 - embedding implemented for surface meshes.
