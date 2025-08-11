@@ -23,6 +23,7 @@ include("test_weld.jl")
 include("test_baryref.jl")
 include("test_gid_reader.jl")
 include("test_gmsh_reader.jl")
+include("test_interface_gmsh.jl")
 include("test_physical_entities.jl")
 include("test_gmsh_multiple_dims.jl")
 
