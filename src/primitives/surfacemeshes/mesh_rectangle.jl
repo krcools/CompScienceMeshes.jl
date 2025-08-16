@@ -53,8 +53,8 @@ function meshrectangle(len::F, breadth::F, edge_length::F, udim = 3;
         @assert udim==3
         msh =  meshrectangle_quadrilateral(len, breadth, edge_length)
     elseif generator == :compsciencemeshes && element == :triangle
-        # @info "Generating a structured mesh: The dimensions of the rectangle are 
-        #     approximated by multiples of edge length.
+        # @info "Generating a structured mesh: The edge lengths are 
+        #     approximated to fit the dimensions of the geometry.
         #     For exact dimensions/ unstructured grid, use kwarg - generator = :gmsh"
         msh = mesh_rectangle(len, breadth, edge_length, udim)
     else 
@@ -74,8 +74,8 @@ end
     structured mesh.
 """
 @generated function mesh_rectangle(a, b, h, udim)
-    Core.println("Generating a structured mesh: The dimensions of the cuboid are 
-            approximated by multiples of edge length. For exact dimensions and
+    Core.println("Generating a structured mesh: The edge lengths are 
+            approximated to fit the dimensions of the geometry. For exact dimensions and
             unstructured grids, use kwarg - generator = :gmsh")
     return :(mesh_rectangle_impl(a, b, h, udim))
 end
@@ -84,18 +84,41 @@ end
 function mesh_rectangle_impl(a::F, b::F, h::F, udim) where F
     @assert udim == 2 || udim == 3 "Universal dimension can only be 2 or 3"
     #structured mesh:  isapprox(a%h, F(0)) && isapprox(b%h, F(0))
-    n = Int(round(a/h))  # number of elements along a
-    m = Int(round(b/h))  # number of elements along b
+    n_u = Int(ceil(a/h))  # number of elements along a
+    n_d = Int(floor(a/h))
+    m_u = Int(ceil(b/h))  # number of elements along b
+    m_d = Int(floor(b/h))
     
+    #determining edge lengths closest to given edge length
+    h_1u = F((a/n_u))
+    h_1d = F((a/n_d))
+    if abs(h_1u - h) < abs(h_1d - h)
+        h_1 = h_1u 
+        n = n_u
+    else
+        h_1 = h_1d
+        n = n_d
+    end
+
+    h_2u = F(b/m_u)
+    h_2d = F(b/m_d)
+    if abs(h_2u - h) < abs(h_2d - h)
+        h_2 = h_2u 
+        m = m_u
+    else
+        h_2 = h_2d
+        m = m_d
+    end
+
     nodes = zeros(SVector{udim, F}, (m + 1)*(n + 1))
     faces = Vector{SVector{3, Int64}}(undef, 2*m*n)
     
     for ix in 0 : n - 1
         for iy in 1 : m
             if udim == 3
-                node = SVector((ix)*h, (iy - 1)*h, F(0))
+                node = SVector((ix)*h_1, (iy - 1)*h_2, F(0))
             else
-                node = SVector((ix)*h, (iy - 1)*h)
+                node = SVector((ix)*h_1, (iy - 1)*h_2)
             end
             
             nodes[(ix)*(m + 1) + iy] = node
@@ -115,18 +138,18 @@ function mesh_rectangle_impl(a::F, b::F, h::F, udim) where F
         end
         # for the mth element in y-direction
         if udim == 3
-            nodes[(ix + 1)*(m + 1)] = SVector((ix)*h, m*h, F(0))
+            nodes[(ix + 1)*(m + 1)] = SVector((ix)*h_1, m*h_2, F(0))
         else
-            nodes[(ix + 1)*(m + 1)] = SVector((ix)*h, m*h)
+            nodes[(ix + 1)*(m + 1)] = SVector((ix)*h_1, m*h_2)
         end
         
     end
     # for ix = n
     for iy in 0 : m
         if udim == 3
-            nodes[n*(m + 1) + iy + 1] = SVector(n*h, (iy*h), F(0))
+            nodes[n*(m + 1) + iy + 1] = SVector(n*h_1, (iy*h_2), F(0))
         else 
-            nodes[n*(m + 1) + iy + 1] = SVector(n*h, (iy*h))
+            nodes[n*(m + 1) + iy + 1] = SVector(n*h_1, (iy*h_2))
         end
     end
         
