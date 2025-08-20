@@ -16,10 +16,10 @@ abstract type AbstractMesh{U,D1,T} end
 mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
-    """
-    maps a face on its index in enumeration
-    """
-    dict::Dict{SVector{D1,Int},Int}
+    # """
+    # maps a face on its index in enumeration
+    # """
+    # dict::Dict{SVector{D1,Int},Int}
 end
 
 function Mesh(vertices, faces)
