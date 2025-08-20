@@ -22,14 +22,14 @@ mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     # dict::Dict{SVector{D1,Int},Int}
 end
 
-function Mesh(vertices, faces)
-    # dict = Dict((f,i) for (i,f) in enumerate(faces))
-    dict = Dict{Int,Int}()
-    T = eltype(eltype(vertices))
-    U = length(eltype(vertices))
-    D1 = length(eltype(faces))
-    Mesh{U,D1,T}(vertices, faces, dict)
-end
+# function Mesh(vertices, faces)
+#     # dict = Dict((f,i) for (i,f) in enumerate(faces))
+#     # dict = Dict{Int,Int}()
+#     T = eltype(eltype(vertices))
+#     U = length(eltype(vertices))
+#     D1 = length(eltype(faces))
+#     Mesh{U,D1,T}(vertices, faces)
+# end
 
 function indices(m::Mesh{U,D1}, cell) where {U,D1}
     return m.faces[cell]
