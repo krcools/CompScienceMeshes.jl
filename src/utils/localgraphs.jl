@@ -27,11 +27,23 @@ function skeleton(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
     collect(idcs for idcs in combinations(g.indices, M+1))
 end
 
+function faces(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
+    collect(idcs for idcs in combinations(g.indices, M+1))
+end
+
 # function skeleton(g::SimplexGraph{N}, ::Type{Val{N-1}}) where {N}
 #     SVector(g.indices)
 # end
 
 function skeleton(g::SimplexGraph{3}, ::Type{Val{1}})
+    return SVector(
+        (g[2],g[3]),
+        (g[3],g[1]),
+        (g[1],g[2]),
+    )
+end
+
+function faces(g::SimplexGraph{3}, ::Type{Val{1}})
     return SVector(
         (g[2],g[3]),
         (g[3],g[1]),
@@ -48,6 +60,14 @@ end
 end
 
 function skeleton(g::QuadrilateralGraph, ::Type{Val{1}})
+    return SVector(
+        (g[1],g[2]),
+        (g[2],g[3]),
+        (g[3],g[4]),
+        (g[4],g[1]),)
+end
+
+function faces(g::QuadrilateralGraph, ::Type{Val{1}})
     return SVector(
         (g[1],g[2]),
         (g[2],g[3]),

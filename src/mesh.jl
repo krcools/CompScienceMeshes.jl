@@ -13,23 +13,17 @@ export vertexarray, cellarray
 abstract type AbstractMesh{U,D1,T} end
 
 
+"""
+    struct Mesh
+
+Basic mesh structure representing flat-faceted simplicial meshes.
+"""
 mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
     faces::Vector{SVector{D1,Int}}
-    # """
-    # maps a face on its index in enumeration
-    # """
-    # dict::Dict{SVector{D1,Int},Int}
 end
 
-# function Mesh(vertices, faces)
-#     # dict = Dict((f,i) for (i,f) in enumerate(faces))
-#     # dict = Dict{Int,Int}()
-#     T = eltype(eltype(vertices))
-#     U = length(eltype(vertices))
-#     D1 = length(eltype(faces))
-#     Mesh{U,D1,T}(vertices, faces)
-# end
+
 
 function indices(m::Mesh{U,D1}, cell) where {U,D1}
     return m.faces[cell]
