@@ -2,10 +2,14 @@
 
 struct QuadMesh{T} <: AbstractMesh{3,4,T}
     vertices::Vector{SVector{3,T}}
-    faces::Vector{SVector{4,Int}}
+    faces::Vector{QuadrilateralGraph}
 end
 
-function indices(m::QuadMesh, cellptr) m.faces[cellptr] end
+function QuadMesh(V::Vector{SVector{3,T}}, F::Vector{SVector{4,Int}}) where {T}
+    return QuadMesh{T}(V, [QuadrilateralGraph(f) for f in F])
+end
+
+function indices(m::QuadMesh, cellptr) m.faces[cellptr].indices end
 function vertextype(m::QuadMesh) eltype(m.vertices) end
 function dimension(m::QuadMesh) 2 end
 
@@ -23,7 +27,7 @@ function celltype(m::QuadMesh, ::Type{Val{2}}) QuadrilateralGraph end
 function celltype(m::QuadMesh) QuadrilateralGraph end
 
 function chart(m::QuadMesh, cellptr)
-    verts = m.vertices[m.faces[cellptr]]
+    verts = m.vertices[m.faces[cellptr].indices]
     Quadrilateral(verts...)
 end
 

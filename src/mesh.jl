@@ -20,13 +20,13 @@ Basic mesh structure representing flat-faceted simplicial meshes.
 """
 mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
-    faces::Vector{SVector{D1,Int}}
+    faces::Vector{SimplexGraph{D1}}
 end
 
 
 
-function indices(m::Mesh{U,D1}, cell) where {U,D1}
-    return m.faces[cell]
+function indices(m::Mesh{U,D1}, i) where {U,D1}
+    return m.faces[i].indices
 end
 
 vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]
@@ -101,7 +101,7 @@ universedimension(m::AbstractMesh) = length(vertextype(m))
 
 Returns an indexable iterable to the vertices of the mesh
 """
-vertices(m::Mesh) = m.vertices
+function vertices(m::Mesh) m.vertices end
 
 
 #     vertices(mesh, i)
@@ -111,10 +111,10 @@ vertices(m::Mesh) = m.vertices
 # form, only statically sized arrays are allowed to discourage
 # memory allocation. The returned vector in that case will also
 # be statically typed and of the same size as `I`.
-vertices(m::Mesh, i::Number) = m.vertices[i]
+function vertices(m::Mesh, i::Number) m.vertices[i] end
 cellvertices(m::AbstractMesh, cell) = vertices(m, indices(m, cell))
-@generated function vertices(m::Mesh, I::SVector)
-    N = length(I)
+@generated function vertices(m::Mesh, I::NTuple)
+    N = fieldcount(I)
     xp = :(())
     for i in 1:N
         push!(xp.args, :(m.vertices[I[$i]]))
@@ -189,7 +189,7 @@ end
 
 Change the orientation of a cell by interchanging the first to indices.
 """
-@generated function flip(cell)
+@generated function flip(cell::SVector)
     # generate `T(cell[2],cell[1],cell[3],...)`, with `T = typeof(cell)`
     N = length(cell)
     if N <= 1
@@ -200,6 +200,11 @@ Change the orientation of a cell by interchanging the first to indices.
         push!(xp.args, :(cell[$i]))
     end
     xp
+end
+
+function flip(cell::SimplexGraph)
+    t = flip(cell.indices)
+    return SimplexGraph(t)
 end
 
 """
@@ -299,9 +304,9 @@ function fliporientation(m::Mesh)
     fliporientation!(n)
 end
 
-@generated function fliporientation(I::SVector{N,T}) where {N,T}
+@generated function fliporientation(I::SimplexGraph{N}) where {N}
     @assert N >= 2
-    xp = :(SVector{N,T}(I[2],I[1]))
+    xp = :(SimplexGraph(I[2],I[1]))
     for i in 3:N
         push!(xp.args, :(I[$i]))
     end
@@ -346,7 +351,7 @@ function boundary(mesh)
     rows = rowvals(conn)
     vals = nonzeros(conn)
 
-    I = indextype(edges)
+    I = celltype(edges)
     bnd_edges = Vector{I}(undef, length(edges))
     i = 1
     for (e,edge) in enumerate(edges)
@@ -354,7 +359,7 @@ function boundary(mesh)
         length(nzr) != 1 && continue
         relop = vals[nzr[1]]
         inds = indices(edges, edge)
-        bnd_edges[i] = (relop > 0) ? inds : flip(inds)
+        bnd_edges[i] = (relop > 0) ? I(inds) : flip(I(inds))
         i += 1
     end
 
@@ -376,7 +381,7 @@ function interior(mesh::Mesh, edges=skeleton(mesh,1))
     @assert size(C) == (numcells(mesh), numcells(edges))
 
     nn = vec(sum(abs.(C), dims=1))
-    T = CompScienceMeshes.indextype(edges)
+    T = CompScienceMeshes.celltype(edges)
     interior_edges = Vector{T}()
     for (i,edge) in pairs(cells(edges))
         nn[i] > 1 && push!(interior_edges, edge)
@@ -525,7 +530,8 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     
     # sort the simplices on a SFC
     simplices = cells(sk)
-    ctrs = [sum(cellvertices(sk,c))/(dim+1) for c in sk]
+    # ctrs = [sum(cellvertices(sk,c))/(dim+1) for c in sk]
+    ctrs = [cartesian(center(chart(sk, cell))) for cell in simplices]
     if length(sk) > 0
         simplices = simplices[sort_sfc(ctrs)]
     end
@@ -564,18 +570,17 @@ end
 
 
 function skeleton_fast(mesh, dimtype::Type)
-    C = celltype(mesh)
-    I = indextype(mesh, dimtype)
-    E = celltype(mesh, dimtype)
-    faces = Vector{I}()
-    for cell in mesh
-        idcs = indices(mesh, cell)
-        for face in skeleton(C(idcs), dimtype)
-            push!(faces, face)
+    # C = celltype(mesh)
+    # I = indextype(mesh, dimtype)
+    F = celltype(mesh, dimtype)
+    fcs = Vector{F}()
+    for cell in cells(mesh)
+        for face in faces(cell, dimtype)
+            push!(fcs, face)
         end
     end
-    faces = unique!(x -> E(x), faces)
-    Mesh(vertices(mesh), faces)
+    fcs = unique!(fcs)
+    Mesh(vertices(mesh), fcs)
 end
 
 function skeleton_fast(mesh, dim::Int)
@@ -774,8 +779,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
     k = 1
     Cells = cells(mesh)
-    for e in edges
-        edge = indices(edges, e)
+    for edge in cells(edges)
+        # edge = indices(edges, e)
 
         # neighborhood of startvertex
         v = edge[1]
@@ -858,7 +863,16 @@ end
 
 Return a chart describing the supplied cell of `mesh`.
 """
-chart(mesh::Mesh, cell) = simplex(vertices(mesh, indices(mesh,cell)))
+function chart(mesh::Mesh, c)
+    cell = cells(mesh)[c]
+    chart(mesh, cell)
+end
+
+function chart(mesh::Mesh, cell::SimplexGraph)
+    # cell = cells(mesh)[c]
+    verts = vertices(mesh, cell.indices.data)
+    simplex(verts)
+end
 
 parent(mesh::AbstractMesh) = nothing
 # parent(mesh::Mesh) = nothing

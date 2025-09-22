@@ -1,6 +1,6 @@
 abstract type AbstractGraph end
 function Base.getindex(g::AbstractGraph, i::Int) g.indices[i] end
-function Base.hash(g::AbstractGraph, a::UInt) hash(sort(g.indices), a) end
+function Base.hash(g::AbstractGraph, a::UInt) hash(sort(SVector(g.indices)).data, a) end
 function Base.length(g::AbstractGraph) length(g.indices) end
 
 struct QuadrilateralGraph <: AbstractGraph
@@ -14,11 +14,23 @@ struct SimplexGraph{N} <: AbstractGraph
     indices::SVector{N,Int}
 end
 
+# function SimplexGraph{1}(i::Int)
+#     return SimplexGraph{1}(SVector(i))
+# end
+
+function SimplexGraph(indices::Vararg{Int,N}) where {N}
+    return SimplexGraph{N}(SVector{N}(indices))
+end
+
+function SimplexGraph(i::Int)
+    return SimplexGraph{1}(SVector(i))
+end
+
 function dimension(h::SimplexGraph{N}) where {N} N-1 end
 function dimtype(g::SimplexGraph{N}) where {N} Val{N-1} end
 
 function Base.isequal(g::G, h::G) where {G <: AbstractGraph}
-    p = indexin(g.indices, h.indices)
+    p = indexin(SVector(g.indices), SVector(h.indices))
     any(p .== nothing) && return false
     return true
 end
@@ -28,26 +40,28 @@ function skeleton(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
 end
 
 function faces(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
-    collect(idcs for idcs in combinations(g.indices, M+1))
+    # F = SimplexGraph{M+1}
+    F = SimplexGraph
+    collect(F(idcs...) for idcs in combinations(g.indices, M+1))
 end
 
 # function skeleton(g::SimplexGraph{N}, ::Type{Val{N-1}}) where {N}
 #     SVector(g.indices)
 # end
 
-function skeleton(g::SimplexGraph{3}, ::Type{Val{1}})
-    return SVector(
-        (g[2],g[3]),
-        (g[3],g[1]),
-        (g[1],g[2]),
-    )
-end
+# function skeleton(g::SimplexGraph{3}, ::Type{Val{1}})
+#     return SVector(
+#         (g[2],g[3]),
+#         (g[3],g[1]),
+#         (g[1],g[2]),
+#     )
+# end
 
 function faces(g::SimplexGraph{3}, ::Type{Val{1}})
-    return SVector(
-        (g[2],g[3]),
-        (g[3],g[1]),
-        (g[1],g[2]),
+    return (
+        SimplexGraph(g[2],g[3]),
+        SimplexGraph(g[3],g[1]),
+        SimplexGraph(g[1],g[2]),
     )
 end
 
@@ -69,10 +83,10 @@ end
 
 function faces(g::QuadrilateralGraph, ::Type{Val{1}})
     return SVector(
-        (g[1],g[2]),
-        (g[2],g[3]),
-        (g[3],g[4]),
-        (g[4],g[1]),)
+        SimplexGraph(g[1],g[2]),
+        SimplexGraph(g[2],g[3]),
+        SimplexGraph(g[3],g[4]),
+        SimplexGraph(g[4],g[1]),)
 end
 
 function relorientation(g::G, h::AbstractGraph) where {G <: SimplexGraph}

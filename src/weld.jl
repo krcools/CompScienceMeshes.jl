@@ -76,8 +76,10 @@ function weld(Γ₁, Γ₂; boundary=false, glueop=unique)
 
     V = [V1; V2]
 
-    F1 = [indices(Γ₁,c) for c in Γ₁]
-    F2 = [indices(Γ₂,c) for c in Γ₂]
+    # F1 = [indices(Γ₁,c) for c in Γ₁]
+    # F2 = [indices(Γ₂,c) for c in Γ₂]
+    F1 = collect(cells(Γ₁))
+    F2 = collect(cells(Γ₂))
     F = [F1; F2]
 
     nc1 = numcells(Γ₁)
@@ -188,8 +190,8 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
         vcat(G1.faces, Faces2))
 end
 
-@generated function map_ids(c::SVector{N,T}, idmap) where {N,T}
-    xp = :(SVector{$N,$T}())
+@generated function map_ids(c::SimplexGraph{N}, idmap) where {N,T}
+    xp = :(SimplexGraph())
     for i in 1:N
         push!(xp.args, :(idmap[c[$i]]))
     end

@@ -44,10 +44,11 @@ vt = skeleton(l1,0)
 bd = boundary(l1)
 
 overlaps = overlap_gpredicate(bd)
-pred1 = c -> overlaps(simplex(vertices(vt,c)))
-@test pred1(SVector(1))
-@test !pred1(SVector(2))
-@test pred1(SVector(3))
+# pred1 = c -> overlaps(simplex(vertices(vt,c)))
+pred1 = c -> overlaps(chart(vt,c))
+@test pred1(CompScienceMeshes.SimplexGraph(1))
+@test !pred1(CompScienceMeshes.SimplexGraph(2))
+@test pred1(CompScienceMeshes.SimplexGraph(3))
 
 
 # test a case where the segments are:

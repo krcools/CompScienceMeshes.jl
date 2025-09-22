@@ -88,7 +88,7 @@ function mesh_rectangle_impl(a::F, b::F, h::F, udim) where F
     m = Int(round(b/h))  # number of elements along b
     
     nodes = zeros(SVector{udim, F}, (m + 1)*(n + 1))
-    faces = Vector{SVector{3, Int64}}(undef, 2*m*n)
+    faces = Vector{SimplexGraph{3}}(undef, 2*m*n)
     
     for ix in 0 : n - 1
         for iy in 1 : m
@@ -99,14 +99,14 @@ function mesh_rectangle_impl(a::F, b::F, h::F, udim) where F
             end
             
             nodes[(ix)*(m + 1) + iy] = node
-            face = SVector(
+            face = SimplexGraph(
                 (ix)*(m + 1) + (iy),
                 (ix)*(m + 1) + (iy + 1),
                 (ix + 1)*(m + 1) + (iy)
             )
             faces[(ix)*2*m + (2*iy - 1)] = face
             
-            face = SVector(
+            face = SimplexGraph(
                 (ix)*(m + 1) + (iy + 1), 
                 (ix + 1)*(m + 1) + (iy + 1), 
                 (ix + 1)*(m + 1) + (iy)
@@ -244,6 +244,7 @@ function meshrectangle_unit_tri_2graded(h::T, udim) where {T}
         end
     end
 
+    faces = [SimplexGraph(f) for f in faces]
     return Mesh(vertices, faces)
 end
 
