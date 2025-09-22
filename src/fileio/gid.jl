@@ -33,13 +33,13 @@ function load_gid_mesh(file,T)
     readline(file); # Elements
 
     # Read the triangles
-    triangles = Vector{Pt{3,Int}}(undef,lineCount-vertexCount);
+    triangles = Vector{SimplexGraph{3}}(undef,lineCount-vertexCount);
     triangleCount = 0;
     while !eof(file)
             line = split(readline(file));
             size(line, 1) == 4 || break; # End Elements
             triangleCount += 1;
-            triangles[triangleCount] = Pt{3,Int}(map(Meta.parse, line[2:4]));
+            triangles[triangleCount] = SimplexGraph{3}(map(Meta.parse, line[2:4]));
     end
     triangles = triangles[1:triangleCount]
     # Mesh(vertices[1:vertexCount], triangles[1:triangleCount])
@@ -48,7 +48,7 @@ function load_gid_mesh(file,T)
     Q = Pt{3,T}
     ctrs = Q[]
     for tr in triangles
-            ctr = sum(vertices[tr])/3
+            ctr = sum(vertices[tr.indices])/3
             push!(ctrs,ctr)
     end
     sorted = sort_sfc(ctrs)

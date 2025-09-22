@@ -69,14 +69,14 @@ T = Float64
     ]
 
     F = [
-        index(1,2,3)
+        CompScienceMeshes.SimplexGraph{3}(index(1,2,3))
     ]
 
     m = Mesh(V,F)
     n = fliporientation(m)
 
-    @test m.faces[1] == index(1,2,3)
-    @test n.faces[1] == index(2,1,3)
+    @test m.faces[1].indices == index(1,2,3)
+    @test n.faces[1].indices == index(2,1,3)
 
     # test the construction of transposed connectivity matricees
     Σᵀ = connectivity(edges, faces, identity)

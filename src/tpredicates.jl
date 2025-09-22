@@ -1,9 +1,12 @@
 import Base.in
 function in(mesh::CompScienceMeshes.AbstractMesh)
-    cells_mesh = sort.(cells(mesh))
+    # cells_mesh = sort.(cells(mesh))
+    cells_mesh = cells(mesh)
     function f(m,p)
-        cell = indices(m,p)
-        sort(cell) in cells_mesh
+        # cell = indices(m,p)
+        cell = cells(m)[p]
+        # sort(cell) in cells_mesh
+        cell in cells_mesh
     end
     return f
 end

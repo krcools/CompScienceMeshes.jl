@@ -94,8 +94,8 @@ function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where 
         c = NV + E
         a = Edges.faces[E][1]
         b = Edges.faces[E][2]
-        edges[2(E-1) + 1] = SVector(a,c)
-        edges[2(E-1) + 2] = SVector(c,b)
+        edges[2(E-1) + 1] = SimplexGraph(a,c)
+        edges[2(E-1) + 2] = SimplexGraph(c,b)
     end
 
     # return the new mesh after refienments
@@ -154,13 +154,15 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     end
 
     Nodes = skeleton(mesh, 0)
-    node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    # node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    node_ctrs = [cartesian(center(chart(Nodes, node))) for node in cells(Nodes)]
     Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
 
+    fcs = [SimplexGraph{3}(fc) for fc in fcs]
     fine = Mesh(verts, fcs)
     D = connectivity(Nodes, fine)
     rows, vals = rowvals(D), nonzeros(D)
-    sorted_fcs = Vector{indextype(mesh)}()
+    sorted_fcs = Vector{celltype(mesh)}()
     for (i,Node) in enumerate(cells(Nodes))
         for k in nzrange(D,i)
             j = rows[k]
@@ -336,7 +338,8 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     # add four faces in each coarse face
     nf = 4NF
-    fcs = zeros(indextype(mesh), nf)
+    # fcs = zeros(celltype(mesh), nf)
+    fcs = Vector{celltype(mesh)}(undef, nf)
 
     for F in 1 : numcells(faces)
 
@@ -356,10 +359,10 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
         r2 = mesh.faces[F][2]
         r3 = mesh.faces[F][3]
 
-        fcs[4(F-1)+1] = index(r1,es[3],es[2])
-        fcs[4(F-1)+2] = index(r2,es[1],es[3])
-        fcs[4(F-1)+3] = index(r3,es[2],es[1])
-        fcs[4(F-1)+4] = index(es[1],es[2],es[3])
+        fcs[4(F-1)+1] = SimplexGraph(r1,es[3],es[2])
+        fcs[4(F-1)+2] = SimplexGraph(r2,es[1],es[3])
+        fcs[4(F-1)+3] = SimplexGraph(r3,es[2],es[1])
+        fcs[4(F-1)+4] = SimplexGraph(es[1],es[2],es[3])
     end
 
     Mesh(verts, fcs)

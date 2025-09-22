@@ -92,6 +92,8 @@ function read_gmsh3d_mesh(io; physical=nothing, T=Float64)
             f[i] = @SVector[fc[1],fc[2],fc[4],fc[3]]
         end
     end
+
+    f = [SimplexGraph{4}(fc) for fc in f]
     msh = Mesh(v, f)
     @assert isoriented(msh)
     return msh
