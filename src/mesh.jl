@@ -39,7 +39,9 @@ cellarray(m::Mesh) = [ k[i] for k in m.faces, i in 1:dimension(m)+1 ]
 Returns an empty mesh with `coordtype` equal to `type`, of dimension `mdim`
 and embedded in a universe of dimension `udim`
 """
-mesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], SVector{mdim+1,Int}[])
+function mesh(T, mdim, udim=mdim+1)
+    Mesh(Pt{udim,T}[], CompScienceMeshes.SimplexGraph{mdim+1}[])
+end
 
 
 
