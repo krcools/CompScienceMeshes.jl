@@ -522,7 +522,7 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
 
-    if dim == meshdim
+    if dim == meshdim && (mesh isa Mesh || mesh isa QuadMesh)
         return mesh
     end
 
