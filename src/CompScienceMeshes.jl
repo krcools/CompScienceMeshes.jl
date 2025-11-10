@@ -60,11 +60,12 @@ export dimension, universedimension
 export volume
 export neighborhood
 export quadpoints
+export meshorder
 
 export isinside, isinclosure, overlap
 
 # specific to simplicial charts
-export simplex, center, vertices
+export simplex, center, vertices, nodes
 export faces, edges, circumcenter
 export barytocart, carttobary
 
@@ -122,6 +123,14 @@ include("isinside.jl")
 include("findchart.jl")
 include("neighborhood.jl")
 include("subd_neighborhood.jl")
+
+include("meshes/curvilinear_silvester.jl")
+include("meshes/curvilinear_gmsh_line.jl")
+include("meshes/curvilinear_gmsh_triangle.jl")
+include("meshes/curvilinear_mesh.jl")
+include("meshes/curvilinear_chart.jl")
+include("meshes/curvilinear_neighborhood.jl")
+
 include("quadpoints.jl")
 
 include("submesh.jl")

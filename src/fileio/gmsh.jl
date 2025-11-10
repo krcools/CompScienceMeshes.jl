@@ -88,6 +88,8 @@ function load_gmsh_mesh(meshfile;
     # TODO: once we support hexahedrons, we need to catch that one too
     if element == :quadrangle
         return QuadMesh(vertices, elements)
+    elseif element == :line && order > 1
+        return CurvilinearMesh(vertices, elements, 1, order)
     else
         return Mesh(vertices, elements)
     end
