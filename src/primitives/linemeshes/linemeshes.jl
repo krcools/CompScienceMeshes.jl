@@ -57,3 +57,55 @@ CT = SVector{2,Int}
 
     return Mesh(vertices, faces)
 end
+
+"""
+    meshcurve(curve, delta::T) where T<:Real
+
+Meshes a curve (2D or 3D) describe by an analytical curve.
+In principle, piecewise curves are possible, as long as the parameter
+space is continuous.
+
+WARNING: We do not ensure uniform segment length in the physical space!
+"""
+function meshcurve(curve, delta::T; udim=2, tstart=T(0.0), tend=T(2π), order=1) where T<:Real
+
+    PT = SVector{udim,T}
+    CT = SVector{2,Int}
+
+    ξ, w = CompScienceMeshes.legendre(1000, tstart, tend)
+
+    curvelength = dot(w, norm.(curve.(ξ)))
+
+    @info "The total curve length is $(curvelength)"
+
+    num_segments = ceil(Int, curvelength / delta)
+
+    tdelta = (tend-tstart) / num_segments
+
+    if norm(curve(tstart) - curve(tend)) < eps(T)*1e1
+        isclosed = true
+        tdeltas = collect(0 : num_segments-1) * tdelta
+        vertices = Array{PT}(undef,num_segments)
+    else
+        isclosed = false
+        tdeltas = collect(0 : num_segments) * tdelta
+        vertices = Array{PT}(undef,num_segments + 1)
+    end
+
+    for i in 1 : (isclosed ? num_segments : num_segments + 1)
+        vertices[i] = PT(curve(tdeltas[i])[1], curve(tdeltas[i])[2])
+    end
+
+    faces = Array{CT}(undef,num_segments)
+    for i in 1 : num_segments-1
+        faces[i] = SVector{2,Int}(i, i+1)
+    end
+
+    if isclosed
+        faces[end] = SVector{2,Int}(num_segments, 1)
+    else
+        faces[end] = SVector{2,Int}(num_segments, num_segments + 1)
+    end
+
+    return Mesh(vertices, faces)
+end

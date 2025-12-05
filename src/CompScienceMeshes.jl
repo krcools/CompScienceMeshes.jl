@@ -22,7 +22,7 @@ export euclidianbasis, point
 
 # default mesh creation
 export mesh, readmesh, writemesh, meshgeo, setminus, load_gmsh_mesh
-export meshsegment, meshcircle
+export meshsegment, meshcircle, meshcurve
 export meshcuboid, meshcylinder, meshdisk, meshicosphere, meshmobius, meshrectangle, meshsphere
 export gmshcuboid, gmshrectangle, gmshsphere
 export tetmeshsphere, tetmeshcuboid, tetgmshcuboid, meshball
