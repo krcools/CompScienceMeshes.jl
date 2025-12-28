@@ -91,7 +91,6 @@ Physical Curve("boundary") = {1, 2, 3, 4};
     gmsh.open(fn)
 
     # Choose element order (1: linear segments, 2: quadratic)
-    @show order
     gmsh.option.setNumber("Mesh.ElementOrder", order)
 
     # Generate only the 1D mesh (curves)
