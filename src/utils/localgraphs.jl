@@ -35,9 +35,9 @@ function Base.isequal(g::G, h::G) where {G <: AbstractGraph}
     return true
 end
 
-function skeleton(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
-    collect(idcs for idcs in combinations(g.indices, M+1))
-end
+# function skeleton(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
+#     collect(idcs for idcs in combinations(g.indices, M+1))
+# end
 
 function faces(g::SimplexGraph{N}, ::Type{Val{M}}) where {N,M}
     # F = SimplexGraph{M+1}
@@ -68,18 +68,18 @@ end
 
 @testitem "skeleton SimplexGraph" begin
     g = CompScienceMeshes.SimplexGraph{4}((1,2,3,4))
-    edges = skeleton(g,Val{1})
+    edges = faces(g,Val{1})
     @test length(edges) == 6
     # @test eltype(edges) == CompScienceMeshes.SVector{2,Int}
 end
 
-function skeleton(g::QuadrilateralGraph, ::Type{Val{1}})
-    return SVector(
-        (g[1],g[2]),
-        (g[2],g[3]),
-        (g[3],g[4]),
-        (g[4],g[1]),)
-end
+# function skeleton(g::QuadrilateralGraph, ::Type{Val{1}})
+#     return SVector(
+#         (g[1],g[2]),
+#         (g[2],g[3]),
+#         (g[3],g[4]),
+#         (g[4],g[1]),)
+# end
 
 function faces(g::QuadrilateralGraph, ::Type{Val{1}})
     return SVector(
@@ -91,10 +91,11 @@ end
 
 function relorientation(g::G, h::AbstractGraph) where {G <: SimplexGraph}
     dimension(g) > dimension(h) && return relorientation(h, g)
-    faces = collect(skeleton(h, dimtype(g)))
-    i = something(findfirst(face -> isequal(G(face), g), faces), 0)
+    fcs = collect(faces(h, dimtype(g)))
+    i = something(findfirst(face -> isequal(face, g), fcs), 0)
     i == 0 && return 0
-    p = Permutations.Permutation(indexin(g.indices, SVector(faces[i])))
+    # p = Permutations.Permutation(indexin(g.indices, SVector(fcs[i])))
+    p = Permutations.Permutation(indexin(g.indices, fcs[i].indices))
     σ = Permutations.sign(p)
     return σ * i
 end
