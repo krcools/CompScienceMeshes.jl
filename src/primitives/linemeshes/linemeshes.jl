@@ -108,5 +108,6 @@ function meshcurve(curve, delta::T; udim=2, tstart=T(0.0), tend=T(2π), order=1)
         faces[end] = SVector{2,Int}(num_segments, num_segments + 1)
     end
 
+    faces = SimplexGraph.(faces)
     return Mesh(vertices, faces)
 end
