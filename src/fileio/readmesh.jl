@@ -52,8 +52,9 @@ function readmesh(filename;T=Float64)
 
         # TODO: remove explicit reference to dimension
         #I = SVector{3,Int}
-        C = SVector{dim1,Int}
-        faces = zeros(C, num_faces)
+        # C = SVector{dim1,Int}
+        C = SimplexGraph{dim1}
+        faces = Vector{C}(undef, num_faces)
         for i in 1 : num_faces
             l = readline(f)
             faces[i] = C([parse(Int,s) for s in split(l)])

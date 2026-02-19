@@ -8,7 +8,7 @@ vrts = [
 ]
 
 idcs = [
-    index(1,2,3)
+    CompScienceMeshes.SimplexGraph(1,2,3)
 ]
 
 axis = 0.5π * [1,0,0]
@@ -23,9 +23,9 @@ G = weld(G1, G2, G3)
 @test numvertices(G) == 5
 
 edges = skeleton(G,1)
-pairs = cellpairs(G, edges, dropjunctionpair=true)
+prs = cellpairs(G, edges, dropjunctionpair=true)
 
-@test size(pairs) == (2,8)
+@test size(prs) == (2,8)
 
 mesh = meshrectangle(1.0, 1.0, 0.5)
 edges = skeleton(mesh,1)

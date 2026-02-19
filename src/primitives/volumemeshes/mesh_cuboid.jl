@@ -170,6 +170,7 @@ function tetmesh_cuboid_impl(a::F, b::F, c::F, h::F) where F
         end
     end
 
+    faces = [SimplexGraph(f) for f in faces]
     return Mesh(vertices, faces)
 end
 

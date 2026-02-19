@@ -1,7 +1,10 @@
 using CompScienceMeshes
+
+using SparseArrays
 using Test
 
 #include(Pkg.dir("CompScienceMeshes","examples","matlab_patches.jl"))
+# T = Float64
 for T in [Float32, Float64]
     sphere = readmesh(joinpath(dirname(@__FILE__),"assets","sphere2.in"),T=T)
     index_in_sphere = mapper(sphere)
@@ -15,6 +18,7 @@ for T in [Float32, Float64]
     # build the restriction operator
     R = spzeros(Int, numcells(southern_hemisphere), numcells(sphere))
     for (i,_c) in enumerate(cells(southern_hemisphere))
+        # @show _c
         j = index_in_sphere[_c]
         R[i,j] = 1
     end

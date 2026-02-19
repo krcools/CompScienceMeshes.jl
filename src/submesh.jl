@@ -45,7 +45,7 @@ mutable struct SubMesh{U,D1,T} <: AbstractMesh{U,D1,T}
     supermesh::AbstractMesh{U,D1,T}
     sub2sup::Vector{Int}
     sup2sub::Vector{Int}
-    cells::Vector{SVector{D1,Int}}
+    # cells::Vector{SVector{D1,Int}}
 end
 
 # function celltype(m::SubMesh{U,D1}) where {U,D1} SimplexGraph{D1} end
@@ -64,7 +64,8 @@ function SubMesh(supermesh, sub2sup)
     # Cells = cells(supermesh)[sub2sup]
     Cells = [indices(supermesh, i) for i in supermesh]
     Cells = Cells[sub2sup]
-    SubMesh(supermesh, sub2sup, sup2sub, Cells)
+    # SubMesh(supermesh, sub2sup, sup2sub, Cells)
+    SubMesh(supermesh, sub2sup, sup2sub)
 end
 
 function vertextype(m::SubMesh) vertextype(m.supermesh) end
@@ -84,8 +85,12 @@ vertices(m::SubMesh, cell) = vertices(m.supermesh, cell)
 numvertices(m::SubMesh) = numvertices(m.supermesh)
 
 indices(m::SubMesh, p) = indices(m.supermesh, m.sub2sup[p])
-cells(m::SubMesh) = m.cells #m.supermesh.faces[m.sub2sup]
 numcells(m::SubMesh) = length(m.sub2sup)
+
+function cells(m::SubMesh)
+    return cells(parent(m))[m.sub2sup]
+    # m.supermesh.faces[m.sub2sup]
+end
 
 issubmesh(sub, sup) = (sub == sup)
 issubmesh(sub::SubMesh, sup) = (sub.supermesh == sup)

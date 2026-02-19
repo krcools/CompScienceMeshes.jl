@@ -512,6 +512,7 @@ function mesh_cuboid_impl(a::F, b::F, c::F, h::F) where F
                 end
             end
         end
+    faces = [SimplexGraph(f) for f in faces]
     Γ = Mesh(nodes, faces)
     return flipmesh!(Γ)
 end
