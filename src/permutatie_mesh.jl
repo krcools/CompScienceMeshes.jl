@@ -14,19 +14,20 @@ In the last two, control that the other mesh is a submesh of the starting mesh. 
 
 """
 
+function permutate(mesh::Mesh, σ::Permutations.Permutation)
+    mesh.vertices = mesh.vertices[σ.data]
+    for (i, a) in enumerate(mesh.faces)
+        ind = σ'.data[a.indices]
+        mesh.faces[i] = SimplexGraph(ind...)
+    end
+end
+
 function permutate(mesh::Mesh, σ::Union{Vector{<:Integer}, StaticArrays.SVector{Int32, <:Integer}})
     @assert numvertices(mesh) == length(σ)
     permutate(mesh, Permutations.Permutation(σ))
 end
 
-function permutate(mesh::Mesh, σ::Permutations.Permutation)
-    mesh.vertices = mesh.vertices[σ.data]
-    for (i, a) in enumerate(mesh.faces)
-        mesh.faces[i] = σ'.data[a]
-    end
-end
-
-function permutate(X::Mesh{U,D1}, Y::Mesh{U,D2}) where {U,D1,D2}
+function permutate(X::Mesh{U}, Y::Mesh{U}) where {U}
     tol = sqrt(eps(coordtype(X)))
     permut = Vector{Int32}()
     temp = collect(1:numvertices(X))
@@ -46,7 +47,7 @@ function permutate(X::Mesh{U,D1}, Y::Mesh{U,D2}) where {U,D1,D2}
     X
 end
 
-function permutate_mesh(X::Mesh{2,D1}, Y::Mesh{3,D2}) where { D1, D2}
+function permutate(X::Mesh{2}, Y::Mesh{3})
     tol = sqrt(eps(coordtype(X)))
 
     # assert that the z-coordinate for the vertices in X is constant.
@@ -77,7 +78,7 @@ function permutate_mesh(X::Mesh{2,D1}, Y::Mesh{3,D2}) where { D1, D2}
     X
 end
 
-function permutate(X::Mesh{3,D1}, Y::Mesh{2,D2}) where {D1, D2}
+function permutate(X::Mesh{3}, Y::Mesh{2})
     tol = sqrt(eps(coordtype(X)))
 
     # assert that the z-coordinate for the vertices in X is constant.
@@ -107,6 +108,6 @@ function permutate(X::Mesh{3,D1}, Y::Mesh{2,D2}) where {D1, D2}
             push!(permut, i)
     end end
     
-    permutate_mesh(X, Permutations.Permutation(permut))
+    permutate(X, Permutations.Permutation(permut))
     X
 end

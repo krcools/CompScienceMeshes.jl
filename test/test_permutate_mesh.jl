@@ -11,7 +11,7 @@ function check_mesh(X, X_check)
     # test that each face has the same points in identical order
     @test numcells(X) == numcells(X_check)
     for i in 1:numcells(X)
-        @test X.vertices[X.faces[i]] == X_check.vertices[X_check.faces[i]]
+        @test X.vertices[X.faces[i].indices] == X_check.vertices[X_check.faces[i].indices]
     end
 end
 

@@ -24,9 +24,10 @@ end
 # universe dimension 2
 for T in [Float32, Float64]
     local mesh = meshrectangle(T(1.0), T(1.0), T(1.0),2)
-    local faces = skeleton(mesh, 2)
-    local verts = vertices(mesh, faces.faces[1])
-    p = simplex(verts)
+    # local faces = skeleton(mesh, 2)
+    # local verts = cellvertices(mesh, 1)
+    p = chart(mesh, cells(mesh)[1])
+    #p = simplex(verts)
 
     @test p.vertices == [
         point(T, 0.0, 0.0),
