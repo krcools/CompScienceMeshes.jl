@@ -38,7 +38,7 @@ export connectivity, cellpairs # marked for deprecation
 export translate, translate!, rotate, rotate!
 export fliporientation!, fliporientation
 export weld, union
-export permutate_mesh
+export permutate
 
 # mesh refinement
 export barycentric_refinement, bisecting_refinement

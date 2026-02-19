@@ -14,19 +14,19 @@ In the last two, control that the other mesh is a submesh of the starting mesh. 
 
 """
 
-function permutate_mesh(mesh::Mesh, σ::Union{Vector{<:Integer}, StaticArrays.SVector{Int32, <:Integer}})
+function permutate(mesh::Mesh, σ::Union{Vector{<:Integer}, StaticArrays.SVector{Int32, <:Integer}})
     @assert numvertices(mesh) == length(σ)
-    permutate_mesh(mesh, Permutations.Permutation(σ))
+    permutate(mesh, Permutations.Permutation(σ))
 end
 
-function permutate_mesh(mesh::Mesh, σ::Permutations.Permutation)
+function permutate(mesh::Mesh, σ::Permutations.Permutation)
     mesh.vertices = mesh.vertices[σ.data]
     for (i, a) in enumerate(mesh.faces)
         mesh.faces[i] = σ'.data[a]
     end
 end
 
-function permutate_mesh(X::Mesh{U,D1}, Y::Mesh{U,D2}) where {U,D1,D2}
+function permutate(X::Mesh{U,D1}, Y::Mesh{U,D2}) where {U,D1,D2}
     tol = sqrt(eps(coordtype(X)))
     permut = Vector{Int32}()
     temp = collect(1:numvertices(X))
@@ -42,7 +42,7 @@ function permutate_mesh(X::Mesh{U,D1}, Y::Mesh{U,D2}) where {U,D1,D2}
         if i !=0
             push!(permut, i)
     end end
-    permutate_mesh(X, Permutations.Permutation(permut))
+    permutate(X, Permutations.Permutation(permut))
     X
 end
 
@@ -73,11 +73,11 @@ function permutate_mesh(X::Mesh{2,D1}, Y::Mesh{3,D2}) where { D1, D2}
             push!(permut, i)
     end end
     
-    permutate_mesh(X, Permutations.Permutation(permut))
+    permutate(X, Permutations.Permutation(permut))
     X
 end
 
-function permutate_mesh(X::Mesh{3,D1}, Y::Mesh{2,D2}) where {D1, D2}
+function permutate(X::Mesh{3,D1}, Y::Mesh{2,D2}) where {D1, D2}
     tol = sqrt(eps(coordtype(X)))
 
     # assert that the z-coordinate for the vertices in X is constant.

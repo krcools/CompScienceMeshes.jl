@@ -23,14 +23,14 @@ for u in 2:3
 
     local σ = Permutations.Permutation(reverse(collect(1:numvertices(X))))
 
-    permutate_mesh(X,σ.data)
+    permutate(X,σ.data)
     check_mesh(X, X_check)
 
-    permutate_mesh(X, σ')
+    permutate(X, σ')
     @test X.vertices == X_check.vertices
     @test X.faces == X_check.faces
 
-    permutate_mesh(X, Y)
+    permutate(X, Y)
     check_mesh(X, X_check)
 
     @test X.vertices[begin: begin+numvertices(Y)-1] == Y.vertices
@@ -44,15 +44,15 @@ let
     local X_check = meshrectangle(1.0, 1.0, 0.5, 2)
     local Y = meshrectangle(0.5, 0.5, 0.5, 3)
 
-    permutate_mesh(X, Y)
+    permutate(X, Y)
     check_mesh(X, X_check)
     @test X.vertices[begin: begin+numvertices(Y)-1] == map(x->x[1:2], Y.vertices)
 
 
-    permutate_mesh(X, X_check)
+    permutate(X, X_check)
 
     translate!(Y, point(0,0,1))
-    permutate_mesh(X, Y)
+    permutate(X, Y)
     check_mesh(X, X_check)
     @test X.vertices[begin: begin+numvertices(Y)-1] == map(x->x[1:2], Y.vertices)
 end
@@ -64,7 +64,7 @@ let
     translate!(X, point(0,0,1))
     translate!(X_check, point(0,0,1))
 
-    permutate_mesh(X, Y)
+    permutate(X, Y)
     check_mesh(X, X_check)
 
     @test  map(x->x[1:2], X.vertices[begin: begin+numvertices(Y)-1]) == Y.vertices
