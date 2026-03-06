@@ -106,3 +106,34 @@ function overlap(p::Simplex{3,3,0,4,T}, q::Simplex{3,3,0,4,T}) where T
     all(0+tol .<= u .<= 1-tol) && return true
     return false
 end
+
+
+function overlap(p::Simplex{2,2,0,3,T}, q::Simplex{2,2,0,3,T}) where T
+
+    #   tol = sqrt(eps(T))
+    tol = 1e3 * eps(T)
+
+  # Are the patches in the same plane?
+  u1 = q.tangents[1]
+  u2 = q.tangents[2]
+  v = p.vertices[1] - q.vertices[2]
+
+  for i in 1:3
+    a = p.vertices[mod1(i+1,3)]
+    b = p.vertices[mod1(i+2,3)]
+    c = p.vertices[i]
+    t = b - a
+    m = StaticArrays.SVector{2,T}(t[2],-t[1])
+
+    sp = zeros(T,3); sp[i] = dot(c-a, m)
+    sq = T[dot(q.vertices[j]-a, m) for j in 1:3]
+
+    minp, maxp = extrema(sp)
+    minq, maxq = extrema(sq)
+
+    maxq <= minp + tol && return false
+    maxp <= minq + tol && return false
+  end
+
+  return true
+end
