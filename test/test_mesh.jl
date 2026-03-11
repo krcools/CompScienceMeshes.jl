@@ -82,4 +82,23 @@ T = Float64
     Σᵀ = connectivity(edges, faces, identity)
     Σ = connectivity(faces, edges, identity)
     @test norm(Σᵀ - Σ', Inf) == 0
+
+    rectangle = meshrectangle(T(1.0), T(1.0), T(0.5));
+    bnd = boundary(rectangle, true)
+
+    @test dimension(bnd) == 1
+    @test numvertices(bnd) == 9
+    @test numcells(bnd) == 8
+
+    bnd = boundary(rectangle, false)
+
+    @test dimension(bnd) == 1
+    @test numvertices(bnd) == 8
+    @test numcells(bnd) == 8
+
+
+    m = meshrectangle(T(1.0),T(1.0),T(0.5))
+    CompScienceMeshes.rotate!(m, [1,0,0]*T(π/2))
+
+    @test CompScienceMeshes.isoriented(boundary(m, false))
 # end

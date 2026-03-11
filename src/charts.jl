@@ -217,7 +217,7 @@ function _normals(tangents::SVector{2,SVector{2,T}}, ::Type{Val{0}}) where {T}
 
     t = tangents[1]
     s = tangents[2]
-    v = (t[1]*s[2] - t[2]*s[1])/2
+    v = abs(t[1]*s[2] - t[2]*s[1])/2
     # n[3] = tangents[1] × tangents[2]
     # l = norm(n)
 

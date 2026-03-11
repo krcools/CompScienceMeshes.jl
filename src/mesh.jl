@@ -331,7 +331,7 @@ Base.getindex(m::AbstractMesh, I::Vector{Int}) = Mesh(vertices(m), cells(m)[I])
 
 Returns the boundary of `mesh` as a mesh of lower dimension.
 """
-function boundary(mesh)
+function boundary(mesh, include_interior_points=true)
 
     D = dimension(mesh)
 
@@ -366,7 +366,22 @@ function boundary(mesh)
     end
 
     resize!(bnd_edges, i-1)
-    bnd = Mesh(vertices(mesh), bnd_edges)
+    if include_interior_points
+        return Mesh(vertices(mesh), bnd_edges)
+    else
+        originaltonew = Dict{Int,Int}()
+        sizehint!(originaltonew, i-1)
+        bnd_edges_new = Vector{I}(undef, length(bnd_edges))
+        for (e,edge) in enumerate(bnd_edges)
+            get!(originaltonew, edge.indices[1], e)
+        end
+        for (e,edge) in enumerate(bnd_edges)
+            bnd_edges_new[e] =SimplexGraph(
+                get(originaltonew, edge.indices[1], -1), 
+                get(originaltonew, edge.indices[2], -1)) 
+        end
+        return Mesh(vertices(mesh)[collect(keys(originaltonew))], bnd_edges_new)
+    end
 end
 
 

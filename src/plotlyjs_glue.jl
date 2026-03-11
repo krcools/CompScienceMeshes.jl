@@ -44,6 +44,44 @@ function __init__()
             return s
         end
 
+        @eval function patch(Γ::CompScienceMeshes.AbstractMesh{2}, fcr=nothing;
+            caxis=nothing, showscale=true, color="red", kwargs...)
+        
+            v = vertexarray(Γ)
+            c = cellarray(Γ)
+        
+            x = v[:,1];    y = v[:,2];    z = zeros(length(y))
+            i = c[:,1].-1; j = c[:,2].-1; k = c[:,3].-1
+        
+        
+            if fcr != nothing
+                m, M = extrema(fcr)
+                if caxis != nothing
+                    m, M = caxis
+                end
+        
+                s = PlotlyBase.mesh3d(;
+                    x=x, y=y, z=z,
+                    i=i, j=j, k=k,    
+                    intensitymode="cell",
+                    intensity=fcr,
+                    colorscale="Viridis",
+                    showscale=showscale,
+                    cmin=m,
+                    cmax=M,
+                    kwargs...
+                )
+            else
+                s = PlotlyBase.mesh3d(;
+                    x=x, y=y, z=z,
+                    i=i, j=j, k=k,
+                    color=color,
+                    kwargs...
+                )
+            end
+            return s
+        end
+
         @eval function patch(a::Vector{<:Simplex}; kwargs...)
             vertices = reduce(vcat, [v.vertices for v in a])
             faces = collect(SVector(3*(i-1)+1, 3*(i-1)+2, 3*(i-1)+3) for i in 1:length(a))
