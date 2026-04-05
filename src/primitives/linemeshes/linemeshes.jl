@@ -60,6 +60,63 @@ function meshcircle(radius::T, delta::T, udim=2) where T<:Real
 end
 
 """
+    meshrect(a::T, b::T, delta::T) where T<:Real
+
+Meshes the boundary of a rectangle with side lengths `a` and `b`. 
+The rectangle is meshed in a counter-clockwise manner, starting at the origin (0, 0).
+"""
+function meshrect(a::T, b::T, delta::T) where T<:Real
+
+    udim = 2
+
+    PT = SVector{udim, T}
+    CT = SimplexGraph{2}
+
+    num_segments_a = ceil(Int, a/delta)
+    num_segments_b = ceil(Int, b/delta)
+
+    actual_delta_a = a / num_segments_a
+    actual_delta_b = b / num_segments_b
+
+    x = collect(0:num_segments_a) * actual_delta_a
+    y = collect(0:num_segments_b) * actual_delta_b
+
+    vertices = zeros(PT, 2*(num_segments_a + num_segments_b))
+
+    for i in 1 : num_segments_a
+        Δx = zeros(T, udim)
+        Δx[1] = x[i]
+        vertices[i] = PT(Δx)
+    end
+    for i in 1 : num_segments_b
+        Δy = zeros(T, udim)
+        Δy[1] = a
+        Δy[2] = y[i]
+        vertices[num_segments_a + i] = PT(Δy)
+    end
+    for i in 1 : num_segments_a
+        Δx = zeros(T, udim)
+        Δx[1] = x[end - i + 1]
+        Δx[2] = b
+        vertices[num_segments_a + num_segments_b + i] = PT(Δx)
+    end
+    for i in 1 : num_segments_b
+        Δy = zeros(T, udim)
+        Δy[1] = 0.0
+        Δy[2] = y[end - i + 1]
+        vertices[2*(num_segments_a + num_segments_b) - num_segments_b + i] = PT(Δy)
+    end
+
+    faces = Vector{CT}(undef, 2*(num_segments_a + num_segments_b))
+    for i in 1 : length(faces)-1
+        faces[i] = SimplexGraph(i, i+1)
+    end
+    faces[end] = SimplexGraph(length(faces), 1)
+
+    return Mesh(vertices, faces)
+end
+
+"""
     meshcurve(curve, delta::T) where T<:Real
 
 Meshes a curve (2D or 3D) describe by an analytical curve.

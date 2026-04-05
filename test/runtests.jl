@@ -49,6 +49,7 @@ include("test_mapper.jl")
 include("test_convert.jl")
 
 include("primitives/linemeshes/test_curve.jl")
+include("primitives/linemeshes/test_meshrect.jl")
 include("primitives/surfacemeshes/test_cuboid.jl")
 include("primitives/surfacemeshes/test_icosphere.jl")
 include("primitives/surfacemeshes/test_rectangle.jl")
