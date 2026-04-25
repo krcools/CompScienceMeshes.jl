@@ -1,4 +1,18 @@
-mutable struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractMesh{U,D1,T}
+abstract type AbstractRefinement{U,D1,T} <: AbstractMesh{U,D1,T} end
+
+"""
+True if m1 is a direct refinement of m2.
+"""
+function refines(m1::AbstractRefinement, m2::AbstractMesh)
+    parent(m1) == nothing && return false
+    return parent(m1) == m2
+end
+
+function refines(m1::AbstractMesh, m2::AbstractMesh)
+    return false
+end
+
+struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     mesh::M
     parent::MP
 end

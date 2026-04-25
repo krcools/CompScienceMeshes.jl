@@ -894,13 +894,7 @@ function isoriented(m::AbstractMesh)
     return all(S)
 end
 
-"""
-True if m1 is a direct refinement of m2.
-"""
-function refines(m1::AbstractMesh, m2::AbstractMesh)
-    parent(m1) == nothing && return false
-    return parent(m1) == m2
-end
+
 
 
 """
