@@ -12,18 +12,7 @@ requirejs.config({
     'highlight-julia-repl': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/julia-repl.min',
   },
   shim: {
-  "headroom-jquery": {
-    "deps": [
-      "jquery",
-      "headroom"
-    ]
-  },
   "highlight-julia": {
-    "deps": [
-      "highlight"
-    ]
-  },
-  "highlight-julia-repl": {
     "deps": [
       "highlight"
     ]
@@ -31,6 +20,17 @@ requirejs.config({
   "katex-auto-render": {
     "deps": [
       "katex"
+    ]
+  },
+  "headroom-jquery": {
+    "deps": [
+      "jquery",
+      "headroom"
+    ]
+  },
+  "highlight-julia-repl": {
+    "deps": [
+      "highlight"
     ]
   }
 }});
@@ -42,19 +42,19 @@ $(document).ready(function() {
     {
   "delimiters": [
     {
-      "display": false,
       "left": "$",
-      "right": "$"
+      "right": "$",
+      "display": false
     },
     {
-      "display": true,
       "left": "$$",
-      "right": "$$"
+      "right": "$$",
+      "display": true
     },
     {
-      "display": true,
       "left": "\\[",
-      "right": "\\]"
+      "right": "\\]",
+      "display": true
     }
   ]
 }
@@ -481,7 +481,6 @@ function worker_function(documenterSearchIndex, documenterBaseURL, filters) {
     // find anything if searching for "add!", only for the entire qualification
     tokenize: (string) => {
       const tokens = [];
-      const tokenSet = new Set();
       let remaining = string;
 
       // julia specific patterns
@@ -508,9 +507,8 @@ function worker_function(documenterSearchIndex, documenterBaseURL, filters) {
         let match;
         while ((match = pattern.exec(remaining)) != null) {
           const token = match[0].trim();
-          if (token && !tokenSet.has(token)) {
+          if (token && !tokens.includes(token)) {
             tokens.push(token);
-            tokenSet.add(token);
           }
         }
       }
@@ -520,9 +518,8 @@ function worker_function(documenterSearchIndex, documenterBaseURL, filters) {
         .split(/[\s\-,;()[\]{}]+/)
         .filter((t) => t.trim());
       for (const token of basicTokens) {
-        if (token && !tokenSet.has(token)) {
+        if (token && !tokens.includes(token)) {
           tokens.push(token);
-          tokenSet.add(token);
         }
       }
 
@@ -1311,21 +1308,18 @@ $(document).ready(function () {
     // construct the target URL with the same page path
     var target_url = target_href;
     if (page_path && page_path !== "" && page_path !== "index.html") {
-      // ensure target_href ends with a slash before appending page path
-      if (!target_url.endsWith("/")) {
-        target_url = target_url + "/";
+      // remove trailing slash from target_href if present
+      if (target_url.endsWith("/")) {
+        target_url = target_url.slice(0, -1);
       }
-      target_url = target_url + page_path;
+      target_url = target_url + "/" + page_path;
     }
-
-    // preserve the anchor (hash) from the current page
-    var current_hash = window.location.hash;
 
     // check if the target page exists, fallback to homepage if it doesn't
     fetch(target_url, { method: "HEAD" })
       .then(function (response) {
         if (response.ok) {
-          window.location.href = target_url + current_hash;
+          window.location.href = target_url;
         } else {
           // page doesn't exist in the target version, go to homepage
           window.location.href = target_href;
