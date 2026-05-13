@@ -19,6 +19,12 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
+[weakdeps]
+PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+
+[extensions]
+PlotlyBaseExt = ["PlotlyBase"]
+
 [compat]
 ClusterTrees = "^0.2"
 CollisionDetection = "^0.1.5"
