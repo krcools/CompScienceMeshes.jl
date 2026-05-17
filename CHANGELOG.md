@@ -1,3 +1,5 @@
+# Version 0.12 
+
 - Fixed bug where submeshes were sometimes treated as refinements.
 - [BREAKING]: PlotlyJS support is now implemented as extension. Functions `patch`, `wireframe`, and `normals` are retired in favour of standard PlolyJS language `scatter3d`, `mesh3d` and `cone`.
 
