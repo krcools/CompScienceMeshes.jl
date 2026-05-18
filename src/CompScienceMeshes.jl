@@ -146,7 +146,7 @@ include("weld.jl")
 include("mapper.jl")
 include("restrict.jl")
 
-# include("plotlyjs_glue.jl")
+include("plotlyjs_glue.jl")
 
 include("stripboundedge.jl")
 end # module

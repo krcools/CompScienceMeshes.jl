@@ -4,7 +4,7 @@ using CompScienceMeshes
 using PlotlyBase
 # using PlotlyJS.PlotlyBase
 
-function patch(Γ::CompScienceMeshes.AbstractMesh, fcr=nothing;
+function CompScienceMeshes.patch(Γ::CompScienceMeshes.AbstractMesh, fcr=nothing;
     caxis=nothing, showscale=true, color="red", kwargs...)
 
     v = vertexarray(Γ)
@@ -42,11 +42,11 @@ function patch(Γ::CompScienceMeshes.AbstractMesh, fcr=nothing;
     return s
 end
 
-function patch(a::Vector{<:CompScienceMeshes.Simplex}; kwargs...)
+function CompScienceMeshes.patch(a::Vector{<:CompScienceMeshes.Simplex}; kwargs...)
     vertices = reduce(vcat, [v.vertices for v in a])
     faces = collect(SVector(3*(i-1)+1, 3*(i-1)+2, 3*(i-1)+3) for i in 1:length(a))
     mesh = CompScienceMeshes.Mesh(vertices, faces)
-    return patch(mesh; kwargs...)
+    return CompScienceMeshes.patch(mesh; kwargs...)
 end
 
 function PlotlyBase.mesh3d(geo::CompScienceMeshes.AbstractMesh; kwargs...)
@@ -74,12 +74,12 @@ function PlotlyBase.cone(mesh, arrows; sizeref=2, kwargs...)
     PlotlyBase.cone(x=x,y=y,z=z,u=u,v=v,w=w,sizemode="absolute", sizeref=sizeref; kwargs...)
 end
 
-function normals(mesh; kwargs...)
+function CompScienceMeshes.normals(mesh; kwargs...)
     nrmls = [normal(chart(mesh,cell)) for cell in mesh]
     return PlotlyBase.cones(mesh, nrmls; kwargs...)
 end
 
-function wireframe(edges; width=1, color="rgb(0,0,0)")
+function CompScienceMeshes.wireframe(edges; width=1, color="rgb(0,0,0)")
     edges = skeleton(edges,1)
     T = coordtype(edges)
     x = T[]
