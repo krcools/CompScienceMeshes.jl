@@ -147,7 +147,7 @@ function __init__()
             return CompScienceMeshes.cones(mesh, nrmls; kwargs...)
         end
 
-        @eval function wireframe(edges; width=1, color="rgb(0,0,0)")
+        @eval function wireframe(edges::CompScienceMeshes.AbstractMesh{3}; width=1, color="rgb(0,0,0)")
             edges = skeleton(edges,1)
             T = coordtype(edges)
             x = T[]
@@ -159,6 +159,27 @@ function __init__()
                 append!(x, [v1[1],v2[1],NaN])
                 append!(y, [v1[2],v2[2],NaN])
                 append!(z, [v1[3],v2[3],NaN])
+            end
+            return PlotlyBase.scatter3d(x=x,y=y,z=z,mode="lines",
+                line=PlotlyBase.attr(
+                    color=color,
+                    width=width
+                )
+            )
+        end
+
+        @eval function wireframe(edges::CompScienceMeshes.AbstractMesh{2}; width=1, color="rgb(0,0,0)")
+            edges = skeleton(edges,1)
+            T = coordtype(edges)
+            x = T[]
+            y = T[]
+            z = T[]
+            for edge in edges
+                chrt = chart(edges, edge)
+                v1, v2 = chrt.vertices
+                append!(x, [v1[1],v2[1],NaN])
+                append!(y, [v1[2],v2[2],NaN])
+                append!(z, [0,0,NaN])
             end
             return PlotlyBase.scatter3d(x=x,y=y,z=z,mode="lines",
                 line=PlotlyBase.attr(
