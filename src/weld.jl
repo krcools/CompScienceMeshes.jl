@@ -190,7 +190,7 @@ function weld(G1::SComplex2D, G2::SComplex2D; seam)
         vcat(G1.faces, Faces2))
 end
 
-@generated function map_ids(c::SimplexGraph{N}, idmap) where {N,T}
+@generated function map_ids(c::SimplexGraph{N}, idmap) where {N}
     xp = :(SimplexGraph())
     for i in 1:N
         push!(xp.args, :(idmap[c[$i]]))
