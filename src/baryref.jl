@@ -16,7 +16,9 @@ struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     mesh::M
     parent::MP
 end
-
+function ==(m1::BarycentricRefinement{U,D1,T,M,MP}, m2::BarycentricRefinement{U,D1,T,M,MP}) where {U,D1,T,M,MP}
+    return m1.mesh == m2.mesh && m1.parent == m2.parent
+end
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
 vertices(br::BarycentricRefinement) = vertices(br.mesh)
 vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)

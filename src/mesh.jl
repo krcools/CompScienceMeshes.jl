@@ -4,7 +4,7 @@ using Combinatorics
 using Compat.Iterators
 
 export vertexarray, cellarray
-
+import Base: ==
 """
     `U::Int`: indicating dimension of the embedding space
     `D1::Int`: one plus the manifold dimension
@@ -23,7 +23,9 @@ mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     faces::Vector{SimplexGraph{D1}}
 end
 
-
+function ==(m1::Mesh{U,D1,T}, m2::Mesh{U,D1,T}) where {U,D1,T}
+    return m1.vertices == m2.vertices && m1.faces == m2.faces
+end
 
 function indices(m::Mesh{U,D1}, i) where {U,D1}
     return m.faces[i].indices
