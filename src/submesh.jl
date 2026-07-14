@@ -47,7 +47,9 @@ mutable struct SubMesh{U,D1,T} <: AbstractMesh{U,D1,T}
     sup2sub::Vector{Int}
     # cells::Vector{SVector{D1,Int}}
 end
-
+function ==(m1::SubMesh{U,D1,T}, m2::SubMesh{U,D1,T}) where {U,D1,T}
+    return m1.supermesh == m2.supermesh && m1.sub2sup == m2.sub2sup && m1.sup2sub == m2.sup2sub
+end
 # function celltype(m::SubMesh{U,D1}) where {U,D1} SimplexGraph{D1} end
 function celltype(m::SubMesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
 function indextype(m::SubMesh{U,D1}) where {U,D1} SVector{D1,Int} end

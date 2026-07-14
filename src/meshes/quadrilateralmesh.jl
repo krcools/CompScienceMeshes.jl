@@ -4,7 +4,9 @@ struct QuadMesh{T} <: AbstractMesh{3,4,T}
     vertices::Vector{SVector{3,T}}
     faces::Vector{QuadrilateralGraph}
 end
-
+function ==(m1::QuadMesh{T}, m2::QuadMesh{T}) where {T}
+    return m1.vertices == m2.vertices && m1.faces == m2.faces
+end
 function QuadMesh(V::Vector{SVector{3,T}}, F::Vector{SVector{4,Int}}) where {T}
     return QuadMesh{T}(V, [QuadrilateralGraph(f) for f in F])
 end
