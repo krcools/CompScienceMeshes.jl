@@ -76,7 +76,7 @@ end
 
 function CompScienceMeshes.normals(mesh; kwargs...)
     nrmls = [normal(chart(mesh,cell)) for cell in mesh]
-    return PlotlyBase.cones(mesh, nrmls; kwargs...)
+    return PlotlyBase.cone(mesh, nrmls; kwargs...)
 end
 
 function CompScienceMeshes.wireframe(edges; width=1, color="rgb(0,0,0)")
