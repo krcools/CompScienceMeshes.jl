@@ -63,10 +63,6 @@ function SubMesh(supermesh, sub2sup)
         sup2sub[j] = i
     end
 
-    # Cells = cells(supermesh)[sub2sup]
-    Cells = [indices(supermesh, i) for i in supermesh]
-    Cells = Cells[sub2sup]
-    # SubMesh(supermesh, sub2sup, sup2sub, Cells)
     SubMesh(supermesh, sub2sup, sup2sub)
 end
 
@@ -88,6 +84,11 @@ numvertices(m::SubMesh) = numvertices(m.supermesh)
 
 indices(m::SubMesh, p) = indices(m.supermesh, m.sub2sup[p])
 numcells(m::SubMesh) = length(m.sub2sup)
+
+# O(1) iteration protocol for SubMesh: the generic AbstractMesh versions route
+# through the allocating cells(m), making iteration/length O(N^2). Use sub2sup.
+Base.length(m::SubMesh) = length(m.sub2sup)
+Base.iterate(m::SubMesh, state=0) = iterate(eachindex(m.sub2sup), state)
 
 function cells(m::SubMesh)
     return cells(parent(m))[m.sub2sup]
