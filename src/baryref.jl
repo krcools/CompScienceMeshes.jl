@@ -5,7 +5,8 @@ True if m1 is a direct refinement of m2.
 """
 function refines(m1::AbstractRefinement, m2::AbstractMesh)
     parent(m1) == nothing && return false
-    return parent(m1) == m2
+    # return parent(m1) == m2
+    m1.parent === m2
 end
 
 function refines(m1::AbstractMesh, m2::AbstractMesh)
