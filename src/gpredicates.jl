@@ -43,16 +43,7 @@ function overlap_gpredicate(γ::AbstractMesh)
         # find all simplices of the small mesh that potentially
         # collide with this patch
         c1, s1 = boundingbox(p1)
-        for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
-            for i in box
-                # p2 = chart(γ, γ.faces[i])
-                # p2 = chart(γ, cells(γ)[i])
-                p2 = chart(γ, i)
-                overlap(p1,p2) && return true
-            end
-        end
-
-        return false
+        return anysearchtree(i -> overlap(p1, chart(γ, i)), tree, (c1, s1))
     end
 
     return pred
@@ -77,16 +68,7 @@ function inclosure_gpredicate(γ::AbstractMesh)
         # find all simplices of the small mesh that potentially
         # collide with this patch
         c1, s1 = boundingbox(p1)
-        for box in boxes(tree, (c,s)->boxesoverlap(c,s,c1,s1))
-            for i in box
-                # p2 = simplex(vertices(γ, γ.faces[i]))
-                # p2 = chart(γ, cells(γ)[i])
-                p2 = chart(γ, i)
-                isinclosure(p2, p1) && return true
-            end
-        end
-
-        return false
+        return anysearchtree(i -> isinclosure(chart(γ, i), p1), tree, (c1, s1))
     end
 
     return pred

@@ -80,7 +80,11 @@ function writemesh(mesh, filename)
             println(f, v[1], dl, v[2], dl, v[3])
         end
         for c in mesh.faces
-            println(f, c[1], dl, c[2], dl, c[3])
+            for i in 1:length(c)
+                i > 1 && print(f, dl)
+                print(f, c[i])
+            end
+            println(f)
         end
     end
 end
