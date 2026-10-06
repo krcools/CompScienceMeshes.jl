@@ -96,3 +96,5 @@ function parametric(p::NeighborhoodLazy) p.params end
 function tangents(p::NeighborhoodLazy,i::Int) tangents(p.chart, p.params)[:,i] end
 function tangents(p::NeighborhoodLazy) tangents(p.chart, p.params) end
 function normal(p::NeighborhoodLazy) normal(p.chart, p.params) end
+
+

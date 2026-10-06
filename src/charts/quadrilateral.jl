@@ -39,7 +39,7 @@ function faces(ch::Quadrilateral)
 end
 
 
-struct Neighborhood{C,P,Q,T,J,N}
+struct NeighborhoodN{C,P,Q,T,J,N}
     chart::C
     parametric::P
     cartesian::Q
@@ -55,16 +55,16 @@ function neighborhood(quad::Quadrilateral, u)
     q = t[:,1] × t[:,2]
     j = norm(q)
     n = normalize(q)
-    Neighborhood(quad, u, c, t, j, n)
+    NeighborhoodN(quad, u, c, t, j, n)
 end
 
 
-function parametric(p::Neighborhood) p.parametric end
-function cartesian(p::Neighborhood) p.cartesian end
-function tangents(p::Neighborhood) p.tangents end
-function tangents(p::Neighborhood, i::Int) p.tangents[:,i] end
-function normal(p::Neighborhood) p.normal end
-function jacobian(p::Neighborhood) p.jacobian end
+function parametric(p::NeighborhoodN) p.parametric end
+function cartesian(p::NeighborhoodN) p.cartesian end
+function tangents(p::NeighborhoodN) p.tangents end
+function tangents(p::NeighborhoodN, i::Int) p.tangents[:,i] end
+function normal(p::NeighborhoodN) p.normal end
+function jacobian(p::NeighborhoodN) p.jacobian end
 
 
 function neighborhood_lazy(quad::Quadrilateral, u) neighborhood(quad, u) end
