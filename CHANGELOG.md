@@ -1,3 +1,9 @@
+# Version 0.13
+
+- Fixed various bugs to better support curves
+- Better support for triangles in a 2D universe
+- Tolerances in overlap are now relative to entity sizes
+
 # Version 0.12 
 
 - Fixed bug where submeshes were sometimes treated as refinements.
