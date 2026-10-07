@@ -5,7 +5,7 @@
 function meshsegment(L::T, delta::T, udim=2) where T<:Real
 
     PT = SVector{udim, T}
-    CT = SVector{2,Int}
+    CT = SimplexGraph{2}
 
     num_segments = ceil(Int, L/delta)
     actual_delta = L/num_segments
@@ -20,7 +20,7 @@ function meshsegment(L::T, delta::T, udim=2) where T<:Real
 
     faces = Array{CT}(undef,num_segments)
     for i in 1 : length(faces)
-        faces[i] = SVector(i, i+1)
+        faces[i] = SimplexGraph(i, i+1)
     end
 
     Mesh(vertices, faces)
@@ -32,8 +32,9 @@ end
 """
 function meshcircle(radius::T, delta::T, udim=2) where T<:Real
 
-PT = SVector{udim,T}
-CT = SVector{2,Int}
+    PT = SVector{udim,T}
+    # CT = SVector{2,Int}
+    CT = SimplexGraph{2}
 
     circumf = 2 * pi *radius
     num_segments = ceil(Int, circumf / delta)
@@ -49,11 +50,68 @@ CT = SVector{2,Int}
         vertices[i] = PT(a)
     end
 
-    faces = Array{CT}(undef,num_segments)
+    faces = Vector{CT}(undef,num_segments)
     for i in 1 : length(faces)-1
-        faces[i] = SVector{2,Int}(i, i+1)
+        faces[i] = SimplexGraph(i, i+1)
     end
-    faces[end] = SVector{2,Int}(num_segments, 1)
+    faces[end] = SimplexGraph(num_segments, 1)
+
+    return Mesh(vertices, faces)
+end
+
+"""
+    meshrect(a::T, b::T, delta::T) where T<:Real
+
+Meshes the boundary of a rectangle with side lengths `a` and `b`. 
+The rectangle is meshed in a counter-clockwise manner, starting at the origin (0, 0).
+"""
+function meshrect(a::T, b::T, delta::T) where T<:Real
+
+    udim = 2
+
+    PT = SVector{udim, T}
+    CT = SimplexGraph{2}
+
+    num_segments_a = ceil(Int, a/delta)
+    num_segments_b = ceil(Int, b/delta)
+
+    actual_delta_a = a / num_segments_a
+    actual_delta_b = b / num_segments_b
+
+    x = collect(0:num_segments_a) * actual_delta_a
+    y = collect(0:num_segments_b) * actual_delta_b
+
+    vertices = zeros(PT, 2*(num_segments_a + num_segments_b))
+
+    for i in 1 : num_segments_a
+        Δx = zeros(T, udim)
+        Δx[1] = x[i]
+        vertices[i] = PT(Δx)
+    end
+    for i in 1 : num_segments_b
+        Δy = zeros(T, udim)
+        Δy[1] = a
+        Δy[2] = y[i]
+        vertices[num_segments_a + i] = PT(Δy)
+    end
+    for i in 1 : num_segments_a
+        Δx = zeros(T, udim)
+        Δx[1] = x[end - i + 1]
+        Δx[2] = b
+        vertices[num_segments_a + num_segments_b + i] = PT(Δx)
+    end
+    for i in 1 : num_segments_b
+        Δy = zeros(T, udim)
+        Δy[1] = 0.0
+        Δy[2] = y[end - i + 1]
+        vertices[2*(num_segments_a + num_segments_b) - num_segments_b + i] = PT(Δy)
+    end
+
+    faces = Vector{CT}(undef, 2*(num_segments_a + num_segments_b))
+    for i in 1 : length(faces)-1
+        faces[i] = SimplexGraph(i, i+1)
+    end
+    faces[end] = SimplexGraph(length(faces), 1)
 
     return Mesh(vertices, faces)
 end
@@ -114,4 +172,57 @@ Physical Curve("boundary") = {1, 2, 3, 4};
     rm(fn)
 
     return m
+end
+
+"""
+    meshcurve(curve, delta::T) where T<:Real
+
+Meshes a curve (2D or 3D) describe by an analytical curve.
+In principle, piecewise curves are possible, as long as the parameter
+space is continuous.
+
+WARNING: We do not ensure uniform segment length in the physical space!
+"""
+function meshcurve(curve, delta::T; udim=2, tstart=T(0.0), tend=T(2π), order=1) where T<:Real
+
+    PT = SVector{udim,T}
+    CT = SVector{2,Int}
+
+    ξ, w = CompScienceMeshes.legendre(1000, tstart, tend)
+
+    curvelength = dot(w, norm.(curve.(ξ)))
+
+    @info "The total curve length is $(curvelength)"
+
+    num_segments = ceil(Int, curvelength / delta)
+
+    tdelta = (tend-tstart) / num_segments
+
+    if norm(curve(tstart) - curve(tend)) < eps(T)*1e1
+        isclosed = true
+        tdeltas = collect(0 : num_segments-1) * tdelta
+        vertices = Array{PT}(undef,num_segments)
+    else
+        isclosed = false
+        tdeltas = collect(0 : num_segments) * tdelta
+        vertices = Array{PT}(undef,num_segments + 1)
+    end
+
+    for i in 1 : (isclosed ? num_segments : num_segments + 1)
+        vertices[i] = PT(curve(tdeltas[i])[1], curve(tdeltas[i])[2])
+    end
+
+    faces = Array{CT}(undef,num_segments)
+    for i in 1 : num_segments-1
+        faces[i] = SVector{2,Int}(i, i+1)
+    end
+
+    if isclosed
+        faces[end] = SVector{2,Int}(num_segments, 1)
+    else
+        faces[end] = SVector{2,Int}(num_segments, num_segments + 1)
+    end
+
+    faces = SimplexGraph.(faces)
+    return Mesh(vertices, faces)
 end

@@ -1,8 +1,25 @@
-mutable struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractMesh{U,D1,T}
+abstract type AbstractRefinement{U,D1,T} <: AbstractMesh{U,D1,T} end
+
+"""
+True if m1 is a direct refinement of m2.
+"""
+function refines(m1::AbstractRefinement, m2::AbstractMesh)
+    parent(m1) == nothing && return false
+    # return parent(m1) == m2
+    m1.parent === m2
+end
+
+function refines(m1::AbstractMesh, m2::AbstractMesh)
+    return false
+end
+
+struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     mesh::M
     parent::MP
 end
-
+function ==(m1::BarycentricRefinement{U,D1,T,M,MP}, m2::BarycentricRefinement{U,D1,T,M,MP}) where {U,D1,T,M,MP}
+    return m1.mesh == m2.mesh && m1.parent == m2.parent
+end
 vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
 vertices(br::BarycentricRefinement) = vertices(br.mesh)
 vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
@@ -54,52 +71,43 @@ Create the mesh obtained by inserting an extra vertex in the barycenters of all 
 recusively creating fine cells by connecting the barycenter of a k-cell to the already
 constructed refined (k-1)-cells on its boundary.
 """
-function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where U
-
+function barycentric_refinement(mesh::AbstractMesh{U,2}; sort=:spacefillingcurve) where U
+    T = coordtype(mesh)
     # Get the points and the faces (segments) we will use in the refinement process
     Edges = skeleton(mesh, 1; sort)
 
-    # Note thier number and use it to find the new number of points and segments(faces)
-    # after refienmnts
-    NV, NE = numvertices(Edges), numcells(Edges)
-
-    nv = NV + NE
-    ne = 2NE
+    # Note their number and use it to size the new vertex and segment arrays
+    NV, NE = numvertices(mesh), numcells(Edges)
 
     # define the new vertices array that will hold the old points(coarse) and the
     # new points(finer mesh) of vertices
-    verts = similar(mesh.vertices, nv)
+    verts = Array{vertextype(mesh)}(undef, NV+NE)
 
-    # Now we assign the coarse mesh vetrices (old points) in the upper half excatly
-    # as the original coarse mesh
+    # Now we assign the coarse mesh vetrices (old points) to the first half of the
+    # array excatly as the original coarse mesh
     for i in 1:NV
-        verts[i] = mesh.vertices[i]
-    end
-
-    # for the second half we store the refienment points and we calculate them using
-    # the old points. We insert a point between every pair of points in the original
-    # coarse mesh by (point1+ point2)\2
-    # for (i, Face) in enumerate(cells(mesh))
-    for (i,f) in enumerate(mesh)
-        verts[NV+i] = cartesian(center(chart(mesh, f)))
+        verts[i] = vertices(mesh)[i]
     end
 
     # Now we create the faces using the new points as well
     # example:
-    # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,5))
+    # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,1))
     # new points_index(1,2,3,4,5,6,7,8), new_faces((1,5),(5,2),(2,6),(6,3),(3,7),(7,4),(4,8),(8,1))
     #                  a,b      For       E=1 ->   (a,c),(c,b) and so on ..
-    edges = similar(Edges.faces, ne)
-    for E in 1:NE
+    edges = Array{celltype(Edges)}(undef, 2NE)
+    for (E,p) in enumerate(Edges)
+        # the second half of the vertex array holds the refinement points,
+        # one at the center of each coarse segment
+        verts[NV+E] = cartesian(center(chart(Edges, p)))
         c = NV + E
-        a = Edges.faces[E][1]
-        b = Edges.faces[E][2]
-        edges[2(E-1) + 1] = SVector(a,c)
-        edges[2(E-1) + 2] = SVector(c,b)
+        a, b = indices(Edges, p)
+        edges[2(E-1) + 1] = SimplexGraph(a,c)
+        edges[2(E-1) + 2] = SimplexGraph(c,b)
     end
+    refmesh = Mesh(verts, edges)
 
-    # return the new mesh after refienments
-    return Mesh(verts, edges)
+    # return the refinement tagged with its parent so that refines recognises it
+    return BarycentricRefinement{U,2,T,typeof(refmesh),typeof(mesh)}(refmesh, mesh)
 end
 
 function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve) where U
@@ -154,13 +162,15 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     end
 
     Nodes = skeleton(mesh, 0)
-    node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    # node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    node_ctrs = [cartesian(center(chart(Nodes, node))) for node in cells(Nodes)]
     Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
 
+    fcs = [SimplexGraph{3}(fc) for fc in fcs]
     fine = Mesh(verts, fcs)
     D = connectivity(Nodes, fine)
     rows, vals = rowvals(D), nonzeros(D)
-    sorted_fcs = Vector{indextype(mesh)}()
+    sorted_fcs = Vector{celltype(mesh)}()
     for (i,Node) in enumerate(cells(Nodes))
         for k in nzrange(D,i)
             j = rows[k]
@@ -297,6 +307,8 @@ end
 children(mesh::Mesh{3,4}, cell) = [24*(cell-1)+1 : 24*cell]
 parent(mesh::BarycentricRefinement{3,4}, cell) = div((cell-1),24)+1
 parent(mesh::BarycentricRefinement{U,3} where {U}, cell) = div((cell-1),6)+1
+parent(mesh::BarycentricRefinement{U,2} where {U}, cell) = div((cell-1),2)+1
+
 
 """
     bisecting_refinement(mesh) -> refinement
@@ -336,7 +348,8 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
 
     # add four faces in each coarse face
     nf = 4NF
-    fcs = zeros(indextype(mesh), nf)
+    # fcs = zeros(celltype(mesh), nf)
+    fcs = Vector{celltype(mesh)}(undef, nf)
 
     for F in 1 : numcells(faces)
 
@@ -356,10 +369,10 @@ function bisecting_refinement(mesh::Mesh{U,3}) where U
         r2 = mesh.faces[F][2]
         r3 = mesh.faces[F][3]
 
-        fcs[4(F-1)+1] = index(r1,es[3],es[2])
-        fcs[4(F-1)+2] = index(r2,es[1],es[3])
-        fcs[4(F-1)+3] = index(r3,es[2],es[1])
-        fcs[4(F-1)+4] = index(es[1],es[2],es[3])
+        fcs[4(F-1)+1] = SimplexGraph(r1,es[3],es[2])
+        fcs[4(F-1)+2] = SimplexGraph(r2,es[1],es[3])
+        fcs[4(F-1)+3] = SimplexGraph(r3,es[2],es[1])
+        fcs[4(F-1)+4] = SimplexGraph(es[1],es[2],es[3])
     end
 
     Mesh(verts, fcs)

@@ -29,7 +29,7 @@ Determine whether point is in the closure of simplex. False positives are possib
 function isinclosure(cell, point)
 
   u = carttobary(cell, point)
-  T = eltype(u)
+  T = coordtype(cell)
   dim = dimension(cell)
   udim = length(point)
 

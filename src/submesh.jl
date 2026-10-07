@@ -41,13 +41,15 @@ function submesh(sm::Mesh, bm::Mesh)
 end
 
 
-mutable struct SubMesh{U,D1,T} <: AbstractMesh{U,D1,T}
-    supermesh::AbstractMesh{U,D1,T}
+mutable struct SubMesh{U,D1,T,S<:AbstractMesh{U,D1,T}} <: AbstractMesh{U,D1,T}
+    supermesh::S
     sub2sup::Vector{Int}
     sup2sub::Vector{Int}
-    cells::Vector{SVector{D1,Int}}
+    # cells::Vector{SVector{D1,Int}}
 end
-
+function ==(m1::SubMesh{U,D1,T}, m2::SubMesh{U,D1,T}) where {U,D1,T}
+    return m1.supermesh == m2.supermesh && m1.sub2sup == m2.sub2sup && m1.sup2sub == m2.sup2sub
+end
 # function celltype(m::SubMesh{U,D1}) where {U,D1} SimplexGraph{D1} end
 function celltype(m::SubMesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
 function indextype(m::SubMesh{U,D1}) where {U,D1} SVector{D1,Int} end
@@ -61,10 +63,7 @@ function SubMesh(supermesh, sub2sup)
         sup2sub[j] = i
     end
 
-    # Cells = cells(supermesh)[sub2sup]
-    Cells = [indices(supermesh, i) for i in supermesh]
-    Cells = Cells[sub2sup]
-    SubMesh(supermesh, sub2sup, sup2sub, Cells)
+    SubMesh(supermesh, sub2sup, sup2sub)
 end
 
 function vertextype(m::SubMesh) vertextype(m.supermesh) end
@@ -84,8 +83,17 @@ vertices(m::SubMesh, cell) = vertices(m.supermesh, cell)
 numvertices(m::SubMesh) = numvertices(m.supermesh)
 
 indices(m::SubMesh, p) = indices(m.supermesh, m.sub2sup[p])
-cells(m::SubMesh) = m.cells #m.supermesh.faces[m.sub2sup]
 numcells(m::SubMesh) = length(m.sub2sup)
+
+# O(1) iteration protocol for SubMesh: the generic AbstractMesh versions route
+# through the allocating cells(m), making iteration/length O(N^2). Use sub2sup.
+Base.length(m::SubMesh) = length(m.sub2sup)
+Base.iterate(m::SubMesh, state=0) = iterate(eachindex(m.sub2sup), state)
+
+function cells(m::SubMesh)
+    return cells(parent(m))[m.sub2sup]
+    # m.supermesh.faces[m.sub2sup]
+end
 
 issubmesh(sub, sup) = (sub == sup)
 issubmesh(sub::SubMesh, sup) = (sub.supermesh == sup)

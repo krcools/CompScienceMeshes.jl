@@ -1,6 +1,9 @@
 struct FlippedMesh{U,D1,T} <: AbstractMesh{U,D1,T}
     mesh::AbstractMesh{U,D1,T}
 end
+function ==(m1::FlippedMesh{U,D1,T}, m2::FlippedMesh{U,D1,T}) where {U,D1,T}
+    return m1.mesh == m2.mesh
+end
 
 indices(m::FlippedMesh, i) = fliporientation(indices(m.mesh,i))
 

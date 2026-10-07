@@ -22,8 +22,8 @@ export euclidianbasis, point
 
 # default mesh creation
 export mesh, readmesh, writemesh, meshgeo, setminus, load_gmsh_mesh
-export meshsegment, meshcircle
-export meshcuboid, meshcylinder, meshdisk, meshicosphere, meshmobius, meshrectangle, meshsphere
+export meshsegment, meshcircle, meshcurve, meshrect
+export meshcuboid, meshcylinder, meshdisk, meshicosphere, meshmobius, meshrectangle, meshsphere, meshtorus
 export gmshcuboid, gmshrectangle, gmshsphere
 export tetmeshsphere, tetmeshcuboid, tetgmshcuboid, meshball
 export subdMesh
@@ -115,6 +115,7 @@ include("subdMesh.jl")
 include("rectangle.jl")
 include("charts.jl")
 include("charts/quadrilateral.jl")
+include("charts/hexahedron.jl")
 include("subd_chart.jl")
 include("sphere.jl")
 include("overlap.jl")
