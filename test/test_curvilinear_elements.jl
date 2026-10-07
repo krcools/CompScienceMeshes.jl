@@ -2,15 +2,19 @@ using Test
 using CompScienceMeshes
 using StaticArrays
 
+const CSM = CompScienceMeshes
+
 ## Line order 1
 v1 = SVector(1.0, 0.0)
 v2 = SVector(0.0, 0.0)
 
 verts1 = [v1, v2]
-faces1 = [SVector(1,2)]
+
+faces1 = [CSM.SimplexGraph(1,2)]
+faces1c = [SVector(1,2)]
 
 m1 = CompScienceMeshes.Mesh(verts1, faces1)
-m2 = CompScienceMeshes.CurvilinearMesh(verts1, faces1, 1, 1)
+m2 = CompScienceMeshes.CurvilinearMesh(verts1, faces1c, 1, 1)
 
 ch1 = chart(m1, 1)
 ch2 = chart(m2, 1)
@@ -30,9 +34,10 @@ mp2 = neighborhood(ch2, 0.0)
 
 v3 = SVector(0.5, 0.0)
 verts2 = [v1, v2, v3]
-faces2 = [SVector(1,2,3)]
+# faces2 = [CSM.SimplexGraph(1,2,3)]
+faces2c = [SVector(1,2,3)]
 
-m2 = CompScienceMeshes.CurvilinearMesh(verts2, faces2, 1, 2)
+m2 = CompScienceMeshes.CurvilinearMesh(verts2, faces2c, 1, 2)
 
 ch2 = chart(m2, 1)
 
@@ -87,10 +92,11 @@ v2 = SVector(0.0, 1.0, 0.0)
 v3 = SVector(0.0, 0.0, 0.0)
 
 verts1 = [v1, v2, v3]
-faces1 = [SVector(1, 2, 3)]
+faces1 = [CSM.SimplexGraph(1, 2, 3)]
+faces1c = [SVector(1, 2, 3)]
 
 m1 = CompScienceMeshes.Mesh(verts1, faces1)
-m2 = CompScienceMeshes.CurvilinearMesh(verts1, faces1, 2, 1)
+m2 = CompScienceMeshes.CurvilinearMesh(verts1, faces1c, 2, 1)
 
 ch1 = chart(m1, 1)
 ch2 = chart(m2, 1)
@@ -115,7 +121,8 @@ v4 = SVector(0.50, 0.0)
 v5 = SVector(0.75, 0.0)
 
 verts1 = [v1, v2]
-faces1 = [SVector(1,2)]
+faces1 = [CSM.SimplexGraph(1,2)]
+# faces1c = [SVector(1,2)]
 
 verts2 = [v1, v2, v3, v4, v5]
 faces2 = [SVector(1,2,3,4,5)]
@@ -157,7 +164,7 @@ v2 = SVector(0.0, 1.0, 0.0)
 v3 = SVector(0.0, 0.0, 0.0)
 
 verts1 = [v1, v2, v3]
-faces1 = [SVector(1, 2, 3)]
+faces1 = [CSM.SimplexGraph(1, 2, 3)]
 
 
 verts2 = [
@@ -184,7 +191,7 @@ v2 = SVector(0.0, 1.0, 0.0)
 v3 = SVector(0.0, 0.0, 0.0)
 
 verts1 = [v1, v2, v3]
-faces1 = [SVector(1, 2, 3)]
+faces1 = [CSM.SimplexGraph(1, 2, 3)]
 
 verts2 = [
     SVector(1.0, 0.0, 0.0),
