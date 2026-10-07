@@ -1,12 +1,13 @@
 #export Simplex
-
+abstract type AbstractSimplex{U,D} 
+end
 
 # U: the dimension of the universe
 # D: the dimension of the manifold
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-struct Simplex{U,D,C,N,T}
+struct Simplex{U,D,C,N,T} <: AbstractSimplex{U,D}
     vertices::SVector{N,SVector{U,T}}
     tangents::SVector{D,SVector{U,T}}
     normals::SVector{C,SVector{U,T}}
@@ -480,6 +481,8 @@ tangents(splx::Simplex, u) = hcat((splx.tangents)...)
 
 # vertices(splx::Simplex) = hcat((splx.vertices)...)
 function vertices(s::Simplex) s.vertices end
+
+function nodes(s::Simplex) s.vertices end
 
 """
     verticeslist(simplex)

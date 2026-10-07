@@ -89,6 +89,10 @@ function load_gmsh_mesh(meshfile;
     if element == :quadrangle
         elements = [QuadrilateralGraph(el) for el in elements]
         return QuadMesh(vertices, elements)
+    elseif element == :line && order > 1
+        return CurvilinearMesh(vertices, elements, 1, order)
+    elseif element == :triangle && order > 1
+        return CurvilinearMesh(vertices, elements, 2, order)
     else
         elements = [SimplexGraph(el) for el in elements]
         return Mesh(vertices, elements)
