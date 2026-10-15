@@ -45,7 +45,15 @@ function mesh(T, mdim, udim=mdim+1)
     Mesh(Pt{udim,T}[], CompScienceMeshes.SimplexGraph{mdim+1}[])
 end
 
+"""
+    similar(mesh::M, vertices, faces) where {M<:AbstractMesh}
 
+Constructs a mesh with the storage type as `mesh`, but with the order and dimension
+parameters inferred from the `faces` argument. The vertices are taken from `vertices`.
+"""
+function similar_mesh(mesh::Mesh{U,D1,T}, vertices, faces::Vector{SimplexGraph{D1new}}) where {U,D1,T,D1new}
+    Mesh{U,D1new,T}(vertices, faces)
+end
 
 """
     vt = vertextype(mesh)
@@ -573,7 +581,7 @@ end
 # end
 
 
-function skeleton_fast(mesh, dimtype::Type)
+function skeleton_fast(mesh::M, dimtype::Type) where {M <: AbstractMesh}
     # C = celltype(mesh)
     # I = indextype(mesh, dimtype)
     F = celltype(mesh, dimtype)
@@ -584,7 +592,7 @@ function skeleton_fast(mesh, dimtype::Type)
         end
     end
     fcs = unique!(fcs)
-    Mesh(vertices(mesh), fcs)
+    similar_mesh(mesh, vertices(mesh), fcs)
 end
 
 function skeleton_fast(mesh, dim::Int)
@@ -595,12 +603,12 @@ function skeleton_fast(mesh, dim::Int)
 end
 
 
-"""
-    skeleton(pred, mesh, dim)
+# """
+#     skeleton(pred, mesh, dim)
 
-Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
-returns true are withheld.
-"""
+# Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
+# returns true are withheld.
+# """
 # function skeleton(pred, mesh, dim)
 
 #     meshdim = dimension(mesh)

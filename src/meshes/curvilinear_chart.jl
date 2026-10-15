@@ -113,7 +113,7 @@ barytocart(ch::CurvilinearSimplex{U,1}, u::Real) where {U} = barytocart(ch, SVec
 barytocart(ch::CurvilinearSimplex{U,2}, u::Real, v::Real) where {U} = barytocart(ch, SVector{2}(u, v))
 barytocart(ch::CurvilinearSimplex{U,3}, u::Real, v::Real, w::Real) where {U} = barytocart(ch, SVector{3}(u, v, w))
 
-cartesian(ch::AbstractSimplex{U,1}, u::SVector{1,<:Real})  where {U} = barytocart(ch, u)
+# cartesian(ch::AbstractSimplex{U,1}, u::SVector{1,<:Real})  where {U} = barytocart(ch, u)
 parametric(ch::AbstractSimplex{U,1}, u::SVector{1,<:Real}) where {U} = u
 
 function barytocart(ch::CurvilinearSimplex{U,1,C,N,T,O}, bary::AbstractVector) where {U,C,N,T,O}
@@ -346,7 +346,7 @@ function chart(
     faceid::Int
 ) where {U,D1,N,T,O}
 
-    vindices = m.faces[faceid]
+    vindices = m.faces[faceid].indices
     X = m.vertices[vindices]
 
     CompScienceMeshes.CurvilinearSimplex{U,D1-1,U-1,N,T,O}(X)
@@ -420,4 +420,21 @@ function volume(ch::CurvilinearSimplex{U,2,C,N,T}) where {U,C,N,T}
     end
 
     return vol
+end
+
+function faces(ch::CurvilinearSimplex{U,2,C,N,T,O}, ::Type{Val{1}}) where {U,C,N,T,O}
+    
+    D = 2
+    @assert N == binomial(D+O,O)
+    P = vertextype(ch)
+
+    I = ch.vertices
+    F = SVector{N, P}
+    E = CurvilinearSimplex{U,1,C,N,T,O}
+
+    (
+        E(F(I[2], I[3+P+1:3+2P-2]..., I[3])),
+        E(F(I[3], I[3+2P-1:3+3P-3]..., I[1])),
+        E(F(I[1], I[4+2P+1:4+3P]..., I[2])),
+    )
 end

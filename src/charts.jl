@@ -275,7 +275,8 @@ function barytocart(mani::Simplex, u)
     return r
 end
 
-function cartesian(ch::Simplex, u) barytocart(ch, u) end
+function cartesian(ch::AbstractSimplex, u) barytocart(ch, u) end
+# function cartesian(ch::Simplex, u::SVector{N,T}) where {N,T} barytocart(ch, u) end
 
 
 """

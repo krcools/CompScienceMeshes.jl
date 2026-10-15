@@ -92,6 +92,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 include("defaults.jl")
 include("utils.jl")
 include("utils/localgraphs.jl")
+include("graphs/hosimplex.jl")
 include("utils/sfc_sort.jl")
 include("utils/circumctr.jl")
 # include("combinatorics.jl")
