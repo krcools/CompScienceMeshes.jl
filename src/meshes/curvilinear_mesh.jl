@@ -85,10 +85,19 @@ end
 function indextype(m::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O} SVector{N-O+1,Int} end
 function indextype(m::CurvilinearMesh{U,D1,N,T,O}, ::Type{Val{M}}) where {U,D1,N,T,O,M} SVector{M+1,Int} end
 
-function indices(m::CurvilinearMesh{U,D1,N,T,O}, cell) where {U,D1,N,T,O}
-    # Currently, we only support lines
-    # First come the topological nodes
-    return SVector(m.faces[cell][begin], m.faces[cell][begin+1])
+function indices(m::CurvilinearMesh{U,1,N,T,O}, cellptr) where {U,N,T,O}
+    cell = m.faces[cellptr]
+    return SVector(cell.indices[begin])
+end
+
+function indices(m::CurvilinearMesh{U,2,N,T,O}, cellptr) where {U,N,T,O}
+    cell = m.faces[cellptr]
+    return SVector(cell.indices[begin], cell.indices[begin+1])
+end
+
+function indices(m::CurvilinearMesh{U,3,N,T,O}, cellptr) where {U,N,T,O}
+    cell = m.faces[cellptr]
+    return SVector(cell.indices[begin], cell.indices[begin+1], cell.indices[begin+2])
 end
 
 
@@ -99,7 +108,7 @@ numvertices(m::CurvilinearMesh) = length(m.vertices)
 numcells(m::CurvilinearMesh)    = length(m.faces)
 # cells(m::CurvilinearMesh)       = Base.OneTo(length(m.faces))
 function cells(m::CurvilinearMesh) m.faces end
-cell(m::CurvilinearMesh, i::Int) = m.faces[i]
+function cell(m::CurvilinearMesh, i::Int) m.faces[i] end
 
 Base.eltype(::Type{CurvilinearMesh{U,D1,N,T,O}}) where {U,D1,N,T,O} = SVector{N,Int}
 

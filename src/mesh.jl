@@ -409,11 +409,14 @@ end
 Computed an V×M array `vertextocells` where V is the number of vertices
 and M is the maximum number of cells adjacent to any given vertex such
 that `vertextocells[v,i]` is the index in the cells of `mesh` of the `i`th
-cell adjacent to teh `v`-th vertex. `numneighbors[v]` contains the number
-of cells adjacent to the `v`-th vertex.
+cell adjacent to the `v`-th vertex. Rows are indexed directly by vertex ID,
+including vertices that are not referenced by any cell. Unused entries are
+padded with `-1`. `numneighbors[v]` contains the number of cells adjacent
+to the `v`-th vertex.
 
 This method allows e.g. for the efficient computation of the connectivity
-matrix of the mesh.
+matrix of the mesh. Use [`vertextocell`](@ref) instead when many vertices
+are unreferenced and compact rows are preferred.
 """
 function vertextocellmap(mesh)
 
@@ -443,6 +446,20 @@ function vertextocellmap(mesh)
 end
 
 
+"""
+    vertextocell(mesh) -> vertextocells, numneighbors, LG, GL
+
+Returns a compact vertex-to-cell adjacency map. `vertextocells` has one row
+for each vertex referenced by a cell, and `numneighbors[row]` gives the
+number of adjacent cells in that row. Entries beyond that count are padded
+with `-1`. Rows are ordered by the first encounter of each vertex while
+iterating over the cells.
+
+The rows are not indexed by vertex ID: `LG[row]` gives the vertex ID for a
+row, and `GL[vertex_id]` gives the row for a referenced vertex. Unlike
+[`vertextocellmap`](@ref), this does not allocate rows for unreferenced
+vertices, so it can use less memory when many vertices are unreferenced.
+"""
 function vertextocell(mesh)
 
     row = Dict{Int,Tuple{Int,Int}}()
@@ -654,18 +671,21 @@ positive or negative depending on the relative orientation of face `k` in cell
 For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
 the graph version of the exterior derivative.
 """
-function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
+function connectivity(kmesh::AbstractMesh, mmesh::AbstractMesh, op = sign)
 
-    K = celltype(kcells)
-    M = celltype(mcells)
+    K = celltype(kmesh)
+    M = celltype(mmesh)
 
-    vtok, _, lgk, _ = vertextocell(kcells)
-    vtom, _, _, glm = vertextocell(mcells)
+    vtok, _, lgk, _ = vertextocell(kmesh)
+    vtom, _, _, glm = vertextocell(mmesh)
 
     npos = -1
 
-    dimk = numcells(kcells)
-    dimm = numcells(mcells)
+    dimk = length(kmesh)
+    dimm = length(mmesh)
+
+    kcells = cells(kmesh)
+    mcells = cells(mmesh)
 
     Rows = Int[]
     Cols = Int[]
@@ -677,12 +697,15 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            kcell = K(indices(kcells,i))
+            kcell = kcells[i]
             for s in axes(vtom,2)
                 j = vtom[vm,s]
                 j == npos && break
-                mcell = M(indices(mcells, j))
+                mcell = mcells[j]
                 val = op(relorientation(kcell, mcell))
+                # @show indices(kcell)
+                # @show indices(mcell)
+                # @show val
                 iszero(val) && continue
                 push!(Rows, j)
                 push!(Cols, i)

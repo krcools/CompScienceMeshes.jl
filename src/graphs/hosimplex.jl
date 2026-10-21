@@ -23,10 +23,39 @@ function faces(g::HOSimplexGraph{3,P,Q}, ::Type{Val{1}}) where {P,Q}
 
 
     (
-        F(I[2], I[3+P:3+2P-2]..., I[3]),
-        F(I[3], I[3+2P-1:3+3P-3]..., I[1]),
-        F(I[1], I[3+1:3+P-1]..., I[2]),
+        F(I[2], I[3], I[3+P:3+2P-2]...),
+        F(I[3], I[1], I[3+2P-1:3+3P-3]...),
+        F(I[1], I[2], I[3+1:3+P-1]...),
     )
 end
 
+# nodes of a triangle
+function faces(g::HOSimplexGraph{3,P,Q}, ::Type{Val{0}}) where {P,Q}
 
+    N=3
+
+    Nout = 1
+    Pout = P
+
+    F = HOSimplexGraph{Nout,Pout}
+    I = g.indices
+
+
+    (
+        F(I[1]),
+        F(I[2]),
+        F(I[3]),
+    )
+end
+
+function indices(g::HOSimplexGraph{N,P,Q}) where {N,P,Q}
+    SVector(ntuple(i -> g.indices[i], Val(N)))
+end
+
+
+function relorientation(
+    g::HOSimplexGraph{N1,P1,Q1},
+    f::HOSimplexGraph{N2,P2,Q2}) where {N1,P1,Q1,N2,P2,Q2}
+
+    relorientation(indices(g), indices(f))
+end
