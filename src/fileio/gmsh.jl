@@ -22,6 +22,8 @@ function load_gmsh_mesh(meshfile;
 
     gmsh.initialize()
 
+    @show meshfile
+
     try
         gmsh.open(meshfile)
     catch e
@@ -35,6 +37,8 @@ function load_gmsh_mesh(meshfile;
         true, # includeBoundary (default false)
         true #  returnParametricCoord (default true)
     )
+    # @show node_tags
+    # @show node_coords
 
     if physical===nothing
         element_types, element_tags, element_node_tags = gmsh.model.mesh.getElements()
@@ -84,6 +88,8 @@ function load_gmsh_mesh(meshfile;
         vertices2d = [SVector(v[1], v[2]) for v in vertices]
         vertices = vertices2d
     end
+
+    # @show elements
 
     # TODO: once we support hexahedrons, we need to catch that one too
     if element == :quadrangle

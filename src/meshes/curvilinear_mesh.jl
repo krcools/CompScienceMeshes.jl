@@ -20,6 +20,22 @@ function CurvilinearMesh(
     CurvilinearMesh{U,D1,N,T,O}(vertices, faces)
 end
 
+function CurvilinearMesh(
+    vertices::AbstractVector{SVector{U,T}},
+    faces::AbstractVector{SVector{N,Int}},
+    # faces::AbstractVector{HOSimplexGraph{D1,O,N}},
+    manifolddimension,
+    order::Integer
+) where {U,N,T}
+    order > 0 || throw(ArgumentError("order must be positive."))
+    # order == O || throw(ArgumentError("order inconsistent with cell type."))
+    # manifolddimension + 1 == D1 || throw(ArgumentError("manifold dimension inconsistent with cell type."))
+    D1 = manifolddimension + 1
+    O = order
+    faces = [HOSimplexGraph{D1,O,N}(f) for f in faces]
+    CurvilinearMesh{U,D1,N,T,O}(vertices, faces)
+end
+
 # This constructor acts like `similar` for arrays. It allows to override the type
 # parameters of the mesh, without referring to the abstract parent type.
 function similar_mesh(
