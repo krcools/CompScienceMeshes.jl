@@ -370,13 +370,15 @@ function boundary(mesh)
         nzr = nzrange(conn,e)
         length(nzr) != 1 && continue
         relop = vals[nzr[1]]
-        inds = indices(edges, edge)
+        # inds = indices(edges, edge)
+        inds = cells(edges)[e].indices
         bnd_edges[i] = (relop > 0) ? I(inds) : flip(I(inds))
         i += 1
     end
 
     resize!(bnd_edges, i-1)
-    bnd = Mesh(vertices(mesh), bnd_edges)
+    # bnd = Mesh(vertices(mesh), bnd_edges)
+    return similar_mesh(mesh, vertices(mesh), bnd_edges)
 end
 
 
@@ -559,13 +561,12 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     
     # sort the simplices on a SFC
     simplices = cells(sk)
-    # ctrs = [sum(cellvertices(sk,c))/(dim+1) for c in sk]
-    ctrs = [cartesian(center(chart(sk, cell))) for cell in simplices]
+    ctrs = [cartesian(center(chart(sk, cellptr))) for cellptr in sk]
     if length(sk) > 0
         simplices = simplices[sort_sfc(ctrs)]
     end
 
-    Mesh(vertices(mesh), simplices)
+    similar_mesh(mesh, vertices(mesh), simplices)
 end
 
 

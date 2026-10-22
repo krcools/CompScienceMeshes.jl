@@ -10,6 +10,13 @@ function HOSimplexGraph{N,P}(idcs::Vararg{Int,Q}) where {N,P,Q}
     HOSimplexGraph{N,P,Q}(SVector{Q,Int}(idcs))
 end
 
+
+function faces(g::HOSimplexGraph{3,P,Q}, ::Type{Val{2}}) where {P,Q}
+    (
+        g,
+    )
+end
+
 # edges of a triangle
 function faces(g::HOSimplexGraph{3,P,Q}, ::Type{Val{1}}) where {P,Q}
 
