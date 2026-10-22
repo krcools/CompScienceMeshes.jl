@@ -341,16 +341,7 @@ function unitarybase2(ch::CurvilinearSimplex{U,2,C,N,T,7}, bary) where {U,C,N,T}
     return SVector(𝓵¹, 𝓵²)
 end
 
-function chart(
-    m::CompScienceMeshes.CurvilinearMesh{U,D1,N,T,O},
-    faceid::Int
-) where {U,D1,N,T,O}
 
-    vindices = m.faces[faceid].indices
-    X = m.vertices[vindices]
-
-    CompScienceMeshes.CurvilinearSimplex{U,D1-1,U-1,N,T,O}(X)
-end
 
 function normal(ch::CurvilinearSimplex{U,2}, bary) where {U}
     t = unitarybase(ch, bary)
@@ -428,13 +419,16 @@ function faces(ch::CurvilinearSimplex{U,2,C,N,T,O}, ::Type{Val{1}}) where {U,C,N
     @assert N == binomial(D+O,O)
     P = vertextype(ch)
 
+    Nout = binomial(1+O,O)
+    Cout = U - 1
+
     I = ch.vertices
-    F = SVector{N, P}
-    E = CurvilinearSimplex{U,1,C,N,T,O}
+    F = SVector{Nout, P}
+    E = CurvilinearSimplex{U,1,Cout,Nout,T,O}
 
     (
-        E(F(I[2], I[3+P+1:3+2P-2]..., I[3])),
-        E(F(I[3], I[3+2P-1:3+3P-3]..., I[1])),
-        E(F(I[1], I[4+2P+1:4+3P]..., I[2])),
+        E(F(I[2], I[3], I[3+1*(O-1)+1:3+2*(O-1)]...)),
+        E(F(I[3], I[1], I[3+2*(O-1)+1:3+3*(O-1)]...)),
+        E(F(I[1], I[2], I[3+0*(O-1)+1:3+1*(O-1)]...)),
     )
 end

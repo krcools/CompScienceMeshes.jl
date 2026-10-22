@@ -133,3 +133,14 @@ meshorder(::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O} = O
 function skeleton_fast(mesh::CurvilinearMesh, dim::Int)
     skeleton_fast(mesh, Val{dim})
 end
+
+function chart(
+    m::CompScienceMeshes.CurvilinearMesh{U,D1,N,T,O},
+    faceid::Int
+) where {U,D1,N,T,O}
+
+    vindices = m.faces[faceid].indices
+    X = m.vertices[vindices]
+
+    CompScienceMeshes.CurvilinearSimplex{U,D1-1,U-1,N,T,O}(X)
+end
