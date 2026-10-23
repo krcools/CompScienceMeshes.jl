@@ -40,12 +40,11 @@ barycentric convention `ζ = λ_left`.
 # Returns
 `(x_left, x_right) :: (SVector{U,T}, SVector{U,T})`
 """
-function nodes(s::CurvilinearSimplex{U,1}) where {U}
-    return SVector(s.vertices[begin], s.vertices[begin + 1])
-end
+function nodes(s::CurvilinearSimplex{<:Any,1}) SVector(s.vertices[begin], s.vertices[begin + 1]) end
+function nodes(s::CurvilinearSimplex{<:Any,2}) SVector(s.vertices[begin], s.vertices[begin + 1], s.vertices[begin + 2]) end
 
 # convenience
-vertices(s::CurvilinearSimplex) = s.vertices
+function vertices(s::CurvilinearSimplex) s.vertices end
 
 """
     coordtype(s::CurvilinearSimplex)

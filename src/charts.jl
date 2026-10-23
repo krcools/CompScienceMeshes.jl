@@ -2,6 +2,8 @@
 abstract type AbstractSimplex{U,D} 
 end
 
+function nodes(chart) vertices(chart) end
+
 # U: the dimension of the universe
 # D: the dimension of the manifold
 # N: the number of vertices
@@ -29,7 +31,7 @@ function permute_vertices(s::Simplex{3,2,1,3,T},permutation::Union{Vector{P},SVe
     Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
 end
 
-"""
+"""F
     flip_normal(simplex)
 
 Flips the normal of the simplex. Only on triangles embedded in 3D space
