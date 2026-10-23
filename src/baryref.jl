@@ -20,17 +20,17 @@ end
 function ==(m1::BarycentricRefinement{U,D1,T,M,MP}, m2::BarycentricRefinement{U,D1,T,M,MP}) where {U,D1,T,M,MP}
     return m1.mesh == m2.mesh && m1.parent == m2.parent
 end
-vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
-vertices(br::BarycentricRefinement) = vertices(br.mesh)
-vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
-numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
-cells(br::BarycentricRefinement) = cells(br.mesh)
-indices(br::BarycentricRefinement, p) = indices(br.mesh, p) 
-numcells(br::BarycentricRefinement) = numcells(br.mesh)
-skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
-chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
-vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
-cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
+vertextype(br::AbstractRefinement) = vertextype(br.mesh)
+vertices(br::AbstractRefinement) = vertices(br.mesh)
+vertices(m::AbstractRefinement, cell) = vertices(m.mesh,cell)
+numvertices(br::AbstractRefinement) = numvertices(br.mesh)
+cells(br::AbstractRefinement) = cells(br.mesh)
+indices(br::AbstractRefinement, p) = indices(br.mesh, p) 
+numcells(br::AbstractRefinement) = numcells(br.mesh)
+skeleton(br::AbstractRefinement, dim::Int) = skeleton(br.mesh, dim)
+chart(br::AbstractRefinement, cell) = chart(br.mesh, cell)
+vertexarray(m::AbstractRefinement) = vertexarray(m.mesh)
+cellarray(m::AbstractRefinement) = cellarray(m.mesh)
 
 function celltype(m::BarycentricRefinement{U,D1}) where {U,D1} SimplexGraph{D1} end
 function celltype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
@@ -318,7 +318,7 @@ Every face is subdived in four small faces.
 
 Only defined for 2D meshes.
 """
-function bisecting_refinement(mesh::Mesh{U,3}) where U
+function bisecting_refinement(mesh::Mesh{U,3}, order=1) where U
 
     D1 = 3
 

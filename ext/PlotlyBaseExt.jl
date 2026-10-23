@@ -13,6 +13,7 @@ function CompScienceMeshes.patch(Γ::CompScienceMeshes.AbstractMesh, fcr=nothing
     x = v[:,1];    y = v[:,2];    z = v[:,3]
     i = c[:,1].-1; j = c[:,2].-1; k = c[:,3].-1
 
+    # @show typeof(v)
 
     if fcr != nothing
         m, M = extrema(fcr)

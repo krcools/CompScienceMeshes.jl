@@ -88,6 +88,13 @@ vertextype(::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O} = SVector{U,T}
 universedimension(::CurvilinearMesh{U}) where {U} = U
 dimension(::CurvilinearMesh{U,D1}) where {U,D1} = D1-1
 
+function vertexarray(m::CurvilinearMesh)
+    [v[i] for v in m.vertices, i in 1:universedimension(m)]
+end
+function cellarray(m::CurvilinearMesh)
+    [ k[i] for k in m.faces, i in 1:dimension(m)+1 ]
+end
+
 function celltype(m::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O}
     # SimplexGraph{N-O+1}
     HOSimplexGraph{D1,O,N}
