@@ -1,5 +1,18 @@
 abstract type AbstractRefinement{U,D1,T} <: AbstractMesh{U,D1,T} end
 
+function ==(m1::M, m2::M) where {M<:AbstractRefinement} m1.mesh == m2.mesh && m1.parent == m2.parent end
+vertextype(br::AbstractRefinement) = vertextype(br.mesh)
+vertices(br::AbstractRefinement) = vertices(br.mesh)
+vertices(m::AbstractRefinement, cell) = vertices(m.mesh,cell)
+numvertices(br::AbstractRefinement) = numvertices(br.mesh)
+cells(br::AbstractRefinement) = cells(br.mesh)
+indices(br::AbstractRefinement, p) = indices(br.mesh, p) 
+numcells(br::AbstractRefinement) = numcells(br.mesh)
+skeleton(br::AbstractRefinement, dim::Int) = skeleton(br.mesh, dim)
+chart(br::AbstractRefinement, cell) = chart(br.mesh, cell)
+vertexarray(m::AbstractRefinement) = vertexarray(m.mesh)
+cellarray(m::AbstractRefinement) = cellarray(m.mesh)
+
 """
 True if m1 is a direct refinement of m2.
 """
@@ -17,20 +30,6 @@ struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     mesh::M
     parent::MP
 end
-function ==(m1::BarycentricRefinement{U,D1,T,M,MP}, m2::BarycentricRefinement{U,D1,T,M,MP}) where {U,D1,T,M,MP}
-    return m1.mesh == m2.mesh && m1.parent == m2.parent
-end
-vertextype(br::AbstractRefinement) = vertextype(br.mesh)
-vertices(br::AbstractRefinement) = vertices(br.mesh)
-vertices(m::AbstractRefinement, cell) = vertices(m.mesh,cell)
-numvertices(br::AbstractRefinement) = numvertices(br.mesh)
-cells(br::AbstractRefinement) = cells(br.mesh)
-indices(br::AbstractRefinement, p) = indices(br.mesh, p) 
-numcells(br::AbstractRefinement) = numcells(br.mesh)
-skeleton(br::AbstractRefinement, dim::Int) = skeleton(br.mesh, dim)
-chart(br::AbstractRefinement, cell) = chart(br.mesh, cell)
-vertexarray(m::AbstractRefinement) = vertexarray(m.mesh)
-cellarray(m::AbstractRefinement) = cellarray(m.mesh)
 
 function celltype(m::BarycentricRefinement{U,D1}) where {U,D1} SimplexGraph{D1} end
 function celltype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
