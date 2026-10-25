@@ -310,6 +310,9 @@ parent(mesh::BarycentricRefinement{U,2} where {U}, cell) = div((cell-1),2)+1
 
 
 """
+    bisecting_refinement(mesh::AbstractMesh{U,3}; order=2) where U
+
+
     bisecting_refinement(mesh) -> refinement
 
 Construct a refinement of `mesh` by inserting a new vertex on every existing edge.
@@ -317,61 +320,109 @@ Every face is subdived in four small faces.
 
 Only defined for 2D meshes.
 """
-function bisecting_refinement(mesh::Mesh{U,3}, order=1) where U
+function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
 
-    D1 = 3
 
     edges = skeleton(mesh,1)
     faces = skeleton(mesh,2)
 
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
-    nv = NV + NE
-    verts = Array{vertextype(mesh)}(undef,nv)
+    verts = deepcopy(vertices(mesh))
 
-    # copy over the existing vertices
-    for V in 1 : numvertices(mesh)
-        verts[V] = mesh.vertices[V]
+    for (i, E) in enumerate(edges)
+        ch = chart(edges, E)
+        for n in 1:order-1
+            p = neighborhood(ch, SVector(n/order))
+            push!(verts, cartesian(p))
+        end
     end
 
-    # add a vertex in each edge centroid
-    # for (E, Edge) in enumerate(cells(edges))
-    for (i,E) in enumerate(edges)
-        verts[NV+i] = cartesian(center(chart(edges, E)))
+    idx = Dict{Tuple{Int,Int}, Int}()
+    k = 1
+    for n in 1:order-2
+        for m in 1:order-1-n
+            idx[(n,m)] = k
+            k += 1
+        end
+    end
+
+    for F in faces
+        ch = chart(faces, F)
+        for n in 1:order-2
+            for m in 1:order-1-n
+                p = neighborhood(ch, SVector(n/order,m/order))
+                push!(verts, cartesian(p))
+            end
+        end
     end
 
     # Build a matrix that given a coarse face gives
     # access to the coarse edges making up its boundary
-    D = copy(transpose(connectivity(edges, faces, identity)))
+    D = connectivity(faces, edges, identity)
     rows, vals = rowvals(D), nonzeros(D)
 
     # add four faces in each coarse face
-    nf = 4NF
-    # fcs = zeros(celltype(mesh), nf)
-    fcs = Vector{celltype(mesh)}(undef, nf)
+    nf = (div(order * (order+1), 2) + div((order-1) * order,2)) * NF
+    S = SimplexGraph{3}
+    fcs = Vector{S}()
 
     for F in 1 : numcells(faces)
 
-        # retrieve the indices of the fine vertices in the centroids
-        # of the edges in the boundary of coarse face F
-        es = zeros(Int,3)
+        # v = zeros(Int, order+1, order+1)
+        v = fill(-200, order+1, order+1)
+
+        # retrieve the indices of the fine vertices in the nodes of face F
+        v[order+1,1] = mesh.faces[F][1]
+        v[1,order+1] = mesh.faces[F][2]
+        v[1,1] = mesh.faces[F][3]
+
+        # retrieve the indices of the fine vertices along the edges of face F
+        # e = zeros(Int,3, order-1)
         for i in nzrange(D, F)
             E = rows[i]
-            j = abs(vals[i]) # local index of edge E in face F
-            @assert 1 <= j <= 3
-            e = NV + E
-            es[j] = e
+            j, σ = abs(vals[i]), sign(vals[i]) # j = +/-1, +/-2, +/-3
+            if j == 1
+                for n in 1:order-1
+                    v[1, order-n+1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            elseif j == 2
+                for n in 1:order-1
+                    v[n+1, 1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            elseif j == 3
+                for n in 1:order-1
+                    v[order-n+1, n+1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            end
+        end
+        # @show e
+
+        # retrieve the indices of the fine vertices in the interior of face F
+        for n in 1:order-2
+            for m in 1:order-1-n
+                k = idx[(n,m)]
+                v[n+1,m+1] = NV + (NE * (order-1)) + (F-1) * div((order-1)*(order-2),2) + k
+            end
         end
 
-        # build the four triangles
-        r1 = mesh.faces[F][1]
-        r2 = mesh.faces[F][2]
-        r3 = mesh.faces[F][3]
+        # @show v
 
-        fcs[4(F-1)+1] = SimplexGraph(r1,es[3],es[2])
-        fcs[4(F-1)+2] = SimplexGraph(r2,es[1],es[3])
-        fcs[4(F-1)+3] = SimplexGraph(r3,es[2],es[1])
-        fcs[4(F-1)+4] = SimplexGraph(es[1],es[2],es[3])
+        # Build the fine faces in the coarse face F
+        for n in 1:order
+            for m in 1:order-n+1
+                push!(fcs, S(SVector(v[n,m], v[n+1,m], v[n,m+1])))
+                if m + n <= order
+                    push!(fcs, S(SVector(v[n+1,m], v[n+1,m+1], v[n,m+1])))
+                end
+            end
+        end
     end
 
     Mesh(verts, fcs)

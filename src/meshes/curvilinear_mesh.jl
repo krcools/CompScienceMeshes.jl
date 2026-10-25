@@ -1,5 +1,5 @@
 # Mesh: 1D elements embedded in R^U, with N control points per element (N = order+1)
-mutable struct CurvilinearMesh{U,D1,N,T,O} <: AbstractMesh{U,N,T}
+mutable struct CurvilinearMesh{U,D1,N,T,O} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}   # coordinates in R^U
     # faces::Vector{SVector{N,Int}}    # connectivity (local order = Gmsh order)
     faces::Vector{HOSimplexGraph{D1,O,N}} # connectivity (local order = Gmsh order)
