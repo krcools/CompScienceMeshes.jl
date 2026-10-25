@@ -120,4 +120,19 @@ function PlotlyBase.scatter3d(surf::CompScienceMeshes.AbstractMesh{3,3}; kwargs.
     PlotlyBase.scatter3d(CompScienceMeshes.skeleton(surf, 1); kwargs...)
 end
 
+function PlotlyBase.scatter3d(nodes::CompScienceMeshes.AbstractMesh{3,1}; kwargs...)
+    T = CompScienceMeshes.coordtype(nodes)
+    x = T[]
+    y = T[]
+    z = T[]
+    for node in nodes
+        chrt = CompScienceMeshes.chart(nodes, node)
+        v1, = chrt.vertices
+        push!(x, v1[1])
+        push!(y, v1[2])
+        push!(z, v1[3])
+    end
+    return PlotlyBase.scatter3d(x=x, y=y, z=z, mode="markers"; kwargs...)
+end
+
 end

@@ -12,6 +12,27 @@ skeleton(br::AbstractRefinement, dim::Int) = skeleton(br.mesh, dim)
 chart(br::AbstractRefinement, cell) = chart(br.mesh, cell)
 vertexarray(m::AbstractRefinement) = vertexarray(m.mesh)
 cellarray(m::AbstractRefinement) = cellarray(m.mesh)
+function celltype(m::AbstractRefinement{U,D1}) where {U,D1} celltype(m.mesh) end
+function celltype(m::AbstractRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} celltype(m.mesh, Val{M}) end
+function indextype(m::AbstractRefinement{U,D1}) where {U,D1} indextype(m.mesh) end
+function indextype(m::AbstractRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} indextype(m.mesh, Val{M}) end
+
+
+struct RefinementParent{U,D1,T,M,N} <: AbstractMesh{U,D1,T}
+    mesh::M
+    refinement::N
+end
+
+Base.:(==)(m1, m2::RefinementParent) = (m1 == m2.mesh)
+Base.:(==)(m1::RefinementParent, m2) = m1.mesh == m2
+
+RefinementParent{U,D1,T}(mesh::M, parent::N) where {U,D1,T,M,N} = RefinementParent{U,D1,T,M,N}(mesh, parent)
+
+parent(m::AbstractRefinement{U,D1,T}) where {U,D1,T} = RefinementParent{U,D1,T}(m.parent, m)
+Base.length(m::RefinementParent) = length(m.mesh)
+vertices(m::RefinementParent, p) = vertices(m.mesh, p)
+cells(m::RefinementParent) = cells(m.mesh)
+function chart(m::RefinementParent, ptr) chart(m.mesh, ptr) end
 
 """
 True if m1 is a direct refinement of m2.
@@ -31,33 +52,12 @@ struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     parent::MP
 end
 
-function celltype(m::BarycentricRefinement{U,D1}) where {U,D1} SimplexGraph{D1} end
-function celltype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
-function indextype(m::BarycentricRefinement{U,D1}) where {U,D1} SVector{D1,Int} end
-function indextype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SVector{M+1,Int} end
-
 function parent(m::BarycentricRefinement, p)
     numchildren = factorial(dimension(m)+1)
     return mod1(p, numchildren)
 end
 
-struct BarycentricRefinementParent{U,D1,T,M,N} <: AbstractMesh{U,D1,T}
-    mesh::M
-    refinement::N
-end
-
-Base.:(==)(m1, m2::BarycentricRefinementParent) = (m1 == m2.mesh)
-Base.:(==)(m1::BarycentricRefinementParent, m2) = m1.mesh == m2
-
-BarycentricRefinementParent{U,D1,T}(mesh::M, parent::N) where {U,D1,T,M,N} = BarycentricRefinementParent{U,D1,T,M,N}(mesh, parent)
-
-parent(m::BarycentricRefinement{U,D1,T}) where {U,D1,T} = BarycentricRefinementParent{U,D1,T}(m.parent, m.mesh)
-Base.length(m::BarycentricRefinementParent) = length(m.mesh)
-vertices(m::BarycentricRefinementParent, p) = vertices(m.mesh, p)
-cells(m::BarycentricRefinementParent) = cells(m.mesh)
-
-
-function children(m::BarycentricRefinementParent, p)
+function children(m::RefinementParent{<:Any,<:Any,<:Any,<:Any,<:BarycentricRefinement}, p)
     numchildren = factorial(dimension(m)+1)
     [(p-1)*numchildren+i for i in 1:numchildren]
 end
@@ -309,6 +309,58 @@ parent(mesh::BarycentricRefinement{U,3} where {U}, cell) = div((cell-1),6)+1
 parent(mesh::BarycentricRefinement{U,2} where {U}, cell) = div((cell-1),2)+1
 
 
+struct BisectingRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
+    order::Int
+    mesh::M
+    parent::MP
+end
+
+function parent(m::BisectingRefinement, p)
+    order = m.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+    return mod1(p, numchildren)
+end
+
+function children(m::RefinementParent{<:Any,<:Any,<:Any,<:Any,<:BisectingRefinement}, p)
+    order = m.refinement.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+    [(p-1)*numchildren+i for i in 1:numchildren]
+end
+
+function injections(m::RefinementParent{U,D1,T,<:Any,<:BisectingRefinement}, p) where {U,D1,T}
+
+    order = m.refinement.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+
+    h = 1 / order
+    # set1 = [
+    #     simplex(point(i*h, j*h), point((i+1)*h, j*h), point(i*h, (j+1)*h))
+    #     for j in 0:order-1 for i in 0:order-1-j
+    # ]
+    # set2 = [
+    #     simplex(point((i+1)*h, j*h), point((i+1)*h, (j+1)*h), point(i*h, (j+1)*h))
+    #      for j in 0:order-2 for i in 0:order-2-j
+    # ]
+    # set = [set1; set2]
+
+    
+    S = Simplex{2,D1-1,2-D1+1,D1,T}
+    fcs = Vector{S}()
+    for m in 0:order-1
+        for n in 0:order-1-m
+            push!(fcs, simplex(point(T,m*h,n*h), point(T,(m+1)*h, n*h), point(T, m*h, (n+1)*h)))
+            if m + n <= order - 2
+                push!(fcs, simplex(point(T,(m+1)*h, n*h), point(T,(m+1)*h, (n+1)*h), point(T, m*h, (n+1)*h)))
+            end
+        end
+    end
+
+    @show length(fcs)
+    @show numchildren
+    @assert length(fcs) == numchildren
+    return fcs
+end
+
 """
     bisecting_refinement(mesh::AbstractMesh{U,3}; order=2) where U
 
@@ -320,11 +372,13 @@ Every face is subdived in four small faces.
 
 Only defined for 2D meshes.
 """
-function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
+function bisecting_refinement(mesh::AbstractMesh{U,3,T}; order=2) where {U,T}
 
+    MP = typeof(mesh)
 
     edges = skeleton(mesh,1)
-    faces = skeleton(mesh,2)
+    # faces = skeleton(mesh,2)
+    faces = mesh
 
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
@@ -333,7 +387,7 @@ function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
     for (i, E) in enumerate(edges)
         ch = chart(edges, E)
         for n in 1:order-1
-            p = neighborhood(ch, SVector(n/order))
+            p = neighborhood(ch, SVector(1 - n/order))
             push!(verts, cartesian(p))
         end
     end
@@ -363,7 +417,7 @@ function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
     rows, vals = rowvals(D), nonzeros(D)
 
     # add four faces in each coarse face
-    nf = (div(order * (order+1), 2) + div((order-1) * order,2)) * NF
+    # nf = (div(order * (order+1), 2) + div((order-1) * order,2)) * NF
     S = SimplexGraph{3}
     fcs = Vector{S}()
 
@@ -373,9 +427,9 @@ function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
         v = fill(-200, order+1, order+1)
 
         # retrieve the indices of the fine vertices in the nodes of face F
-        v[order+1,1] = mesh.faces[F][1]
-        v[1,order+1] = mesh.faces[F][2]
-        v[1,1] = mesh.faces[F][3]
+        v[order+1,1] = cells(faces)[F][1]
+        v[1,order+1] = cells(faces)[F][2]
+        v[1,1] = cells(faces)[F][3]
 
         # retrieve the indices of the fine vertices along the edges of face F
         # e = zeros(Int,3, order-1)
@@ -425,7 +479,9 @@ function bisecting_refinement(mesh::AbstractMesh{<:Any,3}; order=2)
         end
     end
 
-    Mesh(verts, fcs)
+    fine = Mesh(verts, fcs)
+    MR = typeof(fine)
+    BisectingRefinement{U,3,T,MR,MP}(order, fine, mesh)
 end
 
 """

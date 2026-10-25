@@ -370,6 +370,7 @@ end
 Return the physical midpoint of the 1D curvilinear element, obtained by
 evaluating the mapping at `ζ = 0.5`.
 """
+function center(ch::CurvilinearSimplex{U,0}) where {U} ch.vertices[1] end
 function center(ch::CurvilinearSimplex{U,1}) where {U} neighborhood(ch, SVector(0.5)) end
 function center(ch::CurvilinearSimplex{U,2}) where {U} neighborhood(ch, SVector(0.5, 0.5)) end
 
