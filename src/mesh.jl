@@ -4,7 +4,7 @@ using Combinatorics
 using Compat.Iterators
 
 export vertexarray, cellarray
-
+import Base: ==
 """
     `U::Int`: indicating dimension of the embedding space
     `D1::Int`: one plus the manifold dimension
@@ -13,26 +13,22 @@ export vertexarray, cellarray
 abstract type AbstractMesh{U,D1,T} end
 
 
+"""
+    struct Mesh
+
+Basic mesh structure representing flat-faceted simplicial meshes.
+"""
 mutable struct Mesh{U,D1,T} <: AbstractMesh{U,D1,T}
     vertices::Vector{SVector{U,T}}
-    faces::Vector{SVector{D1,Int}}
-    # """
-    # maps a face on its index in enumeration
-    # """
-    # dict::Dict{SVector{D1,Int},Int}
+    faces::Vector{SimplexGraph{D1}}
 end
 
-# function Mesh(vertices, faces)
-#     # dict = Dict((f,i) for (i,f) in enumerate(faces))
-#     # dict = Dict{Int,Int}()
-#     T = eltype(eltype(vertices))
-#     U = length(eltype(vertices))
-#     D1 = length(eltype(faces))
-#     Mesh{U,D1,T}(vertices, faces)
-# end
+function ==(m1::Mesh{U,D1,T}, m2::Mesh{U,D1,T}) where {U,D1,T}
+    return m1.vertices == m2.vertices && m1.faces == m2.faces
+end
 
-function indices(m::Mesh{U,D1}, cell) where {U,D1}
-    return m.faces[cell]
+function indices(m::Mesh{U,D1}, i) where {U,D1}
+    return m.faces[i].indices
 end
 
 vertexarray(m::Mesh) = [ v[i] for v in m.vertices, i in 1:universedimension(m) ]
@@ -45,9 +41,19 @@ cellarray(m::Mesh) = [ k[i] for k in m.faces, i in 1:dimension(m)+1 ]
 Returns an empty mesh with `coordtype` equal to `type`, of dimension `mdim`
 and embedded in a universe of dimension `udim`
 """
-mesh(T, mdim, udim=mdim+1) = Mesh(Pt{udim,T}[], SVector{mdim+1,Int}[])
+function mesh(T, mdim, udim=mdim+1)
+    Mesh(Pt{udim,T}[], CompScienceMeshes.SimplexGraph{mdim+1}[])
+end
 
+"""
+    similar(mesh::M, vertices, faces) where {M<:AbstractMesh}
 
+Constructs a mesh with the storage type as `mesh`, but with the order and dimension
+parameters inferred from the `faces` argument. The vertices are taken from `vertices`.
+"""
+function similar_mesh(mesh::Mesh{U,D1,T}, vertices, faces::Vector{SimplexGraph{D1new}}) where {U,D1,T,D1new}
+    Mesh{U,D1new,T}(vertices, faces)
+end
 
 """
     vt = vertextype(mesh)
@@ -107,7 +113,7 @@ universedimension(m::AbstractMesh) = length(vertextype(m))
 
 Returns an indexable iterable to the vertices of the mesh
 """
-vertices(m::Mesh) = m.vertices
+function vertices(m::Mesh) m.vertices end
 
 
 #     vertices(mesh, i)
@@ -117,10 +123,10 @@ vertices(m::Mesh) = m.vertices
 # form, only statically sized arrays are allowed to discourage
 # memory allocation. The returned vector in that case will also
 # be statically typed and of the same size as `I`.
-vertices(m::Mesh, i::Number) = m.vertices[i]
+function vertices(m::Mesh, i::Number) m.vertices[i] end
 cellvertices(m::AbstractMesh, cell) = vertices(m, indices(m, cell))
-@generated function vertices(m::Mesh, I::SVector)
-    N = length(I)
+@generated function vertices(m::Mesh, I::NTuple)
+    N = fieldcount(I)
     xp = :(())
     for i in 1:N
         push!(xp.args, :(m.vertices[I[$i]]))
@@ -195,7 +201,7 @@ end
 
 Change the orientation of a cell by interchanging the first to indices.
 """
-@generated function flip(cell)
+@generated function flip(cell::SVector)
     # generate `T(cell[2],cell[1],cell[3],...)`, with `T = typeof(cell)`
     N = length(cell)
     if N <= 1
@@ -206,6 +212,11 @@ Change the orientation of a cell by interchanging the first to indices.
         push!(xp.args, :(cell[$i]))
     end
     xp
+end
+
+function flip(cell::SimplexGraph)
+    t = flip(cell.indices)
+    return SimplexGraph(t)
 end
 
 """
@@ -305,9 +316,9 @@ function fliporientation(m::Mesh)
     fliporientation!(n)
 end
 
-@generated function fliporientation(I::SVector{N,T}) where {N,T}
+@generated function fliporientation(I::SimplexGraph{N}) where {N}
     @assert N >= 2
-    xp = :(SVector{N,T}(I[2],I[1]))
+    xp = :(SimplexGraph(I[2],I[1]))
     for i in 3:N
         push!(xp.args, :(I[$i]))
     end
@@ -352,20 +363,22 @@ function boundary(mesh)
     rows = rowvals(conn)
     vals = nonzeros(conn)
 
-    I = indextype(edges)
+    I = celltype(edges)
     bnd_edges = Vector{I}(undef, length(edges))
     i = 1
     for (e,edge) in enumerate(edges)
         nzr = nzrange(conn,e)
         length(nzr) != 1 && continue
         relop = vals[nzr[1]]
-        inds = indices(edges, edge)
-        bnd_edges[i] = (relop > 0) ? inds : flip(inds)
+        # inds = indices(edges, edge)
+        inds = cells(edges)[e].indices
+        bnd_edges[i] = (relop > 0) ? I(inds) : flip(I(inds))
         i += 1
     end
 
     resize!(bnd_edges, i-1)
-    bnd = Mesh(vertices(mesh), bnd_edges)
+    # bnd = Mesh(vertices(mesh), bnd_edges)
+    return similar_mesh(mesh, vertices(mesh), bnd_edges)
 end
 
 
@@ -382,7 +395,7 @@ function interior(mesh::Mesh, edges=skeleton(mesh,1))
     @assert size(C) == (numcells(mesh), numcells(edges))
 
     nn = vec(sum(abs.(C), dims=1))
-    T = CompScienceMeshes.indextype(edges)
+    T = CompScienceMeshes.celltype(edges)
     interior_edges = Vector{T}()
     for (i,edge) in pairs(cells(edges))
         nn[i] > 1 && push!(interior_edges, edge)
@@ -398,11 +411,14 @@ end
 Computed an V×M array `vertextocells` where V is the number of vertices
 and M is the maximum number of cells adjacent to any given vertex such
 that `vertextocells[v,i]` is the index in the cells of `mesh` of the `i`th
-cell adjacent to teh `v`-th vertex. `numneighbors[v]` contains the number
-of cells adjacent to the `v`-th vertex.
+cell adjacent to the `v`-th vertex. Rows are indexed directly by vertex ID,
+including vertices that are not referenced by any cell. Unused entries are
+padded with `-1`. `numneighbors[v]` contains the number of cells adjacent
+to the `v`-th vertex.
 
 This method allows e.g. for the efficient computation of the connectivity
-matrix of the mesh.
+matrix of the mesh. Use [`vertextocell`](@ref) instead when many vertices
+are unreferenced and compact rows are preferred.
 """
 function vertextocellmap(mesh)
 
@@ -432,6 +448,20 @@ function vertextocellmap(mesh)
 end
 
 
+"""
+    vertextocell(mesh) -> vertextocells, numneighbors, LG, GL
+
+Returns a compact vertex-to-cell adjacency map. `vertextocells` has one row
+for each vertex referenced by a cell, and `numneighbors[row]` gives the
+number of adjacent cells in that row. Entries beyond that count are padded
+with `-1`. Rows are ordered by the first encounter of each vertex while
+iterating over the cells.
+
+The rows are not indexed by vertex ID: `LG[row]` gives the vertex ID for a
+row, and `GL[vertex_id]` gives the row for a referenced vertex. Unlike
+[`vertextocellmap`](@ref), this does not allocate rows for unreferenced
+vertices, so it can use less memory when many vertices are unreferenced.
+"""
 function vertextocell(mesh)
 
     row = Dict{Int,Tuple{Int,Int}}()
@@ -522,7 +552,7 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     meshdim = dimension(mesh)
     @assert 0 <= dim <= meshdim
 
-    if dim == meshdim
+    if dim == meshdim && (mesh isa Mesh || mesh isa QuadMesh)
         return mesh
     end
 
@@ -531,12 +561,12 @@ function skeleton(mesh, dim::Int; sort=:spacefillingcurve)
     
     # sort the simplices on a SFC
     simplices = cells(sk)
-    ctrs = [sum(cellvertices(sk,c))/(dim+1) for c in sk]
+    ctrs = [cartesian(center(chart(sk, cellptr))) for cellptr in sk]
     if length(sk) > 0
         simplices = simplices[sort_sfc(ctrs)]
     end
 
-    Mesh(vertices(mesh), simplices)
+    similar_mesh(mesh, vertices(mesh), simplices)
 end
 
 
@@ -569,19 +599,18 @@ end
 # end
 
 
-function skeleton_fast(mesh, dimtype::Type)
-    C = celltype(mesh)
-    I = indextype(mesh, dimtype)
-    E = celltype(mesh, dimtype)
-    faces = Vector{I}()
-    for cell in mesh
-        idcs = indices(mesh, cell)
-        for face in skeleton(C(idcs), dimtype)
-            push!(faces, face)
+function skeleton_fast(mesh::M, dimtype::Type) where {M <: AbstractMesh}
+    # C = celltype(mesh)
+    # I = indextype(mesh, dimtype)
+    F = celltype(mesh, dimtype)
+    fcs = Vector{F}()
+    for cell in cells(mesh)
+        for face in faces(cell, dimtype)
+            push!(fcs, face)
         end
     end
-    faces = unique!(x -> E(x), faces)
-    Mesh(vertices(mesh), faces)
+    fcs = unique!(fcs)
+    similar_mesh(mesh, vertices(mesh), fcs)
 end
 
 function skeleton_fast(mesh, dim::Int)
@@ -592,12 +621,12 @@ function skeleton_fast(mesh, dim::Int)
 end
 
 
-"""
-    skeleton(pred, mesh, dim)
+# """
+#     skeleton(pred, mesh, dim)
 
-Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
-returns true are withheld.
-"""
+# Like `skeleton(mesh, dim)`, but only cells for which `pred(cell)`
+# returns true are withheld.
+# """
 # function skeleton(pred, mesh, dim)
 
 #     meshdim = dimension(mesh)
@@ -643,18 +672,21 @@ positive or negative depending on the relative orientation of face `k` in cell
 For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
 the graph version of the exterior derivative.
 """
-function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
+function connectivity(kmesh::AbstractMesh, mmesh::AbstractMesh, op = sign)
 
-    K = celltype(kcells)
-    M = celltype(mcells)
+    K = celltype(kmesh)
+    M = celltype(mmesh)
 
-    vtok, _, lgk, _ = vertextocell(kcells)
-    vtom, _, _, glm = vertextocell(mcells)
+    vtok, _, lgk, _ = vertextocell(kmesh)
+    vtom, _, _, glm = vertextocell(mmesh)
 
     npos = -1
 
-    dimk = numcells(kcells)
-    dimm = numcells(mcells)
+    dimk = length(kmesh)
+    dimm = length(mmesh)
+
+    kcells = cells(kmesh)
+    mcells = cells(mmesh)
 
     Rows = Int[]
     Cols = Int[]
@@ -666,12 +698,15 @@ function connectivity(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)
         for q in axes(vtok,2)
             i = vtok[vk,q]
             i == npos && break
-            kcell = K(indices(kcells,i))
+            kcell = kcells[i]
             for s in axes(vtom,2)
                 j = vtom[vm,s]
                 j == npos && break
-                mcell = M(indices(mcells, j))
+                mcell = mcells[j]
                 val = op(relorientation(kcell, mcell))
+                # @show indices(kcell)
+                # @show indices(mcell)
+                # @show val
                 iszero(val) && continue
                 push!(Rows, j)
                 push!(Cols, i)
@@ -780,8 +815,8 @@ function cellpairs(mesh, edges; dropjunctionpair=false)
 
     k = 1
     Cells = cells(mesh)
-    for e in edges
-        edge = indices(edges, e)
+    for edge in cells(edges)
+        # edge = indices(edges, e)
 
         # neighborhood of startvertex
         v = edge[1]
@@ -864,7 +899,16 @@ end
 
 Return a chart describing the supplied cell of `mesh`.
 """
-chart(mesh::Mesh, cell) = simplex(vertices(mesh, indices(mesh,cell)))
+function chart(mesh::Mesh, c)
+    cell = cells(mesh)[c]
+    chart(mesh, cell)
+end
+
+function chart(mesh::Mesh, cell::SimplexGraph)
+    # cell = cells(mesh)[c]
+    verts = vertices(mesh, cell.indices.data)
+    simplex(verts)
+end
 
 parent(mesh::AbstractMesh) = nothing
 # parent(mesh::Mesh) = nothing
@@ -884,13 +928,7 @@ function isoriented(m::AbstractMesh)
     return all(S)
 end
 
-"""
-True if m1 is a direct refinement of m2.
-"""
-function refines(m1::AbstractMesh, m2::AbstractMesh)
-    parent(m1) == nothing && return false
-    return parent(m1) == m2
-end
+
 
 
 """

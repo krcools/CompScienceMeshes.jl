@@ -12,7 +12,7 @@ sea_vertices    = skeleton(sea, 0)
 
 # interior_vertices = submesh(v -> !(v in border_vertices || v in coast_vertices), sea_vertices)
 interior_vertices = submesh(sea_vertices) do mesh, i
-    v = CompScienceMeshes.indices(mesh, i)
+    v = CompScienceMeshes.cells(mesh)[i]
     v in cells(border_vertices) && return false
     v in cells(coast_vertices) && return false
     return true

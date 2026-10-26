@@ -50,6 +50,7 @@ function meshicosphere(nu::Int = 1, r::F = 1.0, nr_verts = nothing) where F
             vertices[i] = r.*vertices[i]./sqrt.(sum(x->x.^2, vertices[i]))
         end
     end 
+    faces = [SimplexGraph(f) for f in faces]
     return Mesh(vertices, faces)
 end
 

@@ -9,7 +9,7 @@ function boundingbox(p::Simplex{U,D,C,N,T}) where {U,D,C,N,T}
     # ur = maximum(p.vertices)
 
     ll = first(p.vertices); for v in p.vertices; ll = min.(v, ll); end
-    ur = first(p.vertices); for v in p.vertices; ll = max.(v, ll); end
+    ur = first(p.vertices); for v in p.vertices; ur = max.(v, ur); end
 
     center = (ll + ur) / 2
     halfsize = maximum(ur - center)

@@ -8,9 +8,10 @@ for U in [Float32, Float64]
         point(U,1,1,0),
         point(U,0,1,0)]
 
+    C = CompScienceMeshes.SimplexGraph{3}
     global F = [
-        index(1,2,3),
-        index(1,3,4)]
+        C(index(1,2,3)),
+        C(index(1,3,4))]
 
     global m = Mesh(V,F)
 
@@ -19,11 +20,11 @@ for U in [Float32, Float64]
     global g = -f
     @test g === m
 
-    global T = [index(2,1,3), index(3,1,4)]
+    global T = [C(index(2,1,3)), C(index(3,1,4))]
     # for (i,_c) in enumerate(cells(f))
-    for i in f
-        inds = CompScienceMeshes.indices(f,i)
-        @test inds == T[i]
+    for (i,cell) in pairs(cells(f))
+        # inds = CompScienceMeshes.indices(f,i)
+        @test cell == T[i]
     end
 end
 # @test f.faces[1] == index(2,1,3)

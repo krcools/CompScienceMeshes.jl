@@ -1,12 +1,15 @@
 #export Simplex
+abstract type AbstractSimplex{U,D} 
+end
 
+function nodes(chart) vertices(chart) end
 
 # U: the dimension of the universe
 # D: the dimension of the manifold
 # N: the number of vertices
 # T: the type of the coordinates
 # C: the complimentary dimension (should always be U-D)
-struct Simplex{U,D,C,N,T}
+struct Simplex{U,D,C,N,T} <: AbstractSimplex{U,D}
     vertices::SVector{N,SVector{U,T}}
     tangents::SVector{D,SVector{U,T}}
     normals::SVector{C,SVector{U,T}}
@@ -28,7 +31,7 @@ function permute_vertices(s::Simplex{3,2,1,3,T},permutation::Union{Vector{P},SVe
     Simplex(simp.vertices,simp.tangents,s.normals,simp.volume)
 end
 
-"""
+"""F
     flip_normal(simplex)
 
 Flips the normal of the simplex. Only on triangles embedded in 3D space
@@ -217,7 +220,7 @@ function _normals(tangents::SVector{2,SVector{2,T}}, ::Type{Val{0}}) where {T}
 
     t = tangents[1]
     s = tangents[2]
-    v = (t[1]*s[2] - t[2]*s[1])/2
+    v = abs(t[1]*s[2] - t[2]*s[1])/2
     # n[3] = tangents[1] × tangents[2]
     # l = norm(n)
 
@@ -274,7 +277,8 @@ function barytocart(mani::Simplex, u)
     return r
 end
 
-function cartesian(ch::Simplex, u) barytocart(ch, u) end
+function cartesian(ch::AbstractSimplex, u) barytocart(ch, u) end
+# function cartesian(ch::Simplex, u::SVector{N,T}) where {N,T} barytocart(ch, u) end
 
 
 """
@@ -480,6 +484,8 @@ tangents(splx::Simplex, u) = hcat((splx.tangents)...)
 
 # vertices(splx::Simplex) = hcat((splx.vertices)...)
 function vertices(s::Simplex) s.vertices end
+
+function nodes(s::Simplex) s.vertices end
 
 """
     verticeslist(simplex)

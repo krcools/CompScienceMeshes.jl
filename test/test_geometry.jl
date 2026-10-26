@@ -56,10 +56,14 @@ for T in [Float32, Float64]
     #for i in 1:numcells(m)
     for cl in cells(m)
         #p = chart(m, cells(m,i))
-        v = vertices(m, cl)
-        p = simplex(v)
-        _c = (p.vertices[1] + p.vertices[2]) / 2
-        @test dot(_c, p.normals[1]) > 0
+        # v = vertices(m, cl)
+        # p = simplex(v)
+        # _c = (p.vertices[1] + p.vertices[2]) / 2
+        p = center(chart(m, cl))
+        _c = cartesian(p)
+        # _c = cartesian(center(chart(m, cl)))
+        # @test dot(_c, p.normals[1]) > 0
+        @test dot(cartesian(p), normal(p)) > 0
     end
 end
 
@@ -73,8 +77,8 @@ for T in [Float32, Float64]
     p3 = point(T,-1,0,0)
     p4 = point(T,0,-1,0)
 
-    i1 = index(1,2,3)
-    i2 = index(1,4,2)
+    i1 = CompScienceMeshes.SimplexGraph(1,2,3)
+    i2 = CompScienceMeshes.SimplexGraph(1,4,2)
 
     local m = Mesh([p1,p2,p3,p4], [i1,i2])
     e = skeleton(m,1)
@@ -133,7 +137,7 @@ for T in [Float32, Float64]
                 if val == 1
                     @test e1_cells[row] == E1_cells[col]
                 else
-                    @test e1_cells[row] == reverse(E1_cells[col])
+                    @test e1_cells[row].indices == reverse(E1_cells[col].indices)
                 end
             end
         end

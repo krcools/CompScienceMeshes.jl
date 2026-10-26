@@ -39,4 +39,31 @@ for T in [Float32, Float64]
     local b1 = skeleton(b,1)
     @test numcells(b1) == 2*numcells(m1) + 3*numcells(m)
     @test numvertices(b) == numcells(m0) + numcells(m1)
+
+    # the refinement of a curve is a BarycentricRefinement, as for surfaces
+    @test CompScienceMeshes.refines(Γ2, Γ)
+    @test numcells(Γ2) == 2*numcells(Γ)
+    @test numvertices(Γ2) == numvertices(Γ) + numcells(Γ)
+
+    # parent and children are inverse of each other
+    local pm = CompScienceMeshes.parent(Γ2)
+    for E in 1:numcells(Γ)
+        local kids = CompScienceMeshes.children(pm, E)
+        @test kids == [2*(E-1)+1, 2*(E-1)+2]
+        @test all(CompScienceMeshes.parent(Γ2, k) == E for k in kids)
+    end
+    # curves in a three-dimensional universe, and with vertex numbering
+    # inherited from a parent surface
+    for m in (meshsegment(T(1.0), T(1)/4, 3), boundary(meshrectangle(T(1.0), T(1.0), T(1)/2, 3)))
+        local f = barycentric_refinement(m)
+        @test CompScienceMeshes.refines(f, m)
+        @test numcells(f) == 2*numcells(m)
+        @test numvertices(f) == numvertices(m) + numcells(m)
+    end
+    # a submesh of a curve refines too, which the Mesh-only signature could not do
+    local Λ = meshsegment(T(1.0), T(1)/4, 3)
+    local s = submesh((m,p) -> cartesian(CompScienceMeshes.center(chart(m,p)))[1] < T(1)/2, Λ)
+    local sf = barycentric_refinement(s)
+    @test CompScienceMeshes.refines(sf, s)
+    @test numcells(sf) == 2*numcells(s)
 end

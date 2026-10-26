@@ -22,6 +22,8 @@ function load_gmsh_mesh(meshfile;
 
     gmsh.initialize()
 
+    @show meshfile
+
     try
         gmsh.open(meshfile)
     catch e
@@ -35,6 +37,8 @@ function load_gmsh_mesh(meshfile;
         true, # includeBoundary (default false)
         true #  returnParametricCoord (default true)
     )
+    # @show node_tags
+    # @show node_coords
 
     if physical===nothing
         element_types, element_tags, element_node_tags = gmsh.model.mesh.getElements()
@@ -85,10 +89,18 @@ function load_gmsh_mesh(meshfile;
         vertices = vertices2d
     end
 
+    # @show elements
+
     # TODO: once we support hexahedrons, we need to catch that one too
     if element == :quadrangle
+        elements = [QuadrilateralGraph(el) for el in elements]
         return QuadMesh(vertices, elements)
+    elseif element == :line && order > 1
+        return CurvilinearMesh(vertices, elements, 1, order)
+    elseif element == :triangle && order > 1
+        return CurvilinearMesh(vertices, elements, 2, order)
     else
+        elements = [SimplexGraph(el) for el in elements]
         return Mesh(vertices, elements)
     end
 end
@@ -374,14 +386,14 @@ function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true, T=Float64)
         d[2] == type || continue
         entity_tag == d[4] || entity_tag == 0 || continue
         # f[i +=1] = SVector(d[end-2], d[end-1], d[end-0])
-        f[i+=1] = d[end-dimension:end]
+        f[i+=1] = I(d[end-dimension:end])
     end
     resize!(f,i)
 
     # @show length(v)
     # @show length(f)
     
-    if sort
+    if sort && length(f) > 0
         # @info "sorting..."
         f = sort_sfc(v,f)
     end
@@ -396,6 +408,7 @@ function read_gmsh_mesh(io; physical=nothing, dimension=2, sort=true, T=Float64)
 
 
 
+    f = [SimplexGraph(fc) for fc in f]
     return Mesh(v, f)
 
 end

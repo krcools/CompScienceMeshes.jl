@@ -71,7 +71,7 @@ function GSubdMesh(mesh::Mesh)
         Svertices[V] = SV
     end
     for (E, Edge) in enumerate(cells(edges))
-        EndVerticesIndices = Edge
+        EndVerticesIndices = Edge.indices
         FacesIndex = []
         RelatedVerticesIndices = []
         orientation = []
@@ -82,7 +82,7 @@ function GSubdMesh(mesh::Mesh)
                 append!(orientation,connectMat[F,E])
                     ## Loop over vertices in the faces find out related vertices
                 for iv = 1 : length(Face)
-                    if Face[iv] != Edge[1] && Face[iv] != Edge[2]
+                    if Face[iv] != Edge.indices[1] && Face[iv] != Edge.indices[2]
                             append!(RelatedVerticesIndices, Face[iv])
                     end
                 end

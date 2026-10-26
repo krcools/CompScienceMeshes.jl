@@ -1,47 +1,63 @@
-mutable struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractMesh{U,D1,T}
+abstract type AbstractRefinement{U,D1,T} <: AbstractMesh{U,D1,T} end
+
+function ==(m1::M, m2::M) where {M<:AbstractRefinement} m1.mesh == m2.mesh && m1.parent == m2.parent end
+vertextype(br::AbstractRefinement) = vertextype(br.mesh)
+vertices(br::AbstractRefinement) = vertices(br.mesh)
+vertices(m::AbstractRefinement, cell) = vertices(m.mesh,cell)
+numvertices(br::AbstractRefinement) = numvertices(br.mesh)
+cells(br::AbstractRefinement) = cells(br.mesh)
+indices(br::AbstractRefinement, p) = indices(br.mesh, p) 
+numcells(br::AbstractRefinement) = numcells(br.mesh)
+skeleton(br::AbstractRefinement, dim::Int) = skeleton(br.mesh, dim)
+chart(br::AbstractRefinement, cell) = chart(br.mesh, cell)
+vertexarray(m::AbstractRefinement) = vertexarray(m.mesh)
+cellarray(m::AbstractRefinement) = cellarray(m.mesh)
+function celltype(m::AbstractRefinement{U,D1}) where {U,D1} celltype(m.mesh) end
+function celltype(m::AbstractRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} celltype(m.mesh, Val{M}) end
+function indextype(m::AbstractRefinement{U,D1}) where {U,D1} indextype(m.mesh) end
+function indextype(m::AbstractRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} indextype(m.mesh, Val{M}) end
+
+
+struct RefinementParent{U,D1,T,M,N} <: AbstractMesh{U,D1,T}
+    mesh::M
+    refinement::N
+end
+
+Base.:(==)(m1, m2::RefinementParent) = (m1 == m2.mesh)
+Base.:(==)(m1::RefinementParent, m2) = m1.mesh == m2
+
+RefinementParent{U,D1,T}(mesh::M, parent::N) where {U,D1,T,M,N} = RefinementParent{U,D1,T,M,N}(mesh, parent)
+
+parent(m::AbstractRefinement{U,D1,T}) where {U,D1,T} = RefinementParent{U,D1,T}(m.parent, m)
+Base.length(m::RefinementParent) = length(m.mesh)
+vertices(m::RefinementParent, p) = vertices(m.mesh, p)
+cells(m::RefinementParent) = cells(m.mesh)
+function chart(m::RefinementParent, ptr) chart(m.mesh, ptr) end
+
+"""
+True if m1 is a direct refinement of m2.
+"""
+function refines(m1::AbstractRefinement, m2::AbstractMesh)
+    parent(m1) == nothing && return false
+    # return parent(m1) == m2
+    m1.parent === m2
+end
+
+function refines(m1::AbstractMesh, m2::AbstractMesh)
+    return false
+end
+
+struct BarycentricRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
     mesh::M
     parent::MP
 end
-
-vertextype(br::BarycentricRefinement) = vertextype(br.mesh)
-vertices(br::BarycentricRefinement) = vertices(br.mesh)
-vertices(m::BarycentricRefinement, cell) = vertices(m.mesh,cell)
-numvertices(br::BarycentricRefinement) = numvertices(br.mesh)
-cells(br::BarycentricRefinement) = cells(br.mesh)
-indices(br::BarycentricRefinement, p) = indices(br.mesh, p) 
-numcells(br::BarycentricRefinement) = numcells(br.mesh)
-skeleton(br::BarycentricRefinement, dim::Int) = skeleton(br.mesh, dim)
-chart(br::BarycentricRefinement, cell) = chart(br.mesh, cell)
-vertexarray(m::BarycentricRefinement) = vertexarray(m.mesh)
-cellarray(m::BarycentricRefinement) = cellarray(m.mesh)
-
-function celltype(m::BarycentricRefinement{U,D1}) where {U,D1} SimplexGraph{D1} end
-function celltype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{M+1} end
-function indextype(m::BarycentricRefinement{U,D1}) where {U,D1} SVector{D1,Int} end
-function indextype(m::BarycentricRefinement{U,D1}, ::Type{Val{M}}) where {U,D1,M} SVector{M+1,Int} end
 
 function parent(m::BarycentricRefinement, p)
     numchildren = factorial(dimension(m)+1)
     return mod1(p, numchildren)
 end
 
-struct BarycentricRefinementParent{U,D1,T,M,N} <: AbstractMesh{U,D1,T}
-    mesh::M
-    refinement::N
-end
-
-Base.:(==)(m1, m2::BarycentricRefinementParent) = (m1 == m2.mesh)
-Base.:(==)(m1::BarycentricRefinementParent, m2) = m1.mesh == m2
-
-BarycentricRefinementParent{U,D1,T}(mesh::M, parent::N) where {U,D1,T,M,N} = BarycentricRefinementParent{U,D1,T,M,N}(mesh, parent)
-
-parent(m::BarycentricRefinement{U,D1,T}) where {U,D1,T} = BarycentricRefinementParent{U,D1,T}(m.parent, m.mesh)
-Base.length(m::BarycentricRefinementParent) = length(m.mesh)
-vertices(m::BarycentricRefinementParent, p) = vertices(m.mesh, p)
-cells(m::BarycentricRefinementParent) = cells(m.mesh)
-
-
-function children(m::BarycentricRefinementParent, p)
+function children(m::RefinementParent{<:Any,<:Any,<:Any,<:Any,<:BarycentricRefinement}, p)
     numchildren = factorial(dimension(m)+1)
     [(p-1)*numchildren+i for i in 1:numchildren]
 end
@@ -54,52 +70,43 @@ Create the mesh obtained by inserting an extra vertex in the barycenters of all 
 recusively creating fine cells by connecting the barycenter of a k-cell to the already
 constructed refined (k-1)-cells on its boundary.
 """
-function barycentric_refinement(mesh::Mesh{U,2}; sort=:spacefillingcurve) where U
-
+function barycentric_refinement(mesh::AbstractMesh{U,2}; sort=:spacefillingcurve) where U
+    T = coordtype(mesh)
     # Get the points and the faces (segments) we will use in the refinement process
     Edges = skeleton(mesh, 1; sort)
 
-    # Note thier number and use it to find the new number of points and segments(faces)
-    # after refienmnts
-    NV, NE = numvertices(Edges), numcells(Edges)
-
-    nv = NV + NE
-    ne = 2NE
+    # Note their number and use it to size the new vertex and segment arrays
+    NV, NE = numvertices(mesh), numcells(Edges)
 
     # define the new vertices array that will hold the old points(coarse) and the
     # new points(finer mesh) of vertices
-    verts = similar(mesh.vertices, nv)
+    verts = Array{vertextype(mesh)}(undef, NV+NE)
 
-    # Now we assign the coarse mesh vetrices (old points) in the upper half excatly
-    # as the original coarse mesh
+    # Now we assign the coarse mesh vetrices (old points) to the first half of the
+    # array excatly as the original coarse mesh
     for i in 1:NV
-        verts[i] = mesh.vertices[i]
-    end
-
-    # for the second half we store the refienment points and we calculate them using
-    # the old points. We insert a point between every pair of points in the original
-    # coarse mesh by (point1+ point2)\2
-    # for (i, Face) in enumerate(cells(mesh))
-    for (i,f) in enumerate(mesh)
-        verts[NV+i] = cartesian(center(chart(mesh, f)))
+        verts[i] = vertices(mesh)[i]
     end
 
     # Now we create the faces using the new points as well
     # example:
-    # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,5))
+    # oringinal points_index (1,2,3,4) , original faces ((1,2), (2,3), (3,4),(4,1))
     # new points_index(1,2,3,4,5,6,7,8), new_faces((1,5),(5,2),(2,6),(6,3),(3,7),(7,4),(4,8),(8,1))
     #                  a,b      For       E=1 ->   (a,c),(c,b) and so on ..
-    edges = similar(Edges.faces, ne)
-    for E in 1:NE
+    edges = Array{celltype(Edges)}(undef, 2NE)
+    for (E,p) in enumerate(Edges)
+        # the second half of the vertex array holds the refinement points,
+        # one at the center of each coarse segment
+        verts[NV+E] = cartesian(center(chart(Edges, p)))
         c = NV + E
-        a = Edges.faces[E][1]
-        b = Edges.faces[E][2]
-        edges[2(E-1) + 1] = SVector(a,c)
-        edges[2(E-1) + 2] = SVector(c,b)
+        a, b = indices(Edges, p)
+        edges[2(E-1) + 1] = SimplexGraph(a,c)
+        edges[2(E-1) + 2] = SimplexGraph(c,b)
     end
+    refmesh = Mesh(verts, edges)
 
-    # return the new mesh after refienments
-    return Mesh(verts, edges)
+    # return the refinement tagged with its parent so that refines recognises it
+    return BarycentricRefinement{U,2,T,typeof(refmesh),typeof(mesh)}(refmesh, mesh)
 end
 
 function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve) where U
@@ -154,13 +161,15 @@ function barycentric_refinement(mesh::AbstractMesh{U,3}; sort=:spacefillingcurve
     end
 
     Nodes = skeleton(mesh, 0)
-    node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    # node_ctrs = [vertices(Nodes)[node][1] for node in cells(Nodes)]
+    node_ctrs = [cartesian(center(chart(Nodes, node))) for node in cells(Nodes)]
     Nodes.faces = Nodes.faces[sort_sfc(node_ctrs)]
 
+    fcs = [SimplexGraph{3}(fc) for fc in fcs]
     fine = Mesh(verts, fcs)
     D = connectivity(Nodes, fine)
     rows, vals = rowvals(D), nonzeros(D)
-    sorted_fcs = Vector{indextype(mesh)}()
+    sorted_fcs = Vector{celltype(mesh)}()
     for (i,Node) in enumerate(cells(Nodes))
         for k in nzrange(D,i)
             j = rows[k]
@@ -297,8 +306,65 @@ end
 children(mesh::Mesh{3,4}, cell) = [24*(cell-1)+1 : 24*cell]
 parent(mesh::BarycentricRefinement{3,4}, cell) = div((cell-1),24)+1
 parent(mesh::BarycentricRefinement{U,3} where {U}, cell) = div((cell-1),6)+1
+parent(mesh::BarycentricRefinement{U,2} where {U}, cell) = div((cell-1),2)+1
+
+
+struct BisectingRefinement{U,D1,T,M,MP} <: AbstractRefinement{U,D1,T}
+    order::Int
+    mesh::M
+    parent::MP
+end
+
+function parent(m::BisectingRefinement, p)
+    order = m.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+    return mod1(p, numchildren)
+end
+
+function children(m::RefinementParent{<:Any,<:Any,<:Any,<:Any,<:BisectingRefinement}, p)
+    order = m.refinement.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+    [(p-1)*numchildren+i for i in 1:numchildren]
+end
+
+function injections(m::RefinementParent{U,D1,T,<:Any,<:BisectingRefinement}, p) where {U,D1,T}
+
+    order = m.refinement.order
+    numchildren = (div(order * (order+1), 2) + div((order-1) * order,2))
+
+    h = 1 / order
+    # set1 = [
+    #     simplex(point(i*h, j*h), point((i+1)*h, j*h), point(i*h, (j+1)*h))
+    #     for j in 0:order-1 for i in 0:order-1-j
+    # ]
+    # set2 = [
+    #     simplex(point((i+1)*h, j*h), point((i+1)*h, (j+1)*h), point(i*h, (j+1)*h))
+    #      for j in 0:order-2 for i in 0:order-2-j
+    # ]
+    # set = [set1; set2]
+
+    
+    S = Simplex{2,D1-1,2-D1+1,D1,T}
+    fcs = Vector{S}()
+    for m in 0:order-1
+        for n in 0:order-1-m
+            push!(fcs, simplex(point(T,m*h,n*h), point(T,(m+1)*h, n*h), point(T, m*h, (n+1)*h)))
+            if m + n <= order - 2
+                push!(fcs, simplex(point(T,(m+1)*h, n*h), point(T,(m+1)*h, (n+1)*h), point(T, m*h, (n+1)*h)))
+            end
+        end
+    end
+
+    # @show length(fcs)
+    # @show numchildren
+    # @assert length(fcs) == numchildren
+    return fcs
+end
 
 """
+    bisecting_refinement(mesh::AbstractMesh{U,3}; order=2) where U
+
+
     bisecting_refinement(mesh) -> refinement
 
 Construct a refinement of `mesh` by inserting a new vertex on every existing edge.
@@ -306,63 +372,116 @@ Every face is subdived in four small faces.
 
 Only defined for 2D meshes.
 """
-function bisecting_refinement(mesh::Mesh{U,3}) where U
+function bisecting_refinement(mesh::AbstractMesh{U,3,T}; order=2) where {U,T}
 
-    D1 = 3
+    MP = typeof(mesh)
 
     edges = skeleton(mesh,1)
-    faces = skeleton(mesh,2)
+    # faces = skeleton(mesh,2)
+    faces = mesh
 
     NV, NE, NF = numvertices(mesh), numcells(edges), numcells(faces)
 
-    nv = NV + NE
-    verts = Array{vertextype(mesh)}(undef,nv)
+    verts = deepcopy(vertices(mesh))
 
-    # copy over the existing vertices
-    for V in 1 : numvertices(mesh)
-        verts[V] = mesh.vertices[V]
+    for (i, E) in enumerate(edges)
+        ch = chart(edges, E)
+        for n in 1:order-1
+            p = neighborhood(ch, SVector(1 - n/order))
+            push!(verts, cartesian(p))
+        end
     end
 
-    # add a vertex in each edge centroid
-    # for (E, Edge) in enumerate(cells(edges))
-    for (i,E) in enumerate(edges)
-        verts[NV+i] = cartesian(center(chart(edges, E)))
+    idx = Dict{Tuple{Int,Int}, Int}()
+    k = 1
+    for n in 1:order-2
+        for m in 1:order-1-n
+            idx[(n,m)] = k
+            k += 1
+        end
+    end
+
+    for F in faces
+        ch = chart(faces, F)
+        for n in 1:order-2
+            for m in 1:order-1-n
+                p = neighborhood(ch, SVector(n/order,m/order))
+                push!(verts, cartesian(p))
+            end
+        end
     end
 
     # Build a matrix that given a coarse face gives
     # access to the coarse edges making up its boundary
-    D = copy(transpose(connectivity(edges, faces, identity)))
+    D = connectivity(faces, edges, identity)
     rows, vals = rowvals(D), nonzeros(D)
 
     # add four faces in each coarse face
-    nf = 4NF
-    fcs = zeros(indextype(mesh), nf)
+    # nf = (div(order * (order+1), 2) + div((order-1) * order,2)) * NF
+    S = SimplexGraph{3}
+    fcs = Vector{S}()
 
     for F in 1 : numcells(faces)
 
-        # retrieve the indices of the fine vertices in the centroids
-        # of the edges in the boundary of coarse face F
-        es = zeros(Int,3)
+        # v = zeros(Int, order+1, order+1)
+        v = fill(-200, order+1, order+1)
+
+        # retrieve the indices of the fine vertices in the nodes of face F
+        v[order+1,1] = cells(faces)[F][1]
+        v[1,order+1] = cells(faces)[F][2]
+        v[1,1] = cells(faces)[F][3]
+
+        # retrieve the indices of the fine vertices along the edges of face F
+        # e = zeros(Int,3, order-1)
         for i in nzrange(D, F)
             E = rows[i]
-            j = abs(vals[i]) # local index of edge E in face F
-            @assert 1 <= j <= 3
-            e = NV + E
-            es[j] = e
+            j, σ = abs(vals[i]), sign(vals[i]) # j = +/-1, +/-2, +/-3
+            if j == 1
+                for n in 1:order-1
+                    v[1, order-n+1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            elseif j == 2
+                for n in 1:order-1
+                    v[n+1, 1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            elseif j == 3
+                for n in 1:order-1
+                    v[order-n+1, n+1] = (σ >0) ?
+                        NV + (E-1) * (order-1) + n :
+                        NV + (E-1) * (order-1) + (order-n)
+                end
+            end
+        end
+        # @show e
+
+        # retrieve the indices of the fine vertices in the interior of face F
+        for n in 1:order-2
+            for m in 1:order-1-n
+                k = idx[(n,m)]
+                v[n+1,m+1] = NV + (NE * (order-1)) + (F-1) * div((order-1)*(order-2),2) + k
+            end
         end
 
-        # build the four triangles
-        r1 = mesh.faces[F][1]
-        r2 = mesh.faces[F][2]
-        r3 = mesh.faces[F][3]
+        # @show v
 
-        fcs[4(F-1)+1] = index(r1,es[3],es[2])
-        fcs[4(F-1)+2] = index(r2,es[1],es[3])
-        fcs[4(F-1)+3] = index(r3,es[2],es[1])
-        fcs[4(F-1)+4] = index(es[1],es[2],es[3])
+        # Build the fine faces in the coarse face F
+        for n in 1:order
+            for m in 1:order-n+1
+                push!(fcs, S(SVector(v[n,m], v[n+1,m], v[n,m+1])))
+                if m + n <= order
+                    push!(fcs, S(SVector(v[n+1,m], v[n+1,m+1], v[n,m+1])))
+                end
+            end
+        end
     end
 
-    Mesh(verts, fcs)
+    fine = Mesh(verts, fcs)
+    MR = typeof(fine)
+    BisectingRefinement{U,3,T,MR,MP}(order, fine, mesh)
 end
 
 """
