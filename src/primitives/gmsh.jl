@@ -4,7 +4,7 @@ using GmshTools
     meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs...)
 
 """
-function meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs...)
+function meshgeo(geofile; physical=nothing, dim=2, order=1, tempname=tempname(), kwargs...)
     
     io = open(geofile)
     str = read(io, String)
@@ -31,6 +31,7 @@ function meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs..
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(temp_geo)
     gmsh.model.mesh.generate(dim)
+    order > 1 && gmsh.model.mesh.setOrder(order)
     gmsh.write(temp_msh)
     gmsh.finalize()
 
@@ -38,9 +39,11 @@ function meshgeo(geofile; physical=nothing, dim=2, tempname=tempname(), kwargs..
 
     # run(`gmsh $temp_geo -2 -format msh2 -o $temp_msh`)
     if dim == 2
-        m = read_gmsh_mesh(temp_msh, physical=physical)
+        # m = read_gmsh_mesh(temp_msh, physical=physical)
+        m = load_gmsh_mesh(temp_msh; element=:triangle, physical, order)
     elseif dim == 3
-        m = read_gmsh3d_mesh(temp_msh, physical=physical)
+        # m = read_gmsh3d_mesh(temp_msh, physical=physical)
+        m = load_gmsh_mesh(temp_msh; element=:tetrahedron, physical, order)
     else
         error("gmsh files of dimension $(dim) cannot be read.")
     end
