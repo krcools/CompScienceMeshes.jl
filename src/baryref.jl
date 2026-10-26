@@ -355,9 +355,9 @@ function injections(m::RefinementParent{U,D1,T,<:Any,<:BisectingRefinement}, p) 
         end
     end
 
-    @show length(fcs)
-    @show numchildren
-    @assert length(fcs) == numchildren
+    # @show length(fcs)
+    # @show numchildren
+    # @assert length(fcs) == numchildren
     return fcs
 end
 

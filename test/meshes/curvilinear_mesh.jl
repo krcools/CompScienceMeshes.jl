@@ -196,20 +196,25 @@ end
     # @test length(fine) == 18
 
     # c1 = cells(parent)[1]
-    chart1 = CSM.chart(parent, 1)
-    injct1 = CSM.injections(parent, 1)[1]
-    child1 = chart(fine, CSM.children(parent, 1)[1])
+    for t in parent
+        chart1 = CSM.chart(parent, t)
+        for (injct, child) in zip(CSM.injections(parent, t), CSM.children(parent, t))
+            
+            # injct1 = CSM.injections(parent, 1)[1]
+            # child1 = chart(fine, CSM.children(parent, 1)[1])
 
-    uv = cartesian(CSM.center(injct1))
-    @show uv
-    p1 = neighborhood(chart1, uv)
-    p2 = CSM.center(child1)
-    p3 = CSM.center(chart(fine, 1))
+            uv = cartesian(CSM.center(injct))
+            @show uv
+            p1 = neighborhood(chart1, uv)
+            # p2 = CSM.center(child)
+            p3 = CSM.center(chart(fine, child))
 
-    @show x1 = cartesian(p1)
-    @show x2 = cartesian(p2)
-    @show x3 = cartesian(p3)
+            # @show x1 = cartesian(p1)
+            # @show x2 = cartesian(p2)
+            # @show x3 = cartesian(p3)
 
-    @test isapprox(x1, x2, atol=1e-12)
-    @test isapprox(x1, x3, atol=1e-12)
+            # @test isapprox(x1, x2, atol=1e-12)
+            @test isapprox(x1, x3, atol=1e-12)
+        end
+    end
 end
