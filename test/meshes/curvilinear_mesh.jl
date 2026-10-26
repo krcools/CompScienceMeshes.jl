@@ -209,9 +209,9 @@ end
             # p2 = CSM.center(child)
             p3 = CSM.center(chart(fine, child))
 
-            # @show x1 = cartesian(p1)
+            x1 = cartesian(p1)
             # @show x2 = cartesian(p2)
-            # @show x3 = cartesian(p3)
+            x3 = cartesian(p3)
 
             # @test isapprox(x1, x2, atol=1e-12)
             @test isapprox(x1, x3, atol=1e-12)
