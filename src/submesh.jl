@@ -55,6 +55,11 @@ function celltype(m::SubMesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SimplexGraph{
 function indextype(m::SubMesh{U,D1}) where {U,D1} SVector{D1,Int} end
 function indextype(m::SubMesh{U,D1}, ::Type{Val{M}}) where {U,D1,M} SVector{M+1,Int} end
 
+function similar_mesh(mesh::SubMesh{U,D1,T,S}, vertices, faces::Vector{SimplexGraph{D1new}}
+) where {U,D1,T,S,D1new}
+    similar_mesh(mesh.supermesh, vertices, faces)
+end
+
 
 function SubMesh(supermesh, sub2sup)
 

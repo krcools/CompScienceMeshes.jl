@@ -60,11 +60,12 @@ export dimension, universedimension
 export volume
 export neighborhood
 export quadpoints
+export meshorder
 
 export isinside, isinclosure, overlap
 
 # specific to simplicial charts
-export simplex, center, vertices
+export simplex, center, vertices, nodes
 export faces, edges, circumcenter
 export barytocart, carttobary
 
@@ -91,6 +92,7 @@ Pt{N,T} = StaticArrays.SVector{N,T}
 include("defaults.jl")
 include("utils.jl")
 include("utils/localgraphs.jl")
+include("graphs/hosimplex.jl")
 include("utils/sfc_sort.jl")
 include("utils/circumctr.jl")
 # include("combinatorics.jl")
@@ -115,6 +117,7 @@ include("rectangle.jl")
 include("charts.jl")
 include("charts/quadrilateral.jl")
 include("charts/hexahedron.jl")
+include("charts/curvilinear_chart.jl")
 include("subd_chart.jl")
 include("sphere.jl")
 include("overlap.jl")
@@ -123,6 +126,13 @@ include("isinside.jl")
 include("findchart.jl")
 include("neighborhood.jl")
 include("subd_neighborhood.jl")
+
+include("meshes/curvilinear_silvester.jl")
+include("meshes/curvilinear_gmsh_line.jl")
+include("meshes/curvilinear_gmsh_triangle.jl")
+include("meshes/curvilinear_mesh.jl")
+include("meshes/curvilinear_neighborhood.jl")
+
 include("quadpoints.jl")
 
 include("submesh.jl")

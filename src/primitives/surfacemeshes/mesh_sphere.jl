@@ -232,7 +232,7 @@ Create a mesh of a sphere of radius `radius` by parsing a .geo script
 
 The target edge size is `delta`.
 """
-function gmshsphere(radius, delta; tempname=tempname())
+function gmshsphere(radius, delta; tempname=tempname(), order=1)
     s = """
 lc = $delta;
 
@@ -277,11 +277,20 @@ Ruled Surface(4)={4} In Sphere{1};
     gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Mesh.MshFileVersion",2)
     gmsh.open(fn)
+
+    # Choose element order (1: linear segments, 2: quadratic)
+    gmsh.option.setNumber("Mesh.ElementOrder", order)
+
     gmsh.model.mesh.generate(2)
     gmsh.write(fno)
     gmsh.finalize()
 
-    m = read_gmsh_mesh(fno)
+    m = load_gmsh_mesh(fno,
+        element=:triangle,
+        vertextype=Float64,
+        order=order,
+        sort=false
+    )
 
     rm(fno)
     rm(fn)
