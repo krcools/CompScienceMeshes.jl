@@ -11,6 +11,10 @@ function QuadMesh(V::Vector{SVector{3,T}}, F::Vector{SVector{4,Int}}) where {T}
     return QuadMesh{T}(V, [QuadrilateralGraph(f) for f in F])
 end
 
+function similar_mesh(mesh::QuadMesh{T}, vertices::Vector{SVector{U,T}}, faces::Vector{SimplexGraph{2}}) where {U,T}
+    Mesh{U,2,T}(vertices, faces)
+end
+
 function indices(m::QuadMesh, cellptr) m.faces[cellptr].indices end
 function vertextype(m::QuadMesh) eltype(m.vertices) end
 function dimension(m::QuadMesh) 2 end
