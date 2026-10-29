@@ -12,6 +12,7 @@ include("surfacemeshes/mesh_sphere.jl")
 include("surfacemeshes/mesh_torus.jl")
 include("surfacemeshes/mesh_pyramid.jl")
 include("surfacemeshes/mesh_nasaalmond.jl")
+include("surfacemeshes/mesh_bunny.jl")
 
 include("volumemeshes/mesh_cuboid.jl")
 include("volumemeshes/mesh_sphere.jl")
