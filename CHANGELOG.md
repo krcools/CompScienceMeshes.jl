@@ -1,3 +1,7 @@
+# Unreleased
+
+- New primitive `meshbunny(h; order=1)`: a closed mesh of the Stanford bunny, flat (`order=1`) or with cubic PN triangles (`order=3`). The scan is downloaded on first use.
+
 # Version 0.13
 
 - Fixed various bugs to better support curves
