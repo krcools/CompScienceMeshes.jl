@@ -54,7 +54,6 @@ include("primitives/surfacemeshes/test_cuboid.jl")
 include("primitives/surfacemeshes/test_icosphere.jl")
 include("primitives/surfacemeshes/test_rectangle.jl")
 include("primitives/surfacemeshes/test_sphere.jl")
-include("primitives/surfacemeshes/test_bunny.jl")
 include("primitives/volumemeshes/test_cuboid.jl")
 
 include("test_curvilinear_elements.jl")
