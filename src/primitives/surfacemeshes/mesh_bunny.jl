@@ -148,6 +148,8 @@ end
 
 # Unit normals at the vertices of `m`, averaged (area weighted) over the faces of
 # the dense scan (V, F) whose centroids lie within distance `r`, signed outward like `m`.
+# Where no scan face is that close (e.g. near the large fan triangles closing the holes),
+# fall back to the vertex normal of `m` itself.
 function bunny_normals(m, V, F, r)
     ctr = [sum(V[f]) / 3 for f in F]
     nrm = [cross(V[f[2]] - V[f[1]], V[f[3]] - V[f[1]]) / 2 for f in F]
@@ -165,6 +167,7 @@ function bunny_normals(m, V, F, r)
         b = bin(p)
         n = sum((nrm[j] for k in Iterators.product(-1:1, -1:1, -1:1) for j in get(grid, b .+ k, Int[])
             if norm(ctr[j] - p) < r); init=zero(SVector{3,Float64}))
+        iszero(n) && return normalize(vn[i])
         n = normalize(n)
         dot(n, vn[i]) < 0 ? -n : n
     end
@@ -224,6 +227,7 @@ end
     @test m3 isa CompScienceMeshes.CurvilinearMesh
     @test meshorder(m3) == 3
     @test numcells(m3) == numcells(m)
+    @test all(v -> all(isfinite, v), vertices(m3))
     @test CompScienceMeshes.isoriented(m3)
     # the cubic patches are not folded: their normals stay within 90° of the flat normals
     pts = [point(u, v) for u in 0:0.25:1 for v in 0:0.25:1 if u + v <= 1]
@@ -231,4 +235,11 @@ end
         nf = normal(center(chart(m, cells(m)[i])))
         all(dot(normal(neighborhood(chart(m3, i), p)), nf) > 0 for p in pts)
     end
+
+    # At this size some vertices have no scan face within h/2 and need the fallback normal
+    h = 0.05
+    m = CompScienceMeshes.meshbunny(h)
+    V, F = CompScienceMeshes.bunny_scan(CompScienceMeshes.bunny_scanfile(), 1.0)
+    vn = CompScienceMeshes.bunny_normals(m, V, F, h / 2)
+    @test all(n -> norm(n) ≈ 1, vn)
 end
