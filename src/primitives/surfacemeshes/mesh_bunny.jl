@@ -148,6 +148,9 @@ end
 
 # Unit normals at the vertices of `m`, averaged (area weighted) over the faces of
 # the dense scan (V, F) whose centroids lie within distance `r`, signed outward like `m`.
+# Around vertices of small cells (e.g. slivers at the ear tips) the distance is reduced
+# to half the longest incident edge: normals smoothed over a much larger region than the
+# cells themselves fold their PN triangles.
 # Where no scan face is that close (e.g. near the large fan triangles closing the holes),
 # fall back to the vertex normal of `m` itself.
 function bunny_normals(m, V, F, r)
@@ -159,14 +162,17 @@ function bunny_normals(m, V, F, r)
         push!(get!(grid, bin(c), Int[]), i)
     end
     vn = zeros(SVector{3,Float64}, numvertices(m))    # outward normals of the coarse mesh
+    rv = zeros(numvertices(m))                        # averaging distance per vertex
     for c in cells(m)
         a, b, d = vertices(m)[c.indices]
         foreach(v -> vn[v] += cross(b - a, d - a), c.indices)
+        l = max(norm(b - a), norm(d - b), norm(a - d)) / 2
+        foreach(v -> rv[v] = min(r, max(rv[v], l)), c.indices)
     end
     map(enumerate(vertices(m))) do (i, p)
         b = bin(p)
         n = sum((nrm[j] for k in Iterators.product(-1:1, -1:1, -1:1) for j in get(grid, b .+ k, Int[])
-            if norm(ctr[j] - p) < r); init=zero(SVector{3,Float64}))
+            if norm(ctr[j] - p) < rv[i]); init=zero(SVector{3,Float64}))
         iszero(n) && return normalize(vn[i])
         n = normalize(n)
         dot(n, vn[i]) < 0 ? -n : n
