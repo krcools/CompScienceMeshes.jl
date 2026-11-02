@@ -671,6 +671,10 @@ positive or negative depending on the relative orientation of face `k` in cell
 
 For `op=sign`, the matrix returned is the classic connectivity matrix, i.e.
 the graph version of the exterior derivative.
+
+If `faces` and `cells` have the same dimension, `D[m,k]` is `op(±1)` when cell
+`m` and face `k` have the same vertices, with the sign of their relative
+orientation, and zero otherwise.
 """
 function connectivity(kmesh::AbstractMesh, mmesh::AbstractMesh, op = sign)
 
@@ -717,6 +721,23 @@ function connectivity(kmesh::AbstractMesh, mmesh::AbstractMesh, op = sign)
 
     D = sparse(Rows, Cols, Vals, dimm, dimk, (x,y)->y)
     return D
+end
+
+@testitem "connectivity between meshes of equal dimension" begin
+    using LinearAlgebra
+
+    m = meshrectangle(1.0, 1.0, 0.5)
+    n = length(m)
+    @test connectivity(m, m, sign) == Matrix(I, n, n)
+    @test connectivity(m, m, abs) == Matrix(I, n, n)
+    @test connectivity(m, fliporientation(m), sign) == -Matrix(I, n, n)
+
+    e = skeleton(m, 1)
+    @test connectivity(e, e, sign) == Matrix(I, length(e), length(e))
+
+    # a submesh only connects to its own cells
+    s = Mesh(vertices(m), cells(m)[2:3])
+    @test connectivity(s, m, sign) == Matrix(I, n, n)[:, 2:3]
 end
 
 # function connectivity2(kcells::AbstractMesh, mcells::AbstractMesh, op = sign)

@@ -147,6 +147,13 @@ end
 
 function relorientation(face, simplex)
 
+    # equal dimension: local index is 1 if both have the same vertices
+    if length(face) == length(simplex)
+        p = [something(findfirst(isequal(v), simplex), 0) for v in face]
+        any(iszero, p) && return 0
+        return levicivita(p)
+    end
+
     v = setdiff(simplex, face)
     length(v) == 1 || return 0
 
