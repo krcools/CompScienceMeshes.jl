@@ -2135,3 +2135,29 @@ const trianglequadDunavantW =  [
     trianglequadDunavant73w,
     trianglequadDunavant79w
 ]
+
+# Polynomial degree up to which each rule above integrates exactly (rule n is
+# exact up to degree n, as in Dunavant's paper). Verified numerically against
+# the exact monomial integrals over the reference triangle.
+const trianglequadDunavantDegree = [
+    1,  # 1 point
+    2,  # 3 points
+    3,  # 4 points
+    4,  # 6 points
+    5,  # 7 points
+    6,  # 12 points
+    7,  # 13 points
+    8,  # 16 points
+    9,  # 19 points
+    10, # 25 points
+    11, # 27 points
+    12, # 33 points
+    13, # 37 points
+    14, # 42 points
+    15, # 48 points
+    16, # 52 points
+    17, # 61 points
+    18, # 70 points
+    19, # 73 points
+    20, # 79 points
+]

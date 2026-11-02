@@ -2165,3 +2165,24 @@ const trianglequadGaussW =  [
   trianglequadGauss400w,
   trianglequadGauss900w
 ]
+
+# Polynomial degree up to which each rule above integrates exactly. Rules 1-11
+# were verified numerically against the exact monomial integrals over the
+# reference triangle (rules 8-11 are tabulated to ~13 significant digits). Rules
+# 12 and 13 are collapsed (Duffy) n x n Gauss-Legendre product rules with n = 20
+# and n = 30 respectively, which are exact up to degree 2n-2.
+const trianglequadGaussDegree = [
+  1,  # 1 point
+  2,  # 3 points
+  3,  # 4 points
+  4,  # 6 points
+  5,  # 7 points
+  6,  # 12 points
+  7,  # 13 points
+  13, # 36 points
+  20, # 78 points
+  23, # 105 points
+  25, # 120 points
+  38, # 400 points
+  58, # 900 points
+]
