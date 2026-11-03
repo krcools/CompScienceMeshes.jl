@@ -63,11 +63,21 @@ function load_gmsh_mesh(meshfile;
         element_tags = Vector{Int}[]
         element_node_tags = Vector{Int}[]
 
+        # Merge the elements of all entities per element type: downstream only
+        # the first block of a given element type is read.
         for ent in entities
             elemtypes, elemtags, nodetags = gmsh.model.mesh.getElements(dim, ent)
-            append!(element_types, elemtypes)
-            append!(element_tags, vcat(elemtags))
-            append!(element_node_tags, vcat(nodetags))
+            for (type, tags, ntags) in zip(elemtypes, elemtags, nodetags)
+                k = findfirst(==(type), element_types)
+                if k === nothing
+                    push!(element_types, type)
+                    push!(element_tags, tags)
+                    push!(element_node_tags, ntags)
+                else
+                    append!(element_tags[k], tags)
+                    append!(element_node_tags[k], ntags)
+                end
+            end
         end
 
     end
