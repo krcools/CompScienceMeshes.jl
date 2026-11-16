@@ -1,12 +1,33 @@
 # Unreleased
 
 - New primitive `CompScienceMeshes.meshbunny(h; order=1)` (not exported): a closed mesh of the Stanford bunny, flat (`order=1`) or with cubic PN triangles (`order=3`). The scan is downloaded on first use.
+- `load_gmsh_mesh` merges the elements of all entities per element type, so physical groups that span several geometric entities are now read completely.
+- `connectivity` supports meshes of equal dimension: `D[m,k]` is `op(±1)` when cell `m` and face `k` share the same vertices (with the sign of their relative orientation) and zero otherwise.
+- The Dunavant and Gauss triangle quadrature tables now record the polynomial degree each rule integrates exactly.
+- `sort_sfc` throws an `ArgumentError` for non-finite point coordinates instead of recursing forever.
+
+# Version 1.0
+
+- Support for curvilinear (higher order) simplicial meshes: new `CompScienceMeshes.CurvilinearMesh` type (not exported) with curvilinear charts for lines and triangles.
+  - `load_gmsh_mesh` returns a `CurvilinearMesh` for `element=:line` or `element=:triangle` with `order > 1`.
+  - `meshgeo` accepts an `order` keyword and now reads its output through `load_gmsh_mesh`.
+  - New primitive `CompScienceMeshes.gmshcircle(radius, delta; order=1)` (not exported).
+  - `skeleton`, `boundary`, `connectivity`, and barycentric refinement work for curvilinear meshes.
+- New exports `meshorder` and `nodes`.
+- `scatter3d` (PlotlyBase extension) can plot meshes of points.
 
 # Version 0.13
 
 - Fixed various bugs to better support curves
 - Better support for triangles in a 2D universe
 - Tolerances in overlap are now relative to entity sizes
+- Refining a curve returns a `BarycentricRefinement`.
+- Fixed `isinclosure` for zero-dimensional cells.
+- Fixed negative volumes for charts in a 2D universe (#63).
+- Hexahedral charts.
+- `==` is defined for the mesh types.
+- Structured `meshrectangle` and `meshcuboid` pick the edge length closest to the requested one that fits the geometry exactly, instead of approximating the dimensions by multiples of the edge length.
+- Restored type stability of `SubMesh` and made its `length` and iteration allocation-free (iteration was quadratic in time and memory since 0.10).
 
 # Version 0.12 
 
