@@ -1,4 +1,4 @@
-# Unreleased
+# Version 1.1
 
 - New primitive `CompScienceMeshes.meshbunny(h; order=1)` (not exported): a closed mesh of the Stanford bunny, flat (`order=1`) or with cubic PN triangles (`order=3`). The scan is downloaded on first use.
 - `load_gmsh_mesh` merges the elements of all entities per element type, so physical groups that span several geometric entities are now read completely.
