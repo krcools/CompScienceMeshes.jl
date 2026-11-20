@@ -18,6 +18,14 @@ const CSM = CompScienceMeshes
     @test Γ isa CSM.CurvilinearMesh
     @test CSM.indextype(Γ) == SVector{3,Int}
 
+    # the center of a curved triangle is the image of the reference centroid
+    for p in 1:numcells(Γ)
+        ch = chart(Γ, p)
+        @test parametric(center(ch)) ≈ SVector(1 / 3, 1 / 3)
+        @test cartesian(center(ch)) ≈ barytocart(ch, SVector(1 / 3, 1 / 3))
+    end
+    O == 1 && @test all(cartesian(center(chart(Γ, p))) ≈ cartesian(center(chart(Γflat, p))) for p in 1:numcells(Γ))
+
     R = barycentric_refinement(Γ)
     F = R.mesh
 

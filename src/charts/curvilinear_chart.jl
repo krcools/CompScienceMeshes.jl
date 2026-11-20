@@ -372,7 +372,8 @@ evaluating the mapping at `ζ = 0.5`.
 """
 function center(ch::CurvilinearSimplex{U,0}) where {U} ch.vertices[1] end
 function center(ch::CurvilinearSimplex{U,1}) where {U} neighborhood(ch, SVector(0.5)) end
-function center(ch::CurvilinearSimplex{U,2}) where {U} neighborhood(ch, SVector(0.5, 0.5)) end
+# the centroid of the reference triangle; (1/2, 1/2) would be the midpoint of an edge
+function center(ch::CurvilinearSimplex{U,2,C,N,T}) where {U,C,N,T} neighborhood(ch, SVector(one(T) / 3, one(T) / 3)) end
 
 domain(::CurvilinearSimplex{U,1,C,N,T}) where {U,C,N,T} = ReferenceSimplex{1,T,2}()
 domain(::CurvilinearSimplex{U,2,C,N,T}) where {U,C,N,T} = ReferenceSimplex{2,T,3}()
