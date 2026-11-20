@@ -57,6 +57,7 @@ include("primitives/surfacemeshes/test_sphere.jl")
 include("primitives/volumemeshes/test_cuboid.jl")
 
 include("test_curvilinear_elements.jl")
+include("test_curvilinear_baryref.jl")
 
 using TestItemRunner
 @run_package_tests

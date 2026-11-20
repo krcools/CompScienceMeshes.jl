@@ -151,6 +151,7 @@ include("fileio/gid.jl")
 include("primitives/primitives.jl")
 #include("../examples/waveguide_with_post.jl")
 include("baryref.jl")
+include("meshes/curvilinear_baryref.jl")
 include("subdivision.jl")
 include("weld.jl")
 
