@@ -26,6 +26,14 @@ const CSM = CompScienceMeshes
     end
     O == 1 && @test all(cartesian(center(chart(Γ, p))) ≈ cartesian(center(chart(Γflat, p))) for p in 1:numcells(Γ))
 
+    # the edges of a curved triangle and their injections into its parametric domain agree
+    for p in 1:numcells(Γ)
+        ch = chart(Γ, p)
+        for (edge, inj) in CSM.subcharts(ch, Val{1}), s in (0.1, 0.5, 0.8)
+            @test barytocart(edge, SVector(s)) ≈ barytocart(ch, cartesian(inj, SVector(s)))
+        end
+    end
+
     R = barycentric_refinement(Γ)
     F = R.mesh
 
@@ -53,6 +61,17 @@ const CSM = CompScienceMeshes
                     maxdev = max(maxdev, norm(barytocart(chc, μ) - barytocart(chp, SVector(λ[1], λ[2]))))
                 end
             end
+        end
+    end
+    @test maxdev < 1e-13
+
+    # chartinparent maps the parameters of a child to those of its parent
+    maxdev = 0.0
+    for q in 1:numcells(R)
+        p = CSM.parent(R, q)
+        m = CSM.chartinparent(R, q)
+        for μ in μs
+            maxdev = max(maxdev, norm(barytocart(chart(F, q), μ) - barytocart(chart(Γ, p), cartesian(m, μ))))
         end
     end
     @test maxdev < 1e-13

@@ -76,3 +76,24 @@ function barycentric_refinement(mesh::CurvilinearMesh{U,3,N,T,O}; sort=:spacefil
     refmesh = CurvilinearMesh(verts, fcs)
     return BarycentricRefinement{U,3,T,typeof(refmesh),typeof(mesh)}(refmesh, mesh)
 end
+
+"""
+    chartinparent(refinement::BarycentricRefinement{U,3}, cell)
+
+The cell `cell` of the barycentric refinement of a triangle mesh as a flat simplex in the
+parametric domain of its parent, `parent(refinement, cell)`: its vertices are the parameters
+`(u, v)` of its corners in the parent. Since the children are affine images of parts of the
+parent's reference triangle, the parameters of a point of the child are mapped to those in the
+parent by `cartesian(chartinparent(refinement, cell), u)`, also for curvilinear cells, whose
+corners cannot be located in the parent from their coordinates alone. The children are
+numbered as in `barycentric_refinement`.
+"""
+function chartinparent(refinement::BarycentricRefinement{U,3,T}, cell) where {U,T}
+    k = cell - 6 * (parent(refinement, cell) - 1)
+    j, s = divrem(k - 1, 2) .+ 1
+    corners = (SVector{2,T}(1, 0), SVector{2,T}(0, 1), SVector{2,T}(0, 0))
+    a, b = corners[mod1(j + 1, 3)], corners[mod1(j + 2, 3)]
+    m = (a + b) / 2
+    c = SVector{2,T}(1, 1) / 3
+    return s == 1 ? simplex(a, m, c) : simplex(b, c, m)
+end

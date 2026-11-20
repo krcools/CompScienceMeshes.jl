@@ -221,3 +221,27 @@ end
 @inline dsilv(::Val{10}, ::Val{8}, ξ::T) where {T} = (800000000ξ^7 - 560000000ξ^6 + 201600000ξ^5 - 47040000ξ^4 + 7257600ξ^3 - 725760ξ^2 + 40320ξ - 160) / 40320
 @inline dsilv(::Val{10}, ::Val{9}, ξ::T) where {T} = (9000000000ξ^8 - 7200000000ξ^7 + 2835000000ξ^6 - 729000000ξ^5 + 135000000ξ^4 - 17280000ξ^3 + 1417500ξ^2 - 63000ξ + 180) / 362880
 @inline dsilv(::Val{10}, ::Val{10}, ξ::T) where {T} = (100000000000ξ^9 - 90000000000ξ^8 + 36000000000ξ^7 - 9450000000ξ^6 + 1800000000ξ^5 - 250000000ξ^4 + 24000000ξ^3 - 1440000ξ^2 + 48000ξ - 200) / 3628800
+
+# The same polynomials for an order known at compile time, as static vectors: no allocations,
+# and the same arithmetic, hence the same values, as the methods above. The charts evaluate them
+# at every point, e.g. at every quadrature point of every integral.
+@inline function silvester(::Val{P}, x::T) where {P,T}
+    R = MVector{P + 1,T}(undef)
+    R[1] = T(1)
+    for i = 0:(P-1)
+        R[i + 1 + 1] = (P*x - i)/(i + 1)*R[i + 1]
+    end
+    return SVector(R)
+end
+
+@inline function fast_silvester(::Val{P}, x::T) where {P,T}
+    R = MVector{P + 1,T}(undef)
+    dR = MVector{P + 1,T}(undef)
+    R[1] = T(1)
+    dR[1] = T(0)
+    for i = 0:(P - 1)
+        R[i + 1 + 1] = (P*x - i)/(i + 1)*R[i + 1]
+        dR[i + 1 + 1] = P/(i + 1) * R[i + 1] + (P*x - i)/(i + 1) * dR[i + 1]
+    end
+    return SVector(R), SVector(dR)
+end
