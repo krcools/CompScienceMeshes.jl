@@ -102,7 +102,8 @@ function neighborhood(p::C, bary) where {C<:CurvilinearSimplex}
     D = dimension(p)
     T = coordtype(p)
     P = SVector{D,T}
-    cart = barytocart(p, T.(bary))
+    # the parameters may come as a tuple, as for flat simplices
+    cart = barytocart(p, P(T.(bary)))
     Q = typeof(cart)
     U = length(cart)
     MeshPointNM{T,C,D,U}(p, P(bary), cart)
@@ -433,3 +434,5 @@ function faces(ch::CurvilinearSimplex{U,2,C,N,T,O}, ::Type{Val{1}}) where {U,C,N
         E(F(I[1], I[2], I[3+0*(O-1)+1:3+1*(O-1)]...)),
     )
 end
+# the edges of a triangle, as `faces(::Simplex{3,2})` does for flat ones: edge j is opposite to corner j
+faces(ch::CurvilinearSimplex{U,2}) where {U} = faces(ch, Val{1})
