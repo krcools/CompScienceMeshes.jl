@@ -105,7 +105,8 @@ function celltype(m::CurvilinearMesh{U,D1,N,T,O}, ::Type{Val{M}}) where {U,D1,N,
     HOSimplexGraph{M+1,O,binomial(M+O,O)}
 end
 
-function indextype(m::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O} SVector{N-O+1,Int} end
+# the indices of the corners only, as for flat meshes (N-O+1 was correct for lines alone)
+function indextype(m::CurvilinearMesh{U,D1,N,T,O}) where {U,D1,N,T,O} SVector{D1,Int} end
 function indextype(m::CurvilinearMesh{U,D1,N,T,O}, ::Type{Val{M}}) where {U,D1,N,T,O,M} SVector{M+1,Int} end
 
 function indices(m::CurvilinearMesh{U,1,N,T,O}, cellptr) where {U,N,T,O}

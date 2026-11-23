@@ -78,11 +78,11 @@ Return the static vector type used to represent vertex coordinates.
 """
 vertextype(::CurvilinearSimplex{U,D,C,N,T}) where {U,D,C,N,T} = SVector{U,T}
 
-# type-form
-coordtype(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = T
-dimension(::Type{CurvilinearSimplex{U,D,C,N,T}})  where {U,D,C,N,T} = D
-universedimension(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = U
-vertextype(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = SVector{U,T}
+# type-form; `<:` since the concrete type also carries the order O
+coordtype(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = T
+dimension(::Type{<:CurvilinearSimplex{U,D,C,N,T}})  where {U,D,C,N,T} = D
+universedimension(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = U
+vertextype(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = SVector{U,T}
 
 """
     neighborhood(ch::CurvilinearSimplex, bary)
@@ -102,7 +102,8 @@ function neighborhood(p::C, bary) where {C<:CurvilinearSimplex}
     D = dimension(p)
     T = coordtype(p)
     P = SVector{D,T}
-    cart = barytocart(p, T.(bary))
+    # the parameters may come as a tuple, as for flat simplices
+    cart = barytocart(p, P(T.(bary)))
     Q = typeof(cart)
     U = length(cart)
     MeshPointNM{T,C,D,U}(p, P(bary), cart)
@@ -119,8 +120,10 @@ function barytocart(ch::CurvilinearSimplex{U,1,C,N,T,O}, bary::AbstractVector) w
     u = bary[1]
 
     s = zero(SVector{U,T})
+    Ru = silvester(Val(O), u)
+    Rv = silvester(Val(O), 1 - u)
     @inbounds for (r, (i, j)) in enumerate(gmsh_line_index_to_tuple[O])
-        s += ch.vertices[r] * silvester(O, u)[i + 1] * silvester(O, 1 - u)[j + 1]
+        s += ch.vertices[r] * Ru[i + 1] * Rv[j + 1]
     end
 
     return s
@@ -148,11 +151,14 @@ function barytocart(ch::CurvilinearSimplex{U,2,C,N,T,O}, bary) where {U,C,N,T,O}
     v = bary[2]
 
     s = zero(SVector{U,T})
+    Ru = silvester(Val(O), u)
+    Rv = silvester(Val(O), v)
+    Rw = silvester(Val(O), 1 - u - v)
     @inbounds for (r, (i, j, k)) in enumerate(gmsh_triangle_index_to_tuple[O])
         s += ch.vertices[r] * 
-            silvester(O, u)[i + 1] *
-            silvester(O, v)[j + 1] *
-            silvester(O, 1 - u - v)[k + 1]
+            Ru[i + 1] *
+            Rv[j + 1] *
+            Rw[k + 1]
     end
 
     return s
@@ -218,8 +224,8 @@ function unitarybase(ch::CurvilinearSimplex{U,1,C,N,T,O}, bary) where {U,C,N,T,O
 
     s = zero(SVector{U,T})
 
-    Ru, dRu = fast_silvester(O, u)
-    Rv, dRv = fast_silvester(O, 1 - u)
+    Ru, dRu = fast_silvester(Val(O), u)
+    Rv, dRv = fast_silvester(Val(O), 1 - u)
 
     @inbounds for (r, (i, j)) in enumerate(gmsh_line_index_to_tuple[O])
 
@@ -256,9 +262,9 @@ function unitarybase(ch::CurvilinearSimplex{U,2,C,N,T,O}, bary) where {U,C,N,T,O
     u = bary[1]
     v = bary[2]
 
-    Ru, dRu = fast_silvester(O, u)
-    Rv, dRv = fast_silvester(O, v)
-    Rw, dRw = fast_silvester(O, 1 - u - v)
+    Ru, dRu = fast_silvester(Val(O), u)
+    Rv, dRv = fast_silvester(Val(O), v)
+    Rw, dRw = fast_silvester(Val(O), 1 - u - v)
 
     𝓵¹ = zero(SVector{U,T})
     𝓵² = zero(SVector{U,T})
@@ -372,7 +378,8 @@ evaluating the mapping at `ζ = 0.5`.
 """
 function center(ch::CurvilinearSimplex{U,0}) where {U} ch.vertices[1] end
 function center(ch::CurvilinearSimplex{U,1}) where {U} neighborhood(ch, SVector(0.5)) end
-function center(ch::CurvilinearSimplex{U,2}) where {U} neighborhood(ch, SVector(0.5, 0.5)) end
+# the centroid of the reference triangle; (1/2, 1/2) would be the midpoint of an edge
+function center(ch::CurvilinearSimplex{U,2,C,N,T}) where {U,C,N,T} neighborhood(ch, SVector(one(T) / 3, one(T) / 3)) end
 
 domain(::CurvilinearSimplex{U,1,C,N,T}) where {U,C,N,T} = ReferenceSimplex{1,T,2}()
 domain(::CurvilinearSimplex{U,2,C,N,T}) where {U,C,N,T} = ReferenceSimplex{2,T,3}()
@@ -430,5 +437,23 @@ function faces(ch::CurvilinearSimplex{U,2,C,N,T,O}, ::Type{Val{1}}) where {U,C,N
         E(F(I[2], I[3], I[3+1*(O-1)+1:3+2*(O-1)]...)),
         E(F(I[3], I[1], I[3+2*(O-1)+1:3+3*(O-1)]...)),
         E(F(I[1], I[2], I[3+0*(O-1)+1:3+1*(O-1)]...)),
+    )
+end
+# the edges of a triangle, as `faces(::Simplex{3,2})` does for flat ones: edge j is opposite to corner j
+faces(ch::CurvilinearSimplex{U,2}) where {U} = faces(ch, Val{1})
+
+# the edges of a triangle with their injections into its parametric domain, as
+# `subcharts(::Simplex{U,2}, Val{1})` does for flat ones
+function subcharts(c::CurvilinearSimplex{U,2,C,N,T}, ::Type{Val{1}}) where {U,C,N,T}
+    d = (
+        point(T, 1, 0),
+        point(T, 0, 1),
+        point(T, 0, 0),
+    )
+    e = faces(c, Val{1})
+    return (
+        (e[1], simplex(d[2], d[3])),
+        (e[2], simplex(d[3], d[1])),
+        (e[3], simplex(d[1], d[2])),
     )
 end
