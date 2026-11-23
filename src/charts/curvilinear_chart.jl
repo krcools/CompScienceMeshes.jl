@@ -78,11 +78,11 @@ Return the static vector type used to represent vertex coordinates.
 """
 vertextype(::CurvilinearSimplex{U,D,C,N,T}) where {U,D,C,N,T} = SVector{U,T}
 
-# type-form
-coordtype(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = T
-dimension(::Type{CurvilinearSimplex{U,D,C,N,T}})  where {U,D,C,N,T} = D
-universedimension(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = U
-vertextype(::Type{CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = SVector{U,T}
+# type-form; `<:` since the concrete type also carries the order O
+coordtype(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = T
+dimension(::Type{<:CurvilinearSimplex{U,D,C,N,T}})  where {U,D,C,N,T} = D
+universedimension(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = U
+vertextype(::Type{<:CurvilinearSimplex{U,D,C,N,T}}) where {U,D,C,N,T} = SVector{U,T}
 
 """
     neighborhood(ch::CurvilinearSimplex, bary)

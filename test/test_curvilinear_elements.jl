@@ -187,6 +187,12 @@ m2 = CompScienceMeshes.CurvilinearMesh(verts2, faces2, 2, 2)
 ch1 = chart(m1, 1)
 ch2 = chart(m2, 1)
 
+# the type-form queries agree with those on the chart
+@test CSM.dimension(typeof(ch2)) == CSM.dimension(ch2) == 2
+@test CSM.universedimension(typeof(ch2)) == CSM.universedimension(ch2) == 3
+@test CSM.coordtype(typeof(ch2)) == CSM.coordtype(ch2) == Float64
+@test CSM.vertextype(typeof(ch2)) == CSM.vertextype(ch2) == SVector{3,Float64}
+
 ## Order 7
 
 v1 = SVector(1.0, 0.0, 0.0)
