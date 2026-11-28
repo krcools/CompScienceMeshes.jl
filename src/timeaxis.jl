@@ -86,13 +86,13 @@ end
 function mindist2D_edg_edg(edg1,edg2)
     a1,a2=edg1[1],edg1[2]
     b1,b2=edg2[1],edg2[2]
-    vertices=[a1,a2,b1,b2]
+    vertices=(a1,a2,b1,b2)
     T=eltype(a1)
-    geo1=edgevertexinteraction(a1,b1,b2) 
+    geo1=edgevertexinteraction(a1,b1,b2)
     geo2=edgevertexinteraction(a2,b1,b2)
     geo3=edgevertexinteraction(b1,a1,a2)
     geo4=edgevertexinteraction(b2,a1,a2)
-    geo=[geo1,geo2,geo3,geo4]
+    geo=(geo1,geo2,geo3,geo4)
 
     x=geo[3].tangent
     xb=geo[1].tangent
@@ -100,29 +100,21 @@ function mindist2D_edg_edg(edg1,edg2)
     hdir=cross(xb,x)
 
     angletot=zero(eltype(a1))
-    dminv=Vector{eltype(a1)}(undef, 4)
-    #dmaxv=Vector{eltype(a1)}(undef, 4)
-    ξ=Vector{typeof(a1)}(undef, 4)
-    for j in 1:4
-        dminv[j]=geo[j].dmin
-        #dmaxv[j]=geo[j].dmax 
-    end
+    dminv=(geo1.dmin,geo2.dmin,geo3.dmin,geo4.dmin)
 
     if norm(hdir) < (100)*eps(eltype(a1))
         dmin=min(dminv[1],dminv[2],dminv[3],dminv[4])
-        
-        #dmax=max(dmaxv[1],dmaxv[2],dmaxv[3],dmaxv[4])
         return dmin
     end
 
     n=hdir/norm(hdir)
-    sgnn=[+1,-1,-1,+1]
+    sgnn=(+1,-1,-1,+1)
         h=dot(a2-b2,n)
-        sgnh=[+1,-1,+1,-1]
-        for j in 1:4 
+        sgnh=(+1,-1,+1,-1)
+        for j in 1:4
             v=vertices[j]
-            ξ[j]=v-n*h*sgnh[j]*sgnn[j] 
-            angletot+=anglecontribution(ξ[j],sgnn[j]*n,geo[j])
+            ξ=v-n*h*sgnh[j]*sgnn[j]
+            angletot+=anglecontribution(ξ,sgnn[j]*n,geo[j])
         end
         if abs(angletot-2*T(π))<100*eps(eltype(a1))
             dmin=abs(h)
@@ -130,9 +122,7 @@ function mindist2D_edg_edg(edg1,edg2)
             dmin=min(dminv[1],dminv[2],dminv[3],dminv[4])
         end
 
-     #   dmax=max(dmaxv[1],dmaxv[2],dmaxv[3],dmaxv[4])
         return dmin
-
 end
 
 function mindist2D_nd_fc(node,face,geo)
@@ -146,13 +136,9 @@ function mindist2D_nd_fc(node,face,geo)
 
     h=dot(node-face[1],n)
     ξ=node-n*h
-    dminv=Vector{eltype(node)}(undef, 3)
+    dminv=(geo[1].dmin,geo[2].dmin,geo[3].dmin)
     angletot=zero(eltype(node))
     for j in 1:3
-
-        dminv[j]=geo[j].dmin
-        #dmaxv[j]=geo[j].dmax 
-            
         angletot+=anglecontribution(ξ,n,geo[j])
     end
     if abs(angletot-2*T(π))<100*eps(eltype(node))
@@ -161,7 +147,6 @@ function mindist2D_nd_fc(node,face,geo)
         dmin=min(dminv[1],dminv[2],dminv[3])
     end
 
-    #dmax=max(dmaxv[1],dmaxv[2],dmaxv[3])
     return dmin
 end    
 

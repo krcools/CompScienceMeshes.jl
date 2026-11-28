@@ -79,7 +79,7 @@ Create the neighborhood at the center of the simplex, i.e. the point correspondi
 to parameter `(1/(D+1), 1/(D+1), ...)` where `D` is the simplex dimension.
 """
 @generated function center(p::Simplex{U,D,C,N,T}) where {U,D,C,N,T}
-    uv = ones(T,D)/(D+1)
+    uv = SVector{D,T}(ntuple(_->one(T)/(D+1), D))
     :(neighborhood(p, $uv))
 end
 
